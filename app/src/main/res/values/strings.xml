@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Social Football</string>
-    <string name="action_settings">Settings</string>
+    <string name="teamsmanagement_name">Name Teams</string>
+    <string name="teamsmanagement_phone">Phone</string>
+    <string name="teamsmanagement_email">Email</string>
+    <string name="teamsmanagement_desc">Description</string>
+
 </resources>

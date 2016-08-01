@@ -415,7 +415,7 @@ public class AsyncApp42ServiceApi {
     /*
      * This function Find JSON Document By KeyValue.
      */
-    public void findAllDocs(final String dbName, final String collectionName, final App42StorageServiceListener callBack) {
+    /*public void findAllDocs(final String dbName, final String collectionName, final Context callBack) {
         final Handler callerThreadHandler = new Handler();
         new Thread() {
             @Override
@@ -440,7 +440,7 @@ public class AsyncApp42ServiceApi {
                 }
             }
         }.start();
-    }
+    }*/
 
 	/**
 	 * Update doc by key value.

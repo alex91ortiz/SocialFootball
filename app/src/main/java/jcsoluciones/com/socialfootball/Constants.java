@@ -26,10 +26,10 @@ public class Constants {
  	/*
 	  * For creating Database from AppHQ console, just go to (Technical Service Manager -> Storage Service -> click "Add DB".)
 	  */
-	 static final String App42DBName = "diagnostictests";  // Change it as your requirement. (Note that, only one DataBase can be created through same API_KEY & SECRET_KEY);
+	 static final String App42DBName = "SocialFootball";  // Change it as your requirement. (Note that, only one DataBase can be created through same API_KEY & SECRET_KEY);
 	
 	 /** The Constant CollectionName. */
- 	static final String CollectionName = "asignaturas"; // Change it as your requirement.
+ 	static final String CollectionName = ""; // Change it as your requirement.
 	
 	 /** The Constant App42GameName. */
  	/*

@@ -6,11 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import jcsoluciones.com.socialfootball.R;
+
 /**
  * Created by Admin on 31/07/2016.
  */
-public class Tournaments extends Fragment {
-    public Tournaments() {
+public class TournamentsFragment extends Fragment {
+    public TournamentsFragment() {
         // Required empty public constructor
     }
 

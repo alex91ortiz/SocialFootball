@@ -6,11 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import jcsoluciones.com.socialfootball.R;
+
 /**
  * Created by Admin on 31/07/2016.
  */
-public class TeamsEvents extends Fragment {
-    public TeamsEvents() {
+public class TeamsEventsFragment extends Fragment {
+    public TeamsEventsFragment() {
         // Required empty public constructor
     }
     @Override
