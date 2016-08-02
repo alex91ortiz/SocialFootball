@@ -53,7 +53,7 @@ public class AsyncApp42ServiceApi {
 	 */
 	private AsyncApp42ServiceApi(Context context) {
 		App42API.initialize(context, Constants.App42ApiKey, Constants.App42ApiSecret);
-		App42CacheManager.setPolicy(App42CacheManager.Policy.CACHE_FIRST);
+		//App42CacheManager.setPolicy(App42CacheManager.Policy.CACHE_FIRST);
 		//App42API.setOfflineStorage(true);
 		this.userService = App42API.buildUserService();
 		this.storageService = App42API.buildStorageService();
@@ -411,11 +411,17 @@ public class AsyncApp42ServiceApi {
 			}
 		}.start();
 	}
-
+	/**
+	 * Find doc by doc id.
+	 *
+	 * @param dbName the db name
+	 * @param collectionName the collection name
+	 * @param callBack the call back
+	 */
     /*
      * This function Find JSON Document By KeyValue.
      */
-    /*public void findAllDocs(final String dbName, final String collectionName, final Context callBack) {
+    public void findAllDocs(final String dbName, final String collectionName, final App42StorageServiceListener callBack) {
         final Handler callerThreadHandler = new Handler();
         new Thread() {
             @Override
@@ -440,7 +446,7 @@ public class AsyncApp42ServiceApi {
                 }
             }
         }.start();
-    }*/
+    }
 
 	/**
 	 * Update doc by key value.

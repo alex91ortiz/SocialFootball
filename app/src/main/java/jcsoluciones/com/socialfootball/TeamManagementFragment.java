@@ -1,7 +1,9 @@
 package jcsoluciones.com.socialfootball;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +13,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.shephertz.app42.paas.sdk.android.App42API;
@@ -25,7 +28,7 @@ import java.util.ArrayList;
  * Created by Admin on 31/07/2016.
  */
 
-public class TeamManagementFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+public class TeamManagementFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,AsyncApp42ServiceApi.App42StorageServiceListener {
     /**
      *  Button for add team
      */
@@ -46,16 +49,13 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
      *  adapter for teams management
      */
     private TeamMgtAdapter adapter;
-
     /**
      * List of your Teams setting
      */
-
     private ArrayList<Storage.JSONDocument> listTeamJson = new ArrayList<Storage.JSONDocument>();
-
     /** The storage service. */
     private StorageService storageService;
-
+    private Storage response;
     public TeamManagementFragment() {
         // Required empty public constructor
     }
@@ -63,34 +63,33 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        App42API.initialize(getActivity(), Constants.App42ApiKey, Constants.App42ApiSecret);
-        App42CacheManager.setPolicy(App42CacheManager.Policy.CACHE_FIRST);
-        storageService=App42API.buildStorageService();
+
+        asyncService = AsyncApp42ServiceApi.instance(getContext());
 
         View view = inflater.inflate(R.layout.fragment_teamsmanagement, container, false);
         listView = (ListView)view.findViewById(R.id.listView);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent intent = new Intent(getContext(), TeamMgtActivity.class);
+                intent.putExtra("object",listTeamJson.get(position).getJsonDoc());
+                startActivity(intent);
+            }
+        });
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        adapter = new TeamMgtAdapter(getActivity(), listTeamJson);
-        listView.setAdapter(adapter);
-
         swipeRefreshLayout.setOnRefreshListener(this);
-
-        context=getContext();
-
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
                 swipeRefreshLayout.setRefreshing(true);
-                fetchTeams();
+                onRefresh();
             }
         });
 
@@ -98,10 +97,11 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
         fabEditTeamMgt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(),TeamMgtActivity.class);
+                Intent intent = new Intent(getContext(), TeamMgtActivity.class);
                 startActivity(intent);
             }
         });
+
         return view;
     }
 
@@ -110,34 +110,61 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
         super.onResume();
     }
 
-    public  void fetchTeams() {
-        final Handler callerThreadHandler = new Handler();
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    final Storage response = storageService.findAllDocuments(Constants.App42DBName, "Teams");
-                    callerThreadHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listTeamJson = response.getJsonDocList();
-                        }
-                    });
-                } catch (final App42Exception ex) {
-                    callerThreadHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                        }
-                    });
-                }
-            }
-        }.start();
+    @Override
+    public void onRefresh() {
+        asyncService.findAllDocs(Constants.App42DBName, "Teams", this);
     }
 
 
     @Override
-    public void onRefresh() {
-        fetchTeams();
+    public void onDocumentInserted(Storage response) {
+
+    }
+
+    @Override
+    public void onUpdateDocSuccess(Storage response) {
+
+    }
+
+    @Override
+    public void onFindDocSuccess(Storage response) {
+        listTeamJson = response.getJsonDocList();
+        if(listTeamJson.size()>0) {
+            adapter = new TeamMgtAdapter(getActivity(), listTeamJson);
+            listView.setAdapter(adapter);
+        }
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onInsertionFailed(App42Exception ex) {
+
+    }
+
+    @Override
+    public void onFindDocFailed(App42Exception ex) {
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onUpdateDocFailed(App42Exception ex) {
+
+    }
+    /**
+     * Creates the alert dialog.
+     *
+     * @param msg the msg
+     */
+    public void createAlertDialog(String msg) {
+        AlertDialog.Builder alertbox = new AlertDialog.Builder(getContext());
+        alertbox.setTitle("Response Message");
+        alertbox.setMessage(msg);
+        alertbox.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            // do something when the button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+
+            }
+        });
+        alertbox.show();
     }
 }
