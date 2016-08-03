@@ -1,43 +1,35 @@
 package jcsoluciones.com.socialfootball;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.util.Log;
+import android.content.DialogInterface;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-
+import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.shephertz.app42.paas.sdk.android.upload.Upload;
-import com.shephertz.app42.paas.sdk.android.upload.UploadFileType;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-
-import java.io.InputStream;
 import java.util.ArrayList;
 
-import jcsoluciones.com.socialfootball.R;
+
 
 /**
  * Created by ADMIN on 01/08/2016.
  */
 
-public class TeamMgtAdapter extends BaseAdapter implements AsyncApp42ServiceApi.App42UploadServiceListener {
+public class TeamMgtAdapter extends BaseAdapter {
     private Activity activity;
     private LayoutInflater inflater;
     private ArrayList<Storage.JSONDocument> jsonList;
-    private ImageView mImg;
+    private SmartImageView mImg;
+    private int position;
     /**
      * The async service.
      */
@@ -54,7 +46,7 @@ public class TeamMgtAdapter extends BaseAdapter implements AsyncApp42ServiceApi.
     }
 
     @Override
-    public Object getItem(int position) {
+    public Storage.JSONDocument getItem(int position) {
         return jsonList.get(position);
     }
 
@@ -71,12 +63,15 @@ public class TeamMgtAdapter extends BaseAdapter implements AsyncApp42ServiceApi.
             convertView = inflater.inflate(R.layout.list_row_teamsmanagement,null);
 
         TextView title = (TextView) convertView.findViewById(R.id.title);
+        TextView message = (TextView) convertView.findViewById(R.id.message);
 
         try {
             JSONObject jsonObject = new JSONObject(jsonList.get(position).getJsonDoc());
-            mImg=(ImageView) convertView.findViewById(R.id.ImageTeams);
-            asyncService.getImage(jsonObject.getString("name"),this);
+            mImg=(SmartImageView) convertView.findViewById(R.id.ImageTeams);
+            JSONObject jsonObjectfile = new JSONObject(jsonObject.getString("_files"));
+            mImg.setImageUrl(jsonObjectfile.getString("url"));
             title.setText(jsonObject.getString("name"));
+            message.setText(jsonObject.getString("desc"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -85,53 +80,4 @@ public class TeamMgtAdapter extends BaseAdapter implements AsyncApp42ServiceApi.
         return convertView;
     }
 
-    @Override
-    public void onUploadImageSuccess(Upload response) {
-
-    }
-
-    @Override
-    public void onUploadImageFailed(App42Exception ex) {
-
-    }
-
-    @Override
-    public void onGetImageSuccess(Upload response) {
-        Upload upload = (Upload)response;
-        ArrayList<Upload.File> fileList = upload.getFileList();
-        for(int i = 0; i < fileList.size();i++ )
-        {
-            new DownloadImageTask(mImg).execute(fileList.get(i).getUrl());
-        }
-    }
-
-    @Override
-    public void onGetImageFailed(App42Exception ex) {
-
-    }
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
 }

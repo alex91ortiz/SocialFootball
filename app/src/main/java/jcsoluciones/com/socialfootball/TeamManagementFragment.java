@@ -14,8 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CacheManager;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
@@ -78,7 +80,8 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 Intent intent = new Intent(getContext(), TeamMgtActivity.class);
-                intent.putExtra("object",listTeamJson.get(position).getJsonDoc());
+                intent.putExtra("object",adapter.getItem(position).getJsonDoc());
+                intent.putExtra("createOrupdate",false);
                 startActivity(intent);
             }
         });

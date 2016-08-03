@@ -5,4 +5,10 @@
     <string name="teamsmanagement_email">Email</string>
     <string name="teamsmanagement_desc">Description</string>
 
+    <string-array name="city">
+        <item>Cali</item>
+        <item>Medellin</item>
+        <item>Bogota</item>
+        <item>Barranquilla</item>
+    </string-array>
 </resources>

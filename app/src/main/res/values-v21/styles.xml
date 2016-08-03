@@ -6,4 +6,8 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+    <style name="Sugar.Switch.Affiliate" parent="Base.Widget.AppCompat.CompoundButton.Switch">
+        <item name="colorSwitchThumbNormal">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 </resources>
