@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -23,12 +24,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -87,6 +90,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
     /**
      * The city
      */
+
     private RatingBar cumplimiento;
     /**
      * The status Image of Gallery
@@ -108,6 +112,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
     private final int PHOTO_CODE = 200;
     private final int SELECT_PICTURE = 300;
     private JSONObject jsonObject;
+    private SwitchCompat switchCancel;
     /**
      * The Flag for create/update
      */
@@ -129,6 +134,16 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
         mRlView = (LinearLayout) findViewById(R.id.layout_main);
         cumplimiento =(RatingBar) findViewById(R.id.rtbCumplimiento);
+
+        switchCancel = (SwitchCompat) findViewById(R.id.switchCancel);
+        switchCancel.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    confirmDeleteTeam();
+                }
+            }
+        });
 
         spncity = (Spinner) findViewById(R.id.input_layout_city);
         ArrayAdapter<CharSequence> adapterspinner = ArrayAdapter.createFromResource(this,R.array.city, android.R.layout.simple_spinner_dropdown_item);
@@ -163,10 +178,13 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
                 e.printStackTrace();
             }
         }
-        if(createOrupdate)
+        if(createOrupdate) {
             cumplimiento.setVisibility(View.INVISIBLE);
-        else
+            switchCancel.setVisibility(View.INVISIBLE);
+        }else {
             cumplimiento.setVisibility(View.VISIBLE);
+            switchCancel.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -233,7 +251,13 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
     @Override
     public void onFindDocSuccess(Storage response) {
+        progressDialog.dismiss();
+        finish();
+    }
 
+    @Override
+    public void onDeleteDocSuccess() {
+        finish();
     }
 
     @Override
@@ -248,6 +272,11 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
     @Override
     public void onUpdateDocFailed(App42Exception ex) {
+        createAlertDialog("Error: " + ex.getMessage());
+    }
+
+    @Override
+    public void onDeleteDocFailed(App42Exception ex) {
         createAlertDialog("Error: " + ex.getMessage());
     }
 
@@ -314,7 +343,30 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
         return false;
     }
+    private void confirmDeleteTeam() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(TeamMgtActivity.this);
+        builder.setTitle("Delete Teams");
+        builder.setMessage("Desea elminar el equipo");
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteTeam();
+            }
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                finish();
+            }
+        });
 
+        builder.show();
+    }
+
+    private void deleteTeam(){
+        asyncService.deleteDocKeyValue(Constants.App42DBName,"Teams","name",edtname.getEditText().getText().toString(),this);
+    }
 
     private void showOptions() {
         final CharSequence[] option = {"Tomar foto", "Elegir de galeria", "Cancelar"};

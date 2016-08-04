@@ -140,6 +140,11 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
     }
 
     @Override
+    public void onDeleteDocSuccess() {
+
+    }
+
+    @Override
     public void onInsertionFailed(App42Exception ex) {
 
     }
@@ -153,6 +158,12 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
     public void onUpdateDocFailed(App42Exception ex) {
 
     }
+
+    @Override
+    public void onDeleteDocFailed(App42Exception ex) {
+
+    }
+
     /**
      * Creates the alert dialog.
      *

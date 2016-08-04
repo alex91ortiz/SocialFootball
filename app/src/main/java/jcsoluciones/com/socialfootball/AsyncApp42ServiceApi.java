@@ -445,7 +445,7 @@ public class AsyncApp42ServiceApi {
 			@Override
 			public void run() {
 				try {
-					final Storage response = storageService.findDocumentByKeyValue(dbName, collectionName,key,value);
+					final Storage response = storageService.findDocumentByKeyValue(dbName, collectionName, key, value);
 					callerThreadHandler.post(new Runnable() {
 						@Override
 						public void run() {
@@ -545,6 +545,47 @@ public class AsyncApp42ServiceApi {
 	}
 
 	/**
+	 * Delete doc by doc Key and Value.
+	 *
+	 * @param dbName the db name
+	 * @param collectionName the collection name
+	 * @param key the key
+	 * @param value the value
+	 * @param callBack the call back
+	 */
+	/*
+	 * This function Delete JSON Document By key value.
+	 */
+	public void deleteDocKeyValue(final String dbName, final String collectionName,
+							   final String key,final String value, final App42StorageServiceListener callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					storageService.deleteDocumentsByKeyValue(dbName, collectionName,key, value);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onDeleteDocSuccess();
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onDeleteDocFailed(ex);
+							}
+						}
+					});
+				}
+			}
+		}.start();
+	}
+
+
+	/**
 	 * The listener interface for receiving app42StorageService events.
 	 * The class that is interested in processing a app42StorageService
 	 * event implements this interface, and the object created
@@ -575,9 +616,16 @@ public class AsyncApp42ServiceApi {
 		/**
 		 * On find doc success.
 		 *
-		 * @param response the response
+		 *
 		 */
 		public void onFindDocSuccess(Storage response);
+
+		/**
+		 * On delete doc success.
+		 *
+		 * @param response the response
+		 */
+		public void onDeleteDocSuccess();
 
 		/**
 		 * On insertion failed.
@@ -599,6 +647,12 @@ public class AsyncApp42ServiceApi {
 		 * @param ex the ex
 		 */
 		public void onUpdateDocFailed(App42Exception ex);
+		/**
+		 * On delete doc failed.
+		 *
+		 * @param ex the ex
+		 */
+		public void onDeleteDocFailed(App42Exception ex);
 	}
 
 	
