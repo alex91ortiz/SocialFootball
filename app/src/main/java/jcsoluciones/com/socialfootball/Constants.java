@@ -17,19 +17,19 @@ public class Constants {
 	/*
 	 * For getting API_KEY & SECRET_KEY, just login or register to AppHQ Console (http://apphq.shephertz.com/). 
 	 */
-	 static final String App42ApiKey = "e7cb3839ca4a56b2896c84ae40d0ddf828e5daa751da9ea91473c028986ef10c";  // API_KEY received From AppHQ console, When You create your first app in AppHQ Console.
+	 static final String App42ApiKey = "02ca49b5fe497cb629f4334066fcc9cf97a6ef5a282601daa729ea75f4836ab4";  // API_KEY received From AppHQ console, When You create your first app in AppHQ Console.
 	 
  	/** The Constant App42ApiSecret. */
- 	static final String App42ApiSecret = "f4a534c2448b6a3e86c526e8f40f36e7cd55b75347a4051f68addf2a056a7241"; // SECRET_KEY received From AppHQ console, When You create your first app in AppHQ Console.
+ 	static final String App42ApiSecret = "d1111d1770adf36609a9f137542065639c4b5c0f1ddec406218440bf6da280d2"; // SECRET_KEY received From AppHQ console, When You create your first app in AppHQ Console.
 	 
 	 /** The Constant App42DBName. */
  	/*
 	  * For creating Database from AppHQ console, just go to (Technical Service Manager -> Storage Service -> click "Add DB".)
 	  */
-	 static final String App42DBName = "diagnostictests";  // Change it as your requirement. (Note that, only one DataBase can be created through same API_KEY & SECRET_KEY);
+	 static final String App42DBName = "SocialFootball";  // Change it as your requirement. (Note that, only one DataBase can be created through same API_KEY & SECRET_KEY);
 	
 	 /** The Constant CollectionName. */
- 	static final String CollectionName = "asignaturas"; // Change it as your requirement.
+ 	static final String CollectionName = ""; // Change it as your requirement.
 	
 	 /** The Constant App42GameName. */
  	/*

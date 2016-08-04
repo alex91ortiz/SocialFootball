@@ -8,8 +8,9 @@ package jcsoluciones.com.socialfootball;
 import android.content.Context;
 import android.os.Handler;
 import com.shephertz.app42.paas.sdk.android.App42API;
-import com.shephertz.app42.paas.sdk.android.App42CacheManager;
+
 import com.shephertz.app42.paas.sdk.android.App42Exception;
+import com.shephertz.app42.paas.sdk.android.App42File;
 import com.shephertz.app42.paas.sdk.android.game.Game;
 import com.shephertz.app42.paas.sdk.android.game.ScoreBoardService;
 import com.shephertz.app42.paas.sdk.android.storage.Query;
@@ -21,9 +22,14 @@ import com.shephertz.app42.paas.sdk.android.upload.UploadFileType;
 import com.shephertz.app42.paas.sdk.android.upload.UploadService;
 import com.shephertz.app42.paas.sdk.android.user.User;
 import com.shephertz.app42.paas.sdk.android.user.UserService;
+import com.shephertz.app42.paas.sdk.android.util.Base64;
 
 import org.json.JSONObject;
 
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 
 /**
@@ -53,7 +59,7 @@ public class AsyncApp42ServiceApi {
 	 */
 	private AsyncApp42ServiceApi(Context context) {
 		App42API.initialize(context, Constants.App42ApiKey, Constants.App42ApiSecret);
-		App42CacheManager.setPolicy(App42CacheManager.Policy.CACHE_FIRST);
+		//App42CacheManager.setPolicy(App42CacheManager.Policy.CACHE_FIRST);
 		//App42API.setOfflineStorage(true);
 		this.userService = App42API.buildUserService();
 		this.storageService = App42API.buildStorageService();
@@ -291,7 +297,55 @@ public class AsyncApp42ServiceApi {
 			}
 		}.start();
 	}
-	
+
+	/**
+	 * Insert json doc.
+	 *
+	 * @param dbName the db name
+	 * @param collectionName the collection name
+	 * @param json the json
+	 * @param fileName the name of file
+	 * @param filePath the file
+	 * @param callBack the call back
+	 */
+	/*
+	 * This function Stores JSON Document.
+	 */
+	public void insertJSONDocFile(final String dbName, final String collectionName,
+							  final JSONObject json, final String filePath ,final String fileName,final App42StorageServiceListener callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					FileInputStream inputStream = new FileInputStream(filePath);
+					App42File file = new App42File();
+					file.setFileInputStream(inputStream);
+					file.setFileType(UploadFileType.IMAGE);
+					file.setName(fileName+".JPG");
+					final Storage response = storageService.insertJSONDocument(dbName, collectionName, json, file);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onDocumentInserted(response);
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onInsertionFailed(ex);
+							}
+						}
+					});
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+	}
+
 	/**
 	 * Find doc by doc id.
 	 *
@@ -411,7 +465,13 @@ public class AsyncApp42ServiceApi {
 			}
 		}.start();
 	}
-
+	/**
+	 * Find doc by doc id.
+	 *
+	 * @param dbName the db name
+	 * @param collectionName the collection name
+	 * @param callBack the call back
+	 */
     /*
      * This function Find JSON Document By KeyValue.
      */
