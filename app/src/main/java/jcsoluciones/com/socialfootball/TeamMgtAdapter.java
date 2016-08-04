@@ -68,8 +68,8 @@ public class TeamMgtAdapter extends BaseAdapter {
         try {
             JSONObject jsonObject = new JSONObject(jsonList.get(position).getJsonDoc());
             mImg=(SmartImageView) convertView.findViewById(R.id.ImageTeams);
-            JSONObject jsonObjectfile = new JSONObject(jsonObject.getString("_files"));
-            mImg.setImageUrl(jsonObjectfile.getString("url"));
+
+            mImg.setImageUrl(jsonObject.getString("ImageUrl"));
             title.setText(jsonObject.getString("name"));
             message.setText(jsonObject.getString("desc"));
         } catch (JSONException e) {

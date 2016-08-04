@@ -427,6 +427,45 @@ public class AsyncApp42ServiceApi {
 	}
 
 	/**
+	 * Find doc by query.
+	 *
+	 * @param dbName the db name
+	 * @param collectionName the collection name
+	 * @param query the query
+	 * @param callBack the call back
+	 */
+	/*
+	 * This function Find JSON Document By KeyValue.
+	 */
+	public void findDocByQuery(final String dbName, final String collectionName, final Query query, final App42StorageServiceListener callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+
+					final Storage response = storageService.findDocumentsByQuery(dbName, collectionName, query);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onFindDocSuccess(response);
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onFindDocFailed(ex);
+							}
+						}
+					});
+				}
+			}
+		}.start();
+	}
+
+	/**
 	 * Find doc by doc id.
 	 *
 	 * @param dbName the db name
@@ -583,7 +622,44 @@ public class AsyncApp42ServiceApi {
 			}
 		}.start();
 	}
-
+	/**
+	 * Delete doc by doc Key and Value.
+	 *
+	 * @param dbName the db name
+	 * @param collectionName the collection name
+	 * @param id the id
+	 * @param callBack the call back
+	 */
+	/*
+	 * This function Delete JSON Document By key value.
+	 */
+	public void deleteDocById(final String dbName, final String collectionName,
+								  final String id, final App42StorageServiceListener callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					storageService.deleteDocumentById(dbName, collectionName,id);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onDeleteDocSuccess();
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onDeleteDocFailed(ex);
+							}
+						}
+					});
+				}
+			}
+		}.start();
+	}
 
 	/**
 	 * The listener interface for receiving app42StorageService events.
@@ -856,8 +932,43 @@ public class AsyncApp42ServiceApi {
 			}
 		}.start();
 	}
-	
-	
+
+	/**
+	 * Gets the image.
+	 *
+	 * @param fileName the file name
+	 * @param callBack the call back
+	 * @return the image
+	 */
+	/*
+	 * This function Uploads File On App42 Cloud.
+	 */
+	public void deleteImage(final String fileName, final App42UploadServiceListener callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					 uploadService.removeFileByName(fileName);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onDeleteImageSuccess();
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onDeleteImageFailed(ex);
+							}
+						}
+					});
+				}
+			}
+		}.start();
+	}
 	/**
 	 * The listener interface for receiving app42UploadService events.
 	 * The class that is interested in processing a app42UploadService
@@ -899,6 +1010,18 @@ public class AsyncApp42ServiceApi {
 		 * @param ex the ex
 		 */
 		void onGetImageFailed(App42Exception ex);
+		/**
+		 * On upload image success.
+		 *
+		 */
+		void onDeleteImageSuccess();
+
+		/**
+		 * On upload image failed.
+		 *
+		 * @param ex the ex
+		 */
+		void onDeleteImageFailed(App42Exception ex);
 	}
 
 }

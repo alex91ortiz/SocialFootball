@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -103,6 +104,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
     private FloatingActionButton floatingActionButton;
     private String selectedImage;
+    private String IdTeams;
     private SmartImageView mImg;
     private LinearLayout mRlView;
     private static String APP_DIRECTORY = "MyPictureApp/";
@@ -169,10 +171,13 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
                 edtname.getEditText().setText(jsonObject.getString("name"));
                 edtphone.getEditText().setText(jsonObject.getString("phone"));
                 edtdescrip.getEditText().setText(jsonObject.getString("desc"));
-                createOrupdate = bundle.getBoolean("createOrupdate",true);
-                JSONObject jsonObjectFile = new JSONObject(jsonObject.getString("_files"));
-                mImg.setImageUrl(jsonObjectFile.getString("url"));
-                selectedImage = jsonObjectFile.getString("url");
+                createOrupdate = bundle.getBoolean("createOrupdate", true);
+                /*JSONObject jsonObjectFile = new JSONObject(jsonObject.getString("_files"));
+                ;
+                selectedImage = jsonObjectFile.getString("url");*/
+                IdTeams = bundle.getString("IdTeams", "");
+                selectedImage =jsonObject.getString("ImageUrl");
+                mImg.setImageUrl(selectedImage);
                 spncity.setSelection(adapterspinner.getPosition(jsonObject.getString("city")));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -204,30 +209,35 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
 
             try {
-                if(selectedImage!=null) {
+
                     progressDialog = ProgressDialog.show(this, "", "Saving..");
                     progressDialog.setCancelable(true);
                     if(createOrupdate) {
-                        jsonObject = new JSONObject();
-                        jsonObject.put("name",srtname);
-                        jsonObject.put("phone",srtphone);
-                        jsonObject.put("city",spncity.getSelectedItem());
-                        jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");
-                        asyncService.insertJSONDocFile(Constants.App42DBName, "Teams", jsonObject, selectedImage,srtname, this);
+                        if(selectedImage!=null) {
+                            jsonObject = new JSONObject();
+                            jsonObject.put("name",srtname);
+                            jsonObject.put("countComply",0);
+                            jsonObject.put("complyValue",0);
+                            jsonObject.put("phone",srtphone);
+                            jsonObject.put("city",spncity.getSelectedItem());
+                            jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");
+                            jsonObject.put("active",true);
+                            asyncService.insertJSONDoc(Constants.App42DBName, "Teams", jsonObject, this);
+                        }else{
+                            createAlertDialog("Input Picture");
+                        }
                     }else{
                         jsonObject.put("name", srtname);
                         jsonObject.put("phone", srtphone);
                         jsonObject.put("city",spncity.getSelectedItem());
                         jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");
-                        JSONObject jsonObjectFile = new JSONObject(jsonObject.getString("_files"));
 
-                        asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams","name",srtname, jsonObject, this);
-                        asyncService.uploadImage(jsonObjectFile.getString("name"), selectedImage, UploadFileType.IMAGE, srtdesc, this);
+                        asyncService.deleteImage(edtname.getEditText().getText().toString().replaceAll("^\\s*", ""), this);
+
+
                     }
 
-                }else{
-                    createAlertDialog("Input Picture");
-                }
+
             } catch (JSONException e) {
                 createAlertDialog("Exception Occurred : " + e.getMessage());
             }
@@ -239,14 +249,15 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
     @Override
     public void onDocumentInserted(Storage response) {
-        progressDialog.dismiss();
-        finish();
+
+        asyncService.uploadImage( edtname.getEditText().getText().toString().replaceAll("^\\s*",""), selectedImage, UploadFileType.IMAGE,
+                edtname.getEditText().getText().toString(), this);
+
     }
 
     @Override
     public void onUpdateDocSuccess(Storage response) {
-        progressDialog.dismiss();
-        finish();
+
     }
 
     @Override
@@ -257,50 +268,78 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
     @Override
     public void onDeleteDocSuccess() {
-        finish();
+        asyncService.uploadImage( edtname.getEditText().getText().toString().replaceAll("^\\s*",""), selectedImage, UploadFileType.IMAGE,
+                edtname.getEditText().getText().toString(), this);
     }
 
     @Override
     public void onInsertionFailed(App42Exception ex) {
-        createAlertDialog("Error: "+ ex.getMessage());
+        progressDialog.dismiss();
+        createAlertDialog("Error: " + ex.getMessage());
     }
 
     @Override
     public void onFindDocFailed(App42Exception ex) {
-        createAlertDialog("Error: "+ ex.getMessage());
+        progressDialog.dismiss();
+        createAlertDialog("Error: " + ex.getMessage());
     }
 
     @Override
     public void onUpdateDocFailed(App42Exception ex) {
+        progressDialog.dismiss();
         createAlertDialog("Error: " + ex.getMessage());
     }
 
     @Override
     public void onDeleteDocFailed(App42Exception ex) {
+        progressDialog.dismiss();
         createAlertDialog("Error: " + ex.getMessage());
     }
 
     @Override
     public void onUploadImageSuccess(Upload response) {
 
+        Upload upload = (Upload) response;
+        ArrayList<Upload.File> fileList = upload.getFileList();
+        if (fileList.size() > 0) {
+            try {
+                jsonObject.put("ImageUrl", fileList.get(0).getUrl());
+                asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getEditText().getText().toString(), jsonObject, this);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        progressDialog.dismiss();
+        finish();
     }
+
+
 
     @Override
     public void onUploadImageFailed(App42Exception ex) {
-
+        createAlertDialog("Error: " + ex.getMessage());
     }
 
     @Override
     public void onGetImageSuccess(Upload response) {
+        finish();
+    }
+
+    @Override
+    public void onGetImageFailed(App42Exception ex) {
+        createAlertDialog("Error: " + ex.getMessage());
+    }
+
+    @Override
+    public void onDeleteImageSuccess() {
 
 
     }
 
     @Override
-    public void onGetImageFailed(App42Exception ex) {
-
+    public void onDeleteImageFailed(App42Exception ex) {
+        createAlertDialog("Error: " + ex.getMessage());
     }
-
 
     /**
      * Creates the alert dialog.
@@ -319,6 +358,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
         });
         alertbox.show();
     }
+
     private boolean mayRequestStoragePermission() {
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
@@ -343,6 +383,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
         return false;
     }
+
     private void confirmDeleteTeam() {
         AlertDialog.Builder builder = new AlertDialog.Builder(TeamMgtActivity.this);
         builder.setTitle("Delete Teams");
@@ -365,7 +406,15 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
     }
 
     private void deleteTeam(){
-        asyncService.deleteDocKeyValue(Constants.App42DBName,"Teams","name",edtname.getEditText().getText().toString(),this);
+        try {
+            progressDialog = ProgressDialog.show(this, "", "Deleting..");
+            progressDialog.setCancelable(true);
+            jsonObject.put("active",false);
+            asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getEditText().getText().toString(), jsonObject, this);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void showOptions() {

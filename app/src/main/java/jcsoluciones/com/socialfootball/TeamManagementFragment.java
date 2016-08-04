@@ -21,6 +21,8 @@ import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CacheManager;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
+import com.shephertz.app42.paas.sdk.android.storage.Query;
+import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.shephertz.app42.paas.sdk.android.storage.StorageService;
 
@@ -81,6 +83,7 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
 
                 Intent intent = new Intent(getContext(), TeamMgtActivity.class);
                 intent.putExtra("object",adapter.getItem(position).getJsonDoc());
+                intent.putExtra("IdTeams",adapter.getItem(position).getDocId());
                 intent.putExtra("createOrupdate",false);
                 startActivity(intent);
             }
@@ -115,7 +118,9 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
 
     @Override
     public void onRefresh() {
-        asyncService.findAllDocs(Constants.App42DBName, "Teams", this);
+        //asyncService.findAllDocs(Constants.App42DBName, "Teams", this);
+        Query q1 = QueryBuilder.build("active",true, QueryBuilder.Operator.EQUALS); // Build query q1 for key1 equal to name and value1 equal to Nick
+        asyncService.findDocByQuery(Constants.App42DBName,"Teams",q1,this);
     }
 
 
