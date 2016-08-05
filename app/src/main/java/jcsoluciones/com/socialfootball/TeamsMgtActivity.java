@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 
@@ -31,10 +32,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -99,7 +102,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
     private String selectedImage;
     private String IdTeams;
     private SmartImageView mImg;
-    private CoordinatorLayout mRlView;
+    private RelativeLayout mRlView;
     private static String APP_DIRECTORY = "MyPictureApp/";
     private static String MEDIA_DIRECTORY = APP_DIRECTORY + "PictureApp";
 
@@ -117,10 +120,10 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teams_mgt);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.getBackground().setAlpha(0);
+       /* Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
+
         asyncService = AsyncApp42ServiceApi.instance(this);
 
 
@@ -130,7 +133,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
         mImg= (SmartImageView) findViewById(R.id.ImageTeams);
 
-        mRlView = (CoordinatorLayout) findViewById(R.id.layout_main);
+        mRlView = (RelativeLayout) findViewById(R.id.layout_main);
         cumplimiento =(RatingBar) findViewById(R.id.rtbCumplimiento);
 
         switchCancel = (SwitchCompat) findViewById(R.id.switchCancel);

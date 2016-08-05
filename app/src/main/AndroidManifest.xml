@@ -28,7 +28,7 @@
             android:name=".TeamsMgtActivity"
             android:label="@string/app_name"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.Transparent"></activity>
     </application>
 
 </manifest>
