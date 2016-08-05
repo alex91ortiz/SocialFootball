@@ -41,8 +41,19 @@
         android:layout_toRightOf="@id/serial"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/serial"
         android:layout_below="@+id/title"
         android:paddingLeft="20dp"
         android:textSize="13dp" />
+    <RatingBar
+        android:id="@+id/rtbCumplimiento"
+        android:layout_toRightOf="@id/serial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:attr/ratingBarStyleSmall"
+        android:layout_below="@+id/message"
+        android:numStars="5"
+        android:layout_marginLeft="20dp"
+        android:stepSize="1.0"
+        android:visibility="visible"
+        android:rating="0.0" />
 </RelativeLayout>

@@ -81,7 +81,7 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent intent = new Intent(getContext(), TeamMgtActivity.class);
+                Intent intent = new Intent(getContext(), TeamsMgtActivity.class);
                 intent.putExtra("object",adapter.getItem(position).getJsonDoc());
                 intent.putExtra("IdTeams",adapter.getItem(position).getDocId());
                 intent.putExtra("createOrupdate",false);
@@ -103,7 +103,7 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
         fabEditTeamMgt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), TeamMgtActivity.class);
+                Intent intent = new Intent(getContext(), TeamsMgtActivity.class);
                 startActivity(intent);
             }
         });

@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="colorImage">#e4e4e4</color>
+    <color name="actionbar_opacity">#0D000000</color>
 </resources>

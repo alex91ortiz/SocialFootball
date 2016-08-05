@@ -1,7 +1,7 @@
 package jcsoluciones.com.socialfootball;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -9,13 +9,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.AsyncTask;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.ContactsContract;
+
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -32,9 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+
 import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -49,20 +48,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+
 import java.util.ArrayList;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-/**
- * Created by ADMIN on 01/08/2016.
- */
 
-public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42ServiceApi.App42StorageServiceListener ,
-        AsyncApp42ServiceApi.App42UploadServiceListener {
+public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42ServiceApi.App42StorageServiceListener , AsyncApp42ServiceApi.App42UploadServiceListener {
     /**
      * The async service.
      */
@@ -106,7 +99,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
     private String selectedImage;
     private String IdTeams;
     private SmartImageView mImg;
-    private LinearLayout mRlView;
+    private CoordinatorLayout mRlView;
     private static String APP_DIRECTORY = "MyPictureApp/";
     private static String MEDIA_DIRECTORY = APP_DIRECTORY + "PictureApp";
 
@@ -119,14 +112,17 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
      * The Flag for create/update
      */
     private boolean createOrupdate=true;
+    private boolean resultImageOnSelected=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_teamsmanagement);
+        setContentView(R.layout.activity_teams_mgt);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.getBackground().setAlpha(0);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         asyncService = AsyncApp42ServiceApi.instance(this);
+
 
         edtname = (TextInputLayout) findViewById(R.id.input_layout_name);
         edtphone = (TextInputLayout) findViewById(R.id.input_layout_phone);
@@ -134,7 +130,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
         mImg= (SmartImageView) findViewById(R.id.ImageTeams);
 
-        mRlView = (LinearLayout) findViewById(R.id.layout_main);
+        mRlView = (CoordinatorLayout) findViewById(R.id.layout_main);
         cumplimiento =(RatingBar) findViewById(R.id.rtbCumplimiento);
 
         switchCancel = (SwitchCompat) findViewById(R.id.switchCancel);
@@ -210,32 +206,33 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
             try {
 
-                    progressDialog = ProgressDialog.show(this, "", "Saving..");
-                    progressDialog.setCancelable(true);
-                    if(createOrupdate) {
-                        if(selectedImage!=null) {
-                            jsonObject = new JSONObject();
-                            jsonObject.put("name",srtname);
-                            jsonObject.put("countComply",0);
-                            jsonObject.put("complyValue",0);
-                            jsonObject.put("phone",srtphone);
-                            jsonObject.put("city",spncity.getSelectedItem());
-                            jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");
-                            jsonObject.put("active",true);
-                            asyncService.insertJSONDoc(Constants.App42DBName, "Teams", jsonObject, this);
-                        }else{
-                            createAlertDialog("Input Picture");
-                        }
-                    }else{
-                        jsonObject.put("name", srtname);
-                        jsonObject.put("phone", srtphone);
+                progressDialog = ProgressDialog.show(this, "", "Saving..");
+                progressDialog.setCancelable(true);
+                if(createOrupdate) {
+                    if(selectedImage!=null) {
+                        jsonObject = new JSONObject();
+                        jsonObject.put("name",srtname);
+                        jsonObject.put("countComply",0);
+                        jsonObject.put("complyValue",0);
+                        jsonObject.put("phone",srtphone);
                         jsonObject.put("city",spncity.getSelectedItem());
                         jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");
-
-                        asyncService.deleteImage(edtname.getEditText().getText().toString().replaceAll("^\\s*", ""), this);
-
-
+                        jsonObject.put("active",true);
+                        asyncService.insertJSONDoc(Constants.App42DBName, "Teams", jsonObject, this);
+                    }else{
+                        createAlertDialog("Input Picture");
                     }
+                }else{
+                    jsonObject.put("name", srtname);
+                    jsonObject.put("phone", srtphone);
+                    jsonObject.put("city",spncity.getSelectedItem());
+                    jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");
+                    if(resultImageOnSelected)
+                        asyncService.deleteImage(edtname.getEditText().getText().toString().replaceAll("^\\s*", ""), this);
+                    else
+                        asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getEditText().getText().toString(), jsonObject, this);
+
+                }
 
 
             } catch (JSONException e) {
@@ -257,7 +254,8 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
     @Override
     public void onUpdateDocSuccess(Storage response) {
-
+        progressDialog.dismiss();
+        finish();
     }
 
     @Override
@@ -268,8 +266,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
     @Override
     public void onDeleteDocSuccess() {
-        asyncService.uploadImage( edtname.getEditText().getText().toString().replaceAll("^\\s*",""), selectedImage, UploadFileType.IMAGE,
-                edtname.getEditText().getText().toString(), this);
+
     }
 
     @Override
@@ -332,8 +329,8 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
     @Override
     public void onDeleteImageSuccess() {
-
-
+        asyncService.uploadImage( edtname.getEditText().getText().toString().replaceAll("^\\s*",""), selectedImage, UploadFileType.IMAGE,
+                edtname.getEditText().getText().toString(), this);
     }
 
     @Override
@@ -347,7 +344,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
      * @param msg the msg
      */
     public void createAlertDialog(String msg) {
-        AlertDialog.Builder alertbox = new AlertDialog.Builder(TeamMgtActivity.this);
+        AlertDialog.Builder alertbox = new AlertDialog.Builder(TeamsMgtActivity.this);
         alertbox.setTitle("Response Message");
         alertbox.setMessage(msg);
         alertbox.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -385,7 +382,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
     }
 
     private void confirmDeleteTeam() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(TeamMgtActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(TeamsMgtActivity.this);
         builder.setTitle("Delete Teams");
         builder.setMessage("Desea elminar el equipo");
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
@@ -419,7 +416,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
     private void showOptions() {
         final CharSequence[] option = {"Tomar foto", "Elegir de galeria", "Cancelar"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(TeamMgtActivity.this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(TeamsMgtActivity.this);
         builder.setTitle("Eleige una opción");
         builder.setItems(option, new DialogInterface.OnClickListener() {
             @Override
@@ -479,6 +476,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
         super.onActivityResult(requestCode, resultCode, data);
 
         if(resultCode == RESULT_OK){
+            resultImageOnSelected=true;
             switch (requestCode){
                 case PHOTO_CODE:
                     MediaScannerConnection.scanFile(this,
@@ -513,7 +511,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
 
         if(requestCode == MY_PERMISSIONS){
             if(grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(TeamMgtActivity.this, "Permisos aceptados", Toast.LENGTH_SHORT).show();
+                Toast.makeText(TeamsMgtActivity.this, "Permisos aceptados", Toast.LENGTH_SHORT).show();
                 floatingActionButton.setEnabled(true);
             }
         }else{
@@ -522,7 +520,7 @@ public class TeamMgtActivity extends AppCompatActivity implements AsyncApp42Serv
     }
 
     private void showExplanation() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(TeamMgtActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(TeamsMgtActivity.this);
         builder.setTitle("Permisos denegados");
         builder.setMessage("Para usar las funciones de la app necesitas aceptar los permisos");
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
