@@ -41,6 +41,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
@@ -71,15 +72,15 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
     /**
      * The name
      */
-    private TextInputLayout edtname;
+    private BootstrapEditText edtname;
     /**
      * The phone
      */
-    private TextInputLayout edtphone;
+    private BootstrapEditText edtphone;
     /**
      * The description
      */
-    private TextInputLayout edtdescrip;
+    private BootstrapEditText edtdescrip;
     /**
      * The city
      */
@@ -127,9 +128,9 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         asyncService = AsyncApp42ServiceApi.instance(this);
 
 
-        edtname = (TextInputLayout) findViewById(R.id.input_layout_name);
-        edtphone = (TextInputLayout) findViewById(R.id.input_layout_phone);
-        edtdescrip = (TextInputLayout) findViewById(R.id.input_layout_desc);
+        edtname = (BootstrapEditText) findViewById(R.id.input_layout_name);
+        edtphone = (BootstrapEditText) findViewById(R.id.input_layout_phone);
+        edtdescrip = (BootstrapEditText) findViewById(R.id.input_layout_desc);
 
         mImg= (SmartImageView) findViewById(R.id.ImageTeams);
 
@@ -167,9 +168,9 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         if(bundle!=null){
             try {
                 jsonObject = new JSONObject(bundle.getString("object",""));
-                edtname.getEditText().setText(jsonObject.getString("name"));
-                edtphone.getEditText().setText(jsonObject.getString("phone"));
-                edtdescrip.getEditText().setText(jsonObject.getString("desc"));
+                edtname.setText(jsonObject.getString("name"));
+                edtphone.setText(jsonObject.getString("phone"));
+                edtdescrip.setText(jsonObject.getString("desc"));
                 createOrupdate = bundle.getBoolean("createOrupdate", true);
                 /*JSONObject jsonObjectFile = new JSONObject(jsonObject.getString("_files"));
                 ;
@@ -202,9 +203,9 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         int id = item.getItemId();
 
         if (id == R.id.action_edit) {
-            String srtname  = edtname.getEditText().getText().toString();
-            String srtphone = edtphone.getEditText().getText().toString();
-            String srtdesc  = edtdescrip.getEditText().getText().toString();
+            String srtname  = edtname.getText().toString();
+            String srtphone = edtphone.getText().toString();
+            String srtdesc  = edtdescrip.getText().toString();
 
 
             try {
@@ -231,9 +232,9 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
                     jsonObject.put("city",spncity.getSelectedItem());
                     jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");
                     if(resultImageOnSelected)
-                        asyncService.deleteImage(edtname.getEditText().getText().toString().replaceAll("^\\s*", ""), this);
+                        asyncService.deleteImage(edtname.getText().toString().replaceAll("^\\s*", ""), this);
                     else
-                        asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getEditText().getText().toString(), jsonObject, this);
+                        asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getText().toString(), jsonObject, this);
 
                 }
 
@@ -250,8 +251,8 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
     @Override
     public void onDocumentInserted(Storage response) {
 
-        asyncService.uploadImage( edtname.getEditText().getText().toString().replaceAll("^\\s*",""), selectedImage, UploadFileType.IMAGE,
-                edtname.getEditText().getText().toString(), this);
+        asyncService.uploadImage( edtname.getText().toString().replaceAll("^\\s*",""), selectedImage, UploadFileType.IMAGE,
+                edtname.getText().toString(), this);
 
     }
 
@@ -304,7 +305,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         if (fileList.size() > 0) {
             try {
                 jsonObject.put("ImageUrl", fileList.get(0).getUrl());
-                asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getEditText().getText().toString(), jsonObject, this);
+                asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getText().toString(), jsonObject, this);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -332,8 +333,8 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
     @Override
     public void onDeleteImageSuccess() {
-        asyncService.uploadImage( edtname.getEditText().getText().toString().replaceAll("^\\s*",""), selectedImage, UploadFileType.IMAGE,
-                edtname.getEditText().getText().toString(), this);
+        asyncService.uploadImage( edtname.getText().toString().replaceAll("^\\s*",""), selectedImage, UploadFileType.IMAGE,
+                edtname.getText().toString(), this);
     }
 
     @Override
@@ -410,7 +411,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
             progressDialog = ProgressDialog.show(this, "", "Deleting..");
             progressDialog.setCancelable(true);
             jsonObject.put("active",false);
-            asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getEditText().getText().toString(), jsonObject, this);
+            asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getText().toString(), jsonObject, this);
         } catch (JSONException e) {
             e.printStackTrace();
         }

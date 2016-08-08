@@ -1,33 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:background="@color/md_white_1000"
-        android:layout_height="match_parent"
-        android:id="@+id/layout_main"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="jcsoluciones.com.socialfootball.TeamsMgtActivity"
-        tools:showIn="@layout/activity_teams_mgt">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:background="@color/md_white_1000"
+    android:layout_height="match_parent"
+    android:id="@+id/layout_main">
         <LinearLayout
             android:orientation="vertical"
             android:id="@+id/layout_info_teams"
             android:layout_width="match_parent"
-
             android:layout_height="wrap_content">
+
             <android.support.design.widget.CoordinatorLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <RelativeLayout
                     android:id="@+id/relative_container"
                     android:layout_width="match_parent"
-
                     android:layout_height="wrap_content">
 
                     <com.loopj.android.image.SmartImageView
                         android:id="@+id/ImageTeams"
                         android:layout_width="match_parent"
-                        android:layout_height="250dp"
+                        android:layout_height="200dp"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentTop="true"
                         android:scaleType="fitCenter"
@@ -47,58 +42,52 @@
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="10dp" />
-            <android.support.design.widget.TextInputLayout
+
+            <com.beardedhen.androidbootstrap.BootstrapEditText
                 android:id="@+id/input_layout_name"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/input_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:textSize="13dp"
-                    android:singleLine="true"
-                    android:hint="@string/teamsmanagement_name" />
-            </android.support.design.widget.TextInputLayout>
-            <android.support.design.widget.TextInputLayout
+                android:layout_marginBottom="10dp"
+                app:roundedCorners="true"
+                app:bootstrapSize="lg"
+                app:bootstrapBrand="info"
+                android:hint="@string/teamsmanagement_name"
+                />
+            <com.beardedhen.androidbootstrap.BootstrapEditText
                 android:id="@+id/input_layout_phone"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/input_phone"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:textSize="13dp"
-                    android:singleLine="true"
-                    android:hint="@string/teamsmanagement_phone" />
-            </android.support.design.widget.TextInputLayout>
-            <android.support.design.widget.TextInputLayout
+                android:layout_marginBottom="10dp"
+                app:bootstrapSize="lg"
+                app:roundedCorners="true"
+                app:bootstrapBrand="info"
+                android:hint="@string/teamsmanagement_phone"
+                />
+            <com.beardedhen.androidbootstrap.BootstrapEditText
                 android:id="@+id/input_layout_desc"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/input_desc"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:textSize="13dp"
-                    android:singleLine="true"
-                    android:hint="@string/teamsmanagement_desc" />
-            </android.support.design.widget.TextInputLayout>
-
+                android:layout_marginBottom="10dp"
+                app:bootstrapSize="lg"
+                app:roundedCorners="true"
+                app:bootstrapBrand="info"
+                android:hint="@string/teamsmanagement_desc"
+                />
             <Spinner
                 android:id="@+id/input_layout_city"
                 android:layout_width="match_parent"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_height="45dp"></Spinner>
+                android:layout_height="45dp">
+
+            </Spinner>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
@@ -124,8 +113,6 @@
                 android:paddingLeft="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
             </android.support.v7.widget.SwitchCompat>
-
         </LinearLayout>
 </RelativeLayout>

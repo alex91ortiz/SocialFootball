@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.beardedhen.androidbootstrap.TypefaceProvider;
 
 /**
  * Created by ADMIN on 01/08/2016.
@@ -22,6 +23,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        TypefaceProvider.registerDefaultIconSets();
         mInstance = this;
     }
 

@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     /**
      *  adapter for teams management
      */
-    private TeamMgtAdapter adapter;
+    private TeamsEventsAdapter adapter;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private SearchView mSearchView;
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public void onFindDocSuccess(Storage response) {
         listTeamJson = response.getJsonDocList();
         if(listTeamJson.size()>0) {
-            adapter = new TeamMgtAdapter(this, listTeamJson);
+            adapter = new TeamsEventsAdapter(this, listTeamJson);
             searchList.setAdapter(adapter);
         }
     }
