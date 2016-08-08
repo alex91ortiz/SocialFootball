@@ -2,34 +2,51 @@ package jcsoluciones.com.socialfootball;
 
 import android.app.Activity;
 import android.content.Context;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.net.Uri;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+
+import jcsoluciones.com.socialfootball.utils.ImageLoader;
 
 /**
  * Created by Admin on 07/08/2016.
  */
-public class TeamsEventsAdapter extends BaseAdapter {
+public class SearchTeamsAdapter extends BaseAdapter {
     private Activity activity;
     private LayoutInflater inflater;
     private ArrayList<Storage.JSONDocument> jsonList;
-    private SmartImageView mImg;
+    private BootstrapCircleThumbnail mImg;
+
     private int position;
     /**
      * The async service.
      */
     private AsyncApp42ServiceApi asyncService;
-    public  TeamsEventsAdapter (Activity activity,ArrayList<Storage.JSONDocument> jsonList){
+    public SearchTeamsAdapter(Activity activity, ArrayList<Storage.JSONDocument> jsonList){
         this.jsonList = jsonList;
         this.activity = activity;
         asyncService = AsyncApp42ServiceApi.instance(activity);
@@ -59,12 +76,18 @@ public class TeamsEventsAdapter extends BaseAdapter {
 
         TextView title = (TextView) convertView.findViewById(R.id.title);
         TextView message = (TextView) convertView.findViewById(R.id.message);
+        mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
 
         try {
             JSONObject jsonObject = new JSONObject(jsonList.get(position).getJsonDoc());
-            mImg=(SmartImageView) convertView.findViewById(R.id.ImageTeams);
 
-            mImg.setImageUrl(jsonObject.getString("ImageUrl"));
+            if(Uri.parse(jsonObject.getString("ImageUrl"))!=null) {
+                //mImg.set (Uri.parse(jsonObject.getString("ImageUrl")));
+            }
+            //mImg.setImageURI(uri);
+            if(mImg!=null) {
+                new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
+            }
             title.setText(jsonObject.getString("name"));
             message.setText(jsonObject.getString("desc"));
         } catch (JSONException e) {

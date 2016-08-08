@@ -1,89 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dp"
     android:background="@android:color/white">
 
-    <RelativeLayout
-        android:id="@+id/serial"
-        android:layout_width="wrap_content"
-        android:padding="10dp"
+    <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
+        android:id="@+id/ImageTeams"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_weight="10"
+        app:bootstrapSize="xs"
+        android:layout_margin="5dp"
+        app:bootstrapBrand="danger"
+        app:hasBorder="false" />
 
-        android:layout_alignParentLeft="true"
-        android:layout_height="wrap_content">
-        <!--<ProgressBar
-            android:id="@+id/progress"
-            android:layout_width="50dp"
-            an
-            droid:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:visibility="visible"/>-->
-        <com.loopj.android.image.SmartImageView
-            android:id="@+id/ImageTeams"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:scaleType="fitCenter"
-            android:layout_centerInParent="true" />
-
-    </RelativeLayout>
-
-
-    <LinearLayout
-        android:id="@+id/message_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_toRightOf="@id/serial">
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/message_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="90"
-            android:orientation="vertical">
+            android:layout_marginTop="2dp"
+            android:layout_weight="100"
+            android:orientation="vertical"
+            >
             <TextView
                 android:id="@+id/title"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:paddingLeft="20dp"
+                android:minLines="1"
                 android:textSize="15dp" />
             <TextView
                 android:id="@+id/message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="50"
-                android:paddingLeft="20dp"
+                android:minLines="1"
+                android:layout_weight="80"
                 android:textSize="13dp" />
             <RatingBar
                 android:id="@+id/rtbCumplimiento"
-                android:layout_toRightOf="@id/serial"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="?android:attr/ratingBarStyleSmall"
-                android:layout_below="@+id/message_button"
                 android:numStars="5"
-                android:layout_marginLeft="20dp"
                 android:stepSize="1.0"
                 android:visibility="visible"
                 android:rating="0.0" />
-        </LinearLayout>
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/button_event"
-            android:layout_width="20dp"
-            android:layout_height="wrap_content"
-            android:text="invitar"
 
-            android:layout_gravity="center"
-            app:bootstrapBrand="success"
-            android:layout_weight="30"
-            android:layout_marginRight="50dp"
-            android:layout_marginLeft="50dp"
-            app:bootstrapSize="xs"
-            app:showOutline="true"
-            app:roundedCorners="true"
-            />
-    </LinearLayout>
-</RelativeLayout>
+        </LinearLayout>
+
+
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        android:id="@+id/button_event"
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="20dp"
+        app:typicon="ty_plus_outline"
+        android:layout_weight="5"
+        android:layout_gravity="center"
+        app:bootstrapBrand="success"
+        app:bootstrapSize="xs"
+        app:buttonMode="regular"
+        app:showOutline="true"
+        app:checked="true"
+        app:roundedCorners="true" />
+</LinearLayout>

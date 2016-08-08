@@ -1,6 +1,7 @@
 package jcsoluciones.com.socialfootball;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     /**
      *  adapter for teams management
      */
-    private TeamsEventsAdapter adapter;
+    private SearchTeamsAdapter adapter;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private SearchView mSearchView;
@@ -46,6 +47,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -83,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new TeamsEventsFragment(), "ONE");
-        //adapter.addFragment(new SearchTeamsFragment(), "TWO");
         adapter.addFragment(new TeamManagementFragment(), "THREE");
         adapter.addFragment(new TournamentsFragment(), "FOUR");
         viewPager.setAdapter(adapter);
@@ -133,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public void onFindDocSuccess(Storage response) {
         listTeamJson = response.getJsonDocList();
         if(listTeamJson.size()>0) {
-            adapter = new TeamsEventsAdapter(this, listTeamJson);
+            adapter = new SearchTeamsAdapter(this, listTeamJson);
             searchList.setAdapter(adapter);
         }
     }
