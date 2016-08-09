@@ -14,8 +14,8 @@
         android:layout_weight="10"
         app:bootstrapSize="xs"
         android:layout_margin="5dp"
-        app:bootstrapBrand="danger"
-        app:hasBorder="false" />
+        app:bootstrapBrand="success"
+        app:hasBorder="true" />
 
         <LinearLayout
             android:id="@+id/message_layout"
@@ -55,7 +55,7 @@
 
 
     <com.beardedhen.androidbootstrap.BootstrapButton
-        android:id="@+id/button_event"
+        android:id="@+id/button_invite"
         android:layout_width="50dp"
         android:layout_height="30dp"
         android:layout_marginRight="20dp"

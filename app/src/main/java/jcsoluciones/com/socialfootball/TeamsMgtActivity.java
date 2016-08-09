@@ -121,9 +121,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teams_mgt);
-       /* Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
+
 
         asyncService = AsyncApp42ServiceApi.instance(this);
 

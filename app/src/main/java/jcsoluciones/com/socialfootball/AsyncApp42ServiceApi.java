@@ -13,6 +13,8 @@ import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.App42File;
 import com.shephertz.app42.paas.sdk.android.game.Game;
 import com.shephertz.app42.paas.sdk.android.game.ScoreBoardService;
+import com.shephertz.app42.paas.sdk.android.push.PushNotification;
+import com.shephertz.app42.paas.sdk.android.push.PushNotificationService;
 import com.shephertz.app42.paas.sdk.android.storage.Query;
 import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
@@ -48,7 +50,10 @@ public class AsyncApp42ServiceApi {
 	
 	/** The score board service. */
 	private ScoreBoardService scoreBoardService;
-	
+
+	/** The push Notification service. */
+	private PushNotificationService pushNotificationService ;
+
 	/** The m instance. */
 	private static AsyncApp42ServiceApi mInstance = null;
 	
@@ -65,6 +70,7 @@ public class AsyncApp42ServiceApi {
 		this.storageService = App42API.buildStorageService();
 		this.scoreBoardService = App42API.buildScoreBoardService();
 		this.uploadService = App42API.buildUploadService();
+		this.pushNotificationService =  App42API.buildPushNotificationService();
 	}
 
 	/**
@@ -85,6 +91,12 @@ public class AsyncApp42ServiceApi {
 		return mInstance;
 	}
 
+	public  static void  setLoggedInUser(String user){
+		App42API.setLoggedInUser(user);
+	}
+	public  static String  getLoggedInUser(){
+		return App42API.getLoggedInUser();
+	}
 	/**
 	 * Creates the user.
 	 *
@@ -699,7 +711,7 @@ public class AsyncApp42ServiceApi {
 		/**
 		 * On delete doc success.
 		 *
-		 * @param response the response
+		 *
 		 */
 		public void onDeleteDocSuccess();
 
@@ -1024,4 +1036,216 @@ public class AsyncApp42ServiceApi {
 		void onDeleteImageFailed(App42Exception ex);
 	}
 
+	/**
+	 * Store Device Token.
+	 * @param userName the file userName*
+	 * @param deviceToken the file name
+	 * @param callBack the call back
+	 */
+	/*
+	 * This function Uploads File On App42 Cloud.
+	 */
+	public void onCreationStoreDeviceToken(final String userName,final String deviceToken, final App42PushNotificationServiceListener  callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					final PushNotification response = pushNotificationService.storeDeviceToken(userName, deviceToken);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onCreationStoreDeviceToken(response);
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onStoreDeviceTokenFailed(ex);
+							}
+						}
+					});
+				}
+			}
+		}.start();
+	}
+
+	/**
+	 * Create Channel.
+	 * @param channel the file channel*
+	 * @param description the  description
+	 * @param callBack the call back
+	 */
+	/*
+	 * This function Uploads File On App42 Cloud.
+	 */
+
+	public void onCreateChannel(final String channel,final String description, final App42PushNotificationServiceListener callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					final PushNotification response = pushNotificationService.createChannelForApp(channel, description);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onCreateChannel(response);
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onCreateChannelFailed(ex);
+							}
+						}
+					});
+				}
+			}
+		}.start();
+	}
+
+	/**
+	 * Subscribe To Channel.
+	 * @param channel the file channel*
+	 * @param userName the  userName
+	 * @param callBack the call back
+	 */
+	/*
+	 * This function Uploads File On App42 Cloud.
+	 */
+	public void onSubscribeToChannel(final String channel,final String userName, final App42PushNotificationServiceListener callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					final PushNotification response = pushNotificationService.subscribeToChannel(channel, userName);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onSubscribeToChannel(response);
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onSubscribeToChannelFailed(ex);
+							}
+						}
+					});
+				}
+			}
+		}.start();
+	}
+	/**
+	 * Send Push Message.
+	 * @param channel the file channel*
+	 * @param message the  message
+	 * @param callBack the call back
+	 */
+	/*
+	 * This function Uploads File On App42 Cloud.
+	 */
+	public void onSendPushMessage(final String channel,final String message, final App42PushNotificationServiceListener callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					final PushNotification response = pushNotificationService.sendPushMessageToChannel(channel, message);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onSendPushMessage(response);
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onSendPushMessageFailed(ex);
+							}
+						}
+					});
+				}
+			}
+		}.start();
+	}
+	/**
+	 * The listener interface for receiving app42PushNotificationService events.
+	 * The class that is interested in processing a app42UserService
+	 * event implements this interface, and the object created
+	 * with that class is registered with a component using the
+	 * component's <code>addApp42PushNotificationService<code> method. When
+	 * the app42PushNotificationService event occurs, that object's appropriate
+	 * method is invoked.
+	 *
+	 * @see App42PushNotificationServiceListener
+	 */
+	public static interface App42PushNotificationServiceListener {
+
+		/**
+		 * Invoked when on user is created.
+		 *
+		 * @param response the response
+		 */
+		public void onCreationStoreDeviceToken(PushNotification response);
+
+		/**
+		 * On creation failed.
+		 *
+		 * @param exception the exception
+		 */
+		public void onStoreDeviceTokenFailed(App42Exception exception);
+
+		/**
+		 * On get user success.
+		 *
+		 * @param response the response
+		 */
+		public void onCreateChannel(PushNotification response);
+
+		/**
+		 * On get user failed.
+		 *
+		 * @param exception the exception
+		 */
+		public void onCreateChannelFailed(App42Exception exception);
+		/**
+		 * On get user success.
+		 *
+		 * @param response the response
+		 */
+		public void onSubscribeToChannel(PushNotification response);
+
+		/**
+		 * On get user failed.
+		 *
+		 * @param exception the exception
+		 */
+		public void onSubscribeToChannelFailed(App42Exception exception);
+
+		/**
+		 * On user authenticated.
+		 *
+		 * @param response the response
+		 */
+		public void onSendPushMessage(PushNotification response);
+
+		/**
+		 * On authentication failed.
+		 *
+		 * @param exception the exception
+		 */
+		public void onSendPushMessageFailed(App42Exception exception);
+
+	}
 }

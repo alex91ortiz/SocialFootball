@@ -45,4 +45,7 @@ public class Constants {
 	 
  	/** The Constant UserName. */
  	static final String UserName = "TestUser";
+
+	/** Then Google Project No */
+	static  final String GoogleProjectNo="1071669197043";
 }

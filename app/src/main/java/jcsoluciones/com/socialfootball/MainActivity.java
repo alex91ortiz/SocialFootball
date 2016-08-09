@@ -1,21 +1,32 @@
 package jcsoluciones.com.socialfootball;
 
+import android.app.AlertDialog;
+import android.app.Notification;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import com.shephertz.app42.paas.sdk.android.App42API;
+import com.shephertz.app42.paas.sdk.android.App42CallBack;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.storage.Query;
 import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
@@ -24,7 +35,13 @@ import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener,AsyncApp42ServiceApi.App42StorageServiceListener{
+import jcsoluciones.com.socialfootball.plugin.App42GCMController;
+import jcsoluciones.com.socialfootball.plugin.App42GCMService;
+
+public class MainActivity extends AppCompatActivity implements
+        SearchView.OnQueryTextListener,
+        AsyncApp42ServiceApi.App42StorageServiceListener
+        ,App42GCMController.App42GCMListener {
 
     /**
      * The async service.
@@ -43,7 +60,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private SearchView mSearchView;
     private MenuItem searchMenuItem;
     private ListView searchList;
-
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private static final String TAG = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,11 +73,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         asyncService = AsyncApp42ServiceApi.instance(this);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        asyncService.setLoggedInUser("invite");
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
-
         searchList = (ListView) findViewById(R.id.listsearch);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -83,8 +99,37 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             }
         });
+        App42API.buildLogService().setEvent("Message", "Opened", new App42CallBack() {
+            public void onSuccess(Object arg0) {
+                // TODO Auto-generated method stub
+                Log.i("MainActivity-BroadcastReceiver", "Message Recieved " + " : "
+                        + arg0.toString());
+            }
 
+            public void onException(Exception arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
     }
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (App42GCMController.isPlayServiceAvailable(this)) {
+            App42GCMController.getRegistrationId(MainActivity.this,Constants.GoogleProjectNo, this);
+        } else {
+            Log.i("App42PushNotification", "No valid Google Play Services APK found.");
+        }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        //unregisterReceiver(mBroadcastReceiver);
+    }
+
+    private void onMessageOpen(View view){
+        createAlertDialog("registro");
+    }
+
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new TeamsEventsFragment(), "ONE");
@@ -167,6 +212,58 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     }
 
+    final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra(App42GCMService.ExtraMessage);
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.common_ic_googleplayservices)
+                    .setContentTitle("prueba")
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                    .setContentText(message) //.setWhen(when).setNumber(++msgCount)
+                    .setLights(Color.YELLOW, 1, 2).setAutoCancel(true)
+                    .setDefaults(Notification.DEFAULT_SOUND)
+                    .setDefaults(Notification.DEFAULT_VIBRATE);
+            Log.i("MainActivity-BroadcastReceiver", "Message Recieved " + " : "
+                    + message);
+
+
+        }
+    };
+
+    @Override
+    public void onError(String errorMsg) {
+
+    }
+
+    @Override
+    public void onGCMRegistrationId(String gcmRegId) {
+        //responseTv.setText("Registration Id on GCM--" + gcmRegId);
+        App42GCMController.storeRegistrationId(this, gcmRegId);
+        if(!App42GCMController.isApp42Registerd(MainActivity.this))
+            App42GCMController.registerOnApp42(asyncService.getLoggedInUser(), gcmRegId, this);
+    }
+
+    @Override
+    public void onApp42Response(String responseMessage) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+    }
+
+    @Override
+    public void onRegisterApp42(String responseMessage) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                App42GCMController.storeApp42Success(MainActivity.this);
+            }
+        });
+    }
+
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
@@ -195,5 +292,22 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
+    }
+    /**
+     * Creates the alert dialog.
+     *
+     * @param msg the msg
+     */
+    public void createAlertDialog(String msg) {
+        AlertDialog.Builder alertbox = new AlertDialog.Builder(MainActivity.this);
+        alertbox.setTitle("Response Message");
+        alertbox.setMessage(msg);
+        alertbox.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            // do something when the button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+
+            }
+        });
+        alertbox.show();
     }
 }

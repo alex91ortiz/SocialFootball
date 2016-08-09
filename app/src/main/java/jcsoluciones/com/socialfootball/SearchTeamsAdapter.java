@@ -3,6 +3,7 @@ package jcsoluciones.com.socialfootball;
 import android.app.Activity;
 import android.content.Context;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
@@ -68,7 +70,7 @@ public class SearchTeamsAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         if (inflater==null)
             inflater= (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if(convertView==null)
@@ -77,14 +79,11 @@ public class SearchTeamsAdapter extends BaseAdapter {
         TextView title = (TextView) convertView.findViewById(R.id.title);
         TextView message = (TextView) convertView.findViewById(R.id.message);
         mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
-
+        BootstrapButton makeInvite = (BootstrapButton) convertView.findViewById(R.id.button_invite);
         try {
             JSONObject jsonObject = new JSONObject(jsonList.get(position).getJsonDoc());
 
-            if(Uri.parse(jsonObject.getString("ImageUrl"))!=null) {
-                //mImg.set (Uri.parse(jsonObject.getString("ImageUrl")));
-            }
-            //mImg.setImageURI(uri);
+
             if(mImg!=null) {
                 new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
             }
@@ -94,6 +93,17 @@ public class SearchTeamsAdapter extends BaseAdapter {
             e.printStackTrace();
         }
 
+        makeInvite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                Intent intent = new Intent(activity, InvitePlayActivity.class);
+                intent.putExtra("object",jsonList.get(position).getJsonDoc());
+                intent.putExtra("IdTeams", jsonList.get(position).getDocId());
+                activity.startActivity(intent);
+            }
+        });
 
         return convertView;
     }

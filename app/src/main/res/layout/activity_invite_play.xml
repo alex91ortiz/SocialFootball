@@ -83,6 +83,7 @@
         app:bootstrapBrand="success"
         app:bootstrapSize="lg"
         app:buttonMode="regular"
+        android:onClick="SendInvite"
         app:checked="true"
         app:roundedCorners="true" />
 </RelativeLayout>
