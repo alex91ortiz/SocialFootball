@@ -39,6 +39,7 @@ import android.widget.CompoundButton;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapEditText;
@@ -86,10 +87,16 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
      */
     private Spinner spncity;
     /**
-     * The city
+     * The cumplimiento
      */
 
     private RatingBar cumplimiento;
+    /**
+     * The email
+     */
+
+    private TextView email;
+
     /**
      * The status Image of Gallery
      */
@@ -129,7 +136,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         edtname = (BootstrapEditText) findViewById(R.id.input_layout_name);
         edtphone = (BootstrapEditText) findViewById(R.id.input_layout_phone);
         edtdescrip = (BootstrapEditText) findViewById(R.id.input_layout_desc);
-
+        email = (TextView) findViewById(R.id.input_layout_email);
         mImg= (SmartImageView) findViewById(R.id.ImageTeams);
 
         mRlView = (RelativeLayout) findViewById(R.id.layout_main);
@@ -169,10 +176,9 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
                 edtname.setText(jsonObject.getString("name"));
                 edtphone.setText(jsonObject.getString("phone"));
                 edtdescrip.setText(jsonObject.getString("desc"));
+                email.setText(jsonObject.getString("email"));
                 createOrupdate = bundle.getBoolean("createOrupdate", true);
-                /*JSONObject jsonObjectFile = new JSONObject(jsonObject.getString("_files"));
-                ;
-                selectedImage = jsonObjectFile.getString("url");*/
+
                 IdTeams = bundle.getString("IdTeams", "");
                 selectedImage =jsonObject.getString("ImageUrl");
                 mImg.setImageUrl(selectedImage);
@@ -220,6 +226,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
                         jsonObject.put("city",spncity.getSelectedItem());
                         jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");
                         jsonObject.put("active",true);
+                        jsonObject.put("email","alexortizcortes@gmail.com");
                         asyncService.insertJSONDoc(Constants.App42DBName, "Teams", jsonObject, this);
                     }else{
                         createAlertDialog("Input Picture");

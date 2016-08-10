@@ -7,8 +7,6 @@
     android:padding="5dp"
     android:background="@android:color/white">
 
-
-
     <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
         android:id="@+id/ImageTeams"
         android:layout_width="60dp"
@@ -17,7 +15,7 @@
         android:layout_weight="10"
         app:bootstrapSize="xs"
         android:layout_margin="5dp"
-        app:bootstrapBrand="regular"
+        app:bootstrapBrand="success"
         app:hasBorder="true" />
 
     <LinearLayout
@@ -45,25 +43,17 @@
             android:layout_weight="80"
             android:textSize="13dp" />
 
-        <RatingBar
-            android:id="@+id/rtbCumplimiento"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="?android:attr/ratingBarStyleSmall"
-            android:numStars="5"
-            android:stepSize="1.0"
-            android:visibility="visible"
-            android:rating="0.0" />
+
     </LinearLayout>
     <com.beardedhen.androidbootstrap.BootstrapButton
         android:id="@+id/button_invite"
         android:layout_width="50dp"
         android:layout_height="30dp"
         android:layout_marginRight="20dp"
-        app:fontAwesomeIcon="fa_futbol_o"
+        app:typicon="ty_plus_outline"
         android:layout_weight="5"
         android:layout_gravity="center"
-        app:bootstrapBrand="regular"
+        app:bootstrapBrand="success"
         app:bootstrapSize="xs"
         app:buttonMode="regular"
         app:showOutline="true"

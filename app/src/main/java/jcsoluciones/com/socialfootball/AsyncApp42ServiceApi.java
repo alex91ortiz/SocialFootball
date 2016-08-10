@@ -1055,7 +1055,7 @@ public class AsyncApp42ServiceApi {
 					callerThreadHandler.post(new Runnable() {
 						@Override
 						public void run() {
-							callBack.onCreationStoreDeviceToken(response);
+							callBack.onCreationStoreDeviceTokenSuccess(response);
 						}
 					});
 				} catch (final App42Exception ex) {
@@ -1092,7 +1092,7 @@ public class AsyncApp42ServiceApi {
 					callerThreadHandler.post(new Runnable() {
 						@Override
 						public void run() {
-							callBack.onCreateChannel(response);
+							callBack.onCreateChannelSuccess(response);
 						}
 					});
 				} catch (final App42Exception ex) {
@@ -1128,7 +1128,7 @@ public class AsyncApp42ServiceApi {
 					callerThreadHandler.post(new Runnable() {
 						@Override
 						public void run() {
-							callBack.onSubscribeToChannel(response);
+							callBack.onSubscribeToChannelSuccess(response);
 						}
 					});
 				} catch (final App42Exception ex) {
@@ -1163,7 +1163,7 @@ public class AsyncApp42ServiceApi {
 					callerThreadHandler.post(new Runnable() {
 						@Override
 						public void run() {
-							callBack.onSendPushMessage(response);
+							callBack.onSendPushMessageSuccess(response);
 						}
 					});
 				} catch (final App42Exception ex) {
@@ -1172,6 +1172,41 @@ public class AsyncApp42ServiceApi {
 						public void run() {
 							if (callBack != null) {
 								callBack.onSendPushMessageFailed(ex);
+							}
+						}
+					});
+				}
+			}
+		}.start();
+	}
+	/**
+	 * Send Push Message.
+	 * @param userName the file userName*
+	 * @param message the  message
+	 * @param callBack the call back
+	 */
+	/*
+	 * This function Uploads File On App42 Cloud.
+	 */
+	public void onSendPushMessageUser(final String userName,final String message, final App42PushNotificationServiceListener callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					final PushNotification response = pushNotificationService.sendPushMessageToUser(userName, message);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onSendPushMessageUserSuccess(response);
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onSendPushMessageUserFailed(ex);
 							}
 						}
 					});
@@ -1197,7 +1232,7 @@ public class AsyncApp42ServiceApi {
 		 *
 		 * @param response the response
 		 */
-		public void onCreationStoreDeviceToken(PushNotification response);
+		public void onCreationStoreDeviceTokenSuccess(PushNotification response);
 
 		/**
 		 * On creation failed.
@@ -1211,7 +1246,7 @@ public class AsyncApp42ServiceApi {
 		 *
 		 * @param response the response
 		 */
-		public void onCreateChannel(PushNotification response);
+		public void onCreateChannelSuccess(PushNotification response);
 
 		/**
 		 * On get user failed.
@@ -1224,7 +1259,7 @@ public class AsyncApp42ServiceApi {
 		 *
 		 * @param response the response
 		 */
-		public void onSubscribeToChannel(PushNotification response);
+		public void onSubscribeToChannelSuccess(PushNotification response);
 
 		/**
 		 * On get user failed.
@@ -1238,7 +1273,7 @@ public class AsyncApp42ServiceApi {
 		 *
 		 * @param response the response
 		 */
-		public void onSendPushMessage(PushNotification response);
+		public void onSendPushMessageSuccess(PushNotification response);
 
 		/**
 		 * On authentication failed.
@@ -1246,6 +1281,19 @@ public class AsyncApp42ServiceApi {
 		 * @param exception the exception
 		 */
 		public void onSendPushMessageFailed(App42Exception exception);
+		/**
+		 * On user authenticated.
+		 *
+		 * @param response the response
+		 */
+		public void onSendPushMessageUserSuccess(PushNotification response);
+
+		/**
+		 * On authentication failed.
+		 *
+		 * @param exception the exception
+		 */
+		public void onSendPushMessageUserFailed(App42Exception exception);
 
 	}
 }

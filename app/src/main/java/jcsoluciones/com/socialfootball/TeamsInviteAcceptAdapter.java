@@ -2,40 +2,37 @@ package jcsoluciones.com.socialfootball;
 
 import android.app.Activity;
 import android.content.Context;
-
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
-import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 
 import jcsoluciones.com.socialfootball.utils.ImageLoader;
 
-
 /**
- * Created by ADMIN on 01/08/2016.
+ * Created by ADMIN on 10/08/2016.
  */
+public class TeamsInviteAcceptAdapter extends BaseAdapter{
 
-public class TeamMgtAdapter extends BaseAdapter  {
     private Activity activity;
     private LayoutInflater inflater;
     private ArrayList<Storage.JSONDocument> jsonList;
     private BootstrapCircleThumbnail mImg;
+
     private int position;
 
-    private AsyncApp42ServiceApi asyncService;
-    public  TeamMgtAdapter (Activity activity,ArrayList<Storage.JSONDocument> jsonList){
+    public TeamsInviteAcceptAdapter(Activity activity, ArrayList<Storage.JSONDocument> jsonList){
         this.jsonList = jsonList;
         this.activity = activity;
-        asyncService = AsyncApp42ServiceApi.instance(activity);
     }
 
     @Override
@@ -54,18 +51,19 @@ public class TeamMgtAdapter extends BaseAdapter  {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         if (inflater==null)
             inflater= (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if(convertView==null)
-            convertView = inflater.inflate(R.layout.list_group_teamsmanagement,null);
+            convertView = inflater.inflate(R.layout.list_row_inviteaccept,null);
 
         TextView title = (TextView) convertView.findViewById(R.id.title);
         TextView message = (TextView) convertView.findViewById(R.id.message);
-
+        mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
+        BootstrapButton makeInvite = (BootstrapButton) convertView.findViewById(R.id.button_invite);
         try {
             JSONObject jsonObject = new JSONObject(jsonList.get(position).getJsonDoc());
-            mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
+
 
             if(mImg!=null) {
                 new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
@@ -76,6 +74,17 @@ public class TeamMgtAdapter extends BaseAdapter  {
             e.printStackTrace();
         }
 
+        /*makeInvite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                Intent intent = new Intent(activity, InvitePlayActivity.class);
+                intent.putExtra("object",jsonList.get(position).getJsonDoc());
+                intent.putExtra("IdTeams", jsonList.get(position).getDocId());
+                activity.startActivity(intent);
+            }
+        });*/
 
         return convertView;
     }

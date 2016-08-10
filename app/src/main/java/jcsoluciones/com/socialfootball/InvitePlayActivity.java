@@ -1,6 +1,9 @@
 package jcsoluciones.com.socialfootball;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,13 +15,14 @@ import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.push.PushNotification;
+import com.shephertz.app42.paas.sdk.android.storage.Storage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import jcsoluciones.com.socialfootball.utils.ImageLoader;
 
-public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42ServiceApi.App42PushNotificationServiceListener {
+public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42ServiceApi.App42PushNotificationServiceListener,AsyncApp42ServiceApi.App42StorageServiceListener {
     /**
      * The name
      */
@@ -60,6 +64,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
         txvphone = (TextView) findViewById(R.id.input_layout_phone);
         txvdescrip = (TextView) findViewById(R.id.input_layout_desc);
         txvcity = (TextView) findViewById(R.id.input_layout_city);
+        txvemail = (TextView) findViewById(R.id.input_layout_email);
         Sendnvite = (BootstrapButton) findViewById(R.id.button_event);
 
 
@@ -71,12 +76,8 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
                 txvphone.setText(jsonObject.getString("phone"));
                 txvdescrip.setText(jsonObject.getString("desc"));
                 txvcity.setText(jsonObject.getString("city"));
-
-                /*JSONObject jsonObjectFile = new JSONObject(jsonObject.getString("_files"));
-                ;
-                selectedImage = jsonObjectFile.getString("url");*/
+                txvemail.setText(jsonObject.getString("email"));
                 IdTeams = bundle.getString("IdTeams", "");
-                //selectedImage =jsonObject.getString("ImageUrl");
                 new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -85,11 +86,21 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
     }
 
     public void SendInvite(View view){
+        JSONObject jsonObjectInvite = new JSONObject();
+        try {
+            jsonObjectInvite.put("email",txvemail);
+            jsonObject.put("Accept_invite",false);
+            jsonObjectInvite.put("Teams",jsonObject);
+            asyncService.insertJSONDoc(Constants.App42DBName,"Invites",jsonObjectInvite,this);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 
+
     @Override
-    public void onCreationStoreDeviceToken(PushNotification response) {
+    public void onCreationStoreDeviceTokenSuccess(PushNotification response) {
 
     }
 
@@ -99,7 +110,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
     }
 
     @Override
-    public void onCreateChannel(PushNotification response) {
+    public void onCreateChannelSuccess(PushNotification response) {
 
     }
 
@@ -109,7 +120,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
     }
 
     @Override
-    public void onSubscribeToChannel(PushNotification response) {
+    public void onSubscribeToChannelSuccess(PushNotification response) {
 
     }
 
@@ -119,12 +130,64 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
     }
 
     @Override
-    public void onSendPushMessage(PushNotification response) {
-
+    public void onSendPushMessageSuccess(PushNotification response) {
+        asyncService.onSendPushMessageUser("invite","Tienes una invitacion",this);
     }
+
 
     @Override
     public void onSendPushMessageFailed(App42Exception exception) {
 
     }
+
+    @Override
+    public void onSendPushMessageUserSuccess(PushNotification response) {
+
+    }
+
+    @Override
+    public void onSendPushMessageUserFailed(App42Exception exception) {
+
+    }
+
+    @Override
+    public void onDocumentInserted(Storage response) {
+
+    }
+
+    @Override
+    public void onUpdateDocSuccess(Storage response) {
+
+    }
+
+    @Override
+    public void onFindDocSuccess(Storage response) {
+
+    }
+
+    @Override
+    public void onDeleteDocSuccess() {
+
+    }
+
+    @Override
+    public void onInsertionFailed(App42Exception ex) {
+
+    }
+
+    @Override
+    public void onFindDocFailed(App42Exception ex) {
+
+    }
+
+    @Override
+    public void onUpdateDocFailed(App42Exception ex) {
+
+    }
+
+    @Override
+    public void onDeleteDocFailed(App42Exception ex) {
+
+    }
+
 }

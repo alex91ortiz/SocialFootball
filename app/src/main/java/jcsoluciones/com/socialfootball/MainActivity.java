@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new TeamsEventsFragment(), "ONE");
+        adapter.addFragment(new TeamsInviteAcceptFragment(), "TWO");
         adapter.addFragment(new TeamManagementFragment(), "THREE");
         adapter.addFragment(new TournamentsFragment(), "FOUR");
         viewPager.setAdapter(adapter);
@@ -223,8 +224,7 @@ public class MainActivity extends AppCompatActivity implements
                     .setLights(Color.YELLOW, 1, 2).setAutoCancel(true)
                     .setDefaults(Notification.DEFAULT_SOUND)
                     .setDefaults(Notification.DEFAULT_VIBRATE);
-            Log.i("MainActivity-BroadcastReceiver", "Message Recieved " + " : "
-                    + message);
+            Log.i("MainActivity-BroadcastReceiver", "Message Recieved " + " : " + message);
 
 
         }
