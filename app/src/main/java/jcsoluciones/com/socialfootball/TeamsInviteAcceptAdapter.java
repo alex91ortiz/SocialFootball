@@ -11,6 +11,9 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
+import com.beardedhen.androidbootstrap.api.attributes.BootstrapBrand;
+import com.beardedhen.androidbootstrap.api.defaults.DefaultBootstrapBrand;
+import com.beardedhen.androidbootstrap.font.FontAwesome;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,28 +66,44 @@ public class TeamsInviteAcceptAdapter extends BaseAdapter{
         BootstrapButton makeInvite = (BootstrapButton) convertView.findViewById(R.id.button_invite);
         try {
             JSONObject jsonObject = new JSONObject(jsonList.get(position).getJsonDoc());
+            JSONObject jsonObjectTeams = new JSONObject(jsonObject.getString("Teams"));
 
 
             if(mImg!=null) {
-                new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
+                new ImageLoader(mImg).execute(jsonObjectTeams.getString("ImageUrl"));
             }
-            title.setText(jsonObject.getString("name"));
-            message.setText(jsonObject.getString("desc"));
+            title.setText(jsonObjectTeams.getString("name"));
+            message.setText(jsonObjectTeams.getString("desc"));
+            if(jsonObjectTeams.getBoolean("Accept_invite")){
+                makeInvite.setShowOutline(false);
+                makeInvite.setBootstrapBrand(DefaultBootstrapBrand.SUCCESS);
+                makeInvite.setFontAwesomeIcon(FontAwesome.FA_CHECK_CIRCLE);
+
+            }else{
+                makeInvite.setBootstrapBrand(DefaultBootstrapBrand.WARNING );
+                makeInvite.setFontAwesomeIcon(FontAwesome.FA_CLOCK_O);
+                makeInvite.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+
+                        Intent intent = new Intent(activity, InvitePlayActivity.class);
+                        JSONObject jsonObject = null;
+
+                        intent.putExtra("object", jsonList.get(position).getJsonDoc());
+                        intent.putExtra("IdTeams", jsonList.get(position).getDocId());
+                        intent.putExtra("flagAccept", true);
+                        activity.startActivity(intent);
+
+
+                    }
+                });
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        /*makeInvite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-
-                Intent intent = new Intent(activity, InvitePlayActivity.class);
-                intent.putExtra("object",jsonList.get(position).getJsonDoc());
-                intent.putExtra("IdTeams", jsonList.get(position).getDocId());
-                activity.startActivity(intent);
-            }
-        });*/
 
         return convertView;
     }

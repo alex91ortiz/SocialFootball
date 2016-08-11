@@ -594,7 +594,46 @@ public class AsyncApp42ServiceApi {
 			}
 		}.start();
 	}
-
+	/**
+	 * Update doc by id.
+	 *
+	 * @param dbName the db name
+	 * @param collectionName the collection name
+	 * @param id the key
+	 * @param newJsonDoc the new json doc
+	 * @param callBack the call back
+	 */
+	/*
+	 * This function Find JSON Document By Id.
+	 */
+	public void updateDocById(final String dbName,
+									final String collectionName, final String id,
+									final JSONObject newJsonDoc, final App42StorageServiceListener callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					final Storage response = storageService.updateDocumentByDocId(dbName, collectionName, id, newJsonDoc);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onUpdateDocSuccess(response);
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onUpdateDocFailed(ex);
+							}
+						}
+					});
+				}
+			}
+		}.start();
+	}
 	/**
 	 * Delete doc by doc Key and Value.
 	 *

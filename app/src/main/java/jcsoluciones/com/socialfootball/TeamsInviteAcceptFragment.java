@@ -1,5 +1,7 @@
 package jcsoluciones.com.socialfootball;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -97,7 +99,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
 
         @Override
         public void onFindDocFailed(App42Exception ex) {
-
+            createAlertDialog("fallo la busqueda: "+ ex.getMessage());
         }
 
         @Override
@@ -112,7 +114,34 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
 
         @Override
         public void onRefresh() {
-            Query q1 = QueryBuilder.build("active", true, QueryBuilder.Operator.EQUALS); // Build query q1 for key1 equal to name and value1 equal to Nick
-            asyncService.findDocByQuery(Constants.App42DBName,"Teams",q1,this);
+            Query q1 = QueryBuilder.build("Teams.active", true, QueryBuilder.Operator.EQUALS);
+            Query q2 = QueryBuilder.build("Teams.email","alexortizcortes@gmail.com", QueryBuilder.Operator.EQUALS);
+            Query q3 = QueryBuilder.compoundOperator(q1, QueryBuilder.Operator.AND, q2);
+            Query q4 = QueryBuilder.build("email", "alexortizcortes@gmail.com", QueryBuilder.Operator.EQUALS);
+            Query q5 = QueryBuilder.build("Teams.active", true, QueryBuilder.Operator.EQUALS);
+            Query q6 = QueryBuilder.build("Teams.Accept_invite", true, QueryBuilder.Operator.EQUALS);
+            Query q7 = QueryBuilder.compoundOperator(q4, QueryBuilder.Operator.AND, q5);
+            Query q8 = QueryBuilder.compoundOperator(q7, QueryBuilder.Operator.AND, q6);
+            Query q9 = QueryBuilder.compoundOperator(q3,QueryBuilder.Operator.OR,q8);
+            asyncService.findDocByQuery(Constants.App42DBName,"Invites",q9,this);
         }
+
+        /**
+         * Creates the alert dialog.
+         *
+         * @param msg the msg
+         */
+        public void createAlertDialog(String msg) {
+            AlertDialog.Builder alertbox = new AlertDialog.Builder(getActivity());
+            alertbox.setTitle("Response Message");
+            alertbox.setMessage(msg);
+            alertbox.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                // do something when the button is clicked
+                public void onClick(DialogInterface arg0, int arg1) {
+
+                }
+            });
+            alertbox.show();
+        }
+
 }

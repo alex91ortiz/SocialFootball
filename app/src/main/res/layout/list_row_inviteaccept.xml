@@ -53,7 +53,7 @@
         app:typicon="ty_plus_outline"
         android:layout_weight="5"
         android:layout_gravity="center"
-        app:bootstrapBrand="success"
+        app:bootstrapBrand="regular"
         app:bootstrapSize="xs"
         app:buttonMode="regular"
         app:showOutline="true"

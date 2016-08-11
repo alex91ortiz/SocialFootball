@@ -96,11 +96,10 @@ public class SearchTeamsAdapter extends BaseAdapter {
         makeInvite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
                 Intent intent = new Intent(activity, InvitePlayActivity.class);
                 intent.putExtra("object",jsonList.get(position).getJsonDoc());
                 intent.putExtra("IdTeams", jsonList.get(position).getDocId());
+                intent.putExtra("flagAccept", false);
                 activity.startActivity(intent);
             }
         });
