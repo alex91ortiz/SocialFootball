@@ -4,6 +4,8 @@
     <string name="teamsmanagement_phone">Phone</string>
     <string name="teamsmanagement_email">Email</string>
     <string name="teamsmanagement_desc">Description</string>
+    <string name="user_pass">Password</string>
+    <string name="user_username">Username</string>
 
     <string-array name="city">
         <item>Cali</item>

@@ -28,4 +28,5 @@ dependencies {
     compile 'com.mcxiaoke.volley:library-aar:1.0.0'
     compile 'com.beardedhen:androidbootstrap:2.1.0'
     compile "com.google.android.gms:play-services-gcm:9.4.0"
+    compile 'com.google.android.gms:play-services-auth:9.4.0'
 }

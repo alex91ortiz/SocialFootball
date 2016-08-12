@@ -43,6 +43,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapEditText;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
@@ -119,6 +123,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
     private final int SELECT_PICTURE = 300;
     private JSONObject jsonObject;
     private SwitchCompat switchCancel;
+
     /**
      * The Flag for create/update
      */
@@ -190,10 +195,12 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         if(createOrupdate) {
             cumplimiento.setVisibility(View.INVISIBLE);
             switchCancel.setVisibility(View.INVISIBLE);
+
         }else {
             cumplimiento.setVisibility(View.VISIBLE);
             switchCancel.setVisibility(View.VISIBLE);
         }
+
     }
 
     @Override
@@ -552,4 +559,6 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
         builder.show();
     }
+
+
 }

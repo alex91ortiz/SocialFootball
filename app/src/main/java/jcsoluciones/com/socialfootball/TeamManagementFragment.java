@@ -28,6 +28,8 @@ import com.shephertz.app42.paas.sdk.android.storage.StorageService;
 
 import java.util.ArrayList;
 
+import jcsoluciones.com.socialfootball.utils.SessionManager;
+
 /**
  * Created by Admin on 31/07/2016.
  */
@@ -60,6 +62,7 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
     /** The storage service. */
     private StorageService storageService;
     private Storage response;
+    private SessionManager sessionManager;
     public TeamManagementFragment() {
         // Required empty public constructor
     }
@@ -98,13 +101,19 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
                 onRefresh();
             }
         });
-
+        sessionManager = new SessionManager(getContext());
         fabEditTeamMgt = (FloatingActionButton) view.findViewById(R.id.fabEdit);
         fabEditTeamMgt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), TeamsMgtActivity.class);
-                startActivity(intent);
+
+                if(!sessionManager.isLoggedIn()) {
+                    Intent intent = new Intent(getContext(), SignInActivity.class);
+                    startActivity(intent);
+                }else{
+                    Intent intent = new Intent(getContext(), TeamsMgtActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 

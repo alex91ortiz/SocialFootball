@@ -25,6 +25,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
@@ -41,7 +47,8 @@ import jcsoluciones.com.socialfootball.plugin.App42GCMService;
 public class MainActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
         AsyncApp42ServiceApi.App42StorageServiceListener
-        ,App42GCMController.App42GCMListener {
+        ,App42GCMController.App42GCMListener
+        ,GoogleApiClient.OnConnectionFailedListener{
 
     /**
      * The async service.
@@ -62,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements
     private ListView searchList;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
+    private GoogleApiClient mGoogleApiClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +118,15 @@ public class MainActivity extends AppCompatActivity implements
                 // TODO Auto-generated method stub
             }
         });
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+
     }
     @Override
     public void onStart() {
@@ -262,6 +279,11 @@ public class MainActivity extends AppCompatActivity implements
                 App42GCMController.storeApp42Success(MainActivity.this);
             }
         });
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
