@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import jcsoluciones.com.socialfootball.utils.ImageLoader;
+import jcsoluciones.com.socialfootball.utils.SessionManager;
 
 public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42ServiceApi.App42PushNotificationServiceListener,AsyncApp42ServiceApi.App42StorageServiceListener {
     /**
@@ -62,6 +63,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
      * The progress dialog.
      */
     private Boolean flagAccept=false;
+    private SessionManager sessionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +79,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
         txvemail = (TextView) findViewById(R.id.input_layout_email);
         Sendnvite = (BootstrapButton) findViewById(R.id.button_event);
 
-
+        sessionManager = new SessionManager(this);
         Bundle bundle =getIntent().getExtras();
         if(bundle!=null){
             try {
@@ -124,7 +126,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
             JSONObject jsonObjectInvite = new JSONObject();
 
             try {
-                jsonObjectInvite.put("email", txvemail.getText());
+                jsonObjectInvite.put(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), txvemail.getText());
                 jsonObject.put("Accept_invite", false);
                 jsonObjectInvite.put("Teams", jsonObject);
                 asyncService.insertJSONDoc(Constants.App42DBName, "Invites", jsonObjectInvite, this);
@@ -190,13 +192,13 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
 
     @Override
     public void onDocumentInserted(Storage response) {
-        asyncService.onSendPushMessageUser("invite", "Tienes una invitacion",this);
+        asyncService.onSendPushMessageUser(sessionManager.getUserDetails().get(sessionManager.KEY_NAME), "Tienes una invitacion",this);
 
     }
 
     @Override
     public void onUpdateDocSuccess(Storage response) {
-        asyncService.onSendPushMessageUser("invite", "Aceptaron tu invitacion",this);
+        asyncService.onSendPushMessageUser(sessionManager.getUserDetails().get(sessionManager.KEY_NAME), "Aceptaron tu invitacion",this);
 
     }
 

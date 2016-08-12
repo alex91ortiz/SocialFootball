@@ -43,6 +43,7 @@ import java.util.List;
 
 import jcsoluciones.com.socialfootball.plugin.App42GCMController;
 import jcsoluciones.com.socialfootball.plugin.App42GCMService;
+import jcsoluciones.com.socialfootball.utils.SessionManager;
 
 public class MainActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
@@ -70,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
     private GoogleApiClient mGoogleApiClient;
+    private SessionManager sessionManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +84,8 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         asyncService = AsyncApp42ServiceApi.instance(this);
-        asyncService.setLoggedInUser("invite");
+        sessionManager  = new SessionManager(this);
+        asyncService.setLoggedInUser(sessionManager.getUserDetails().get(sessionManager.KEY_NAME));
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         searchList = (ListView) findViewById(R.id.listsearch);

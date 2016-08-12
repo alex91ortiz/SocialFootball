@@ -33,6 +33,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 
 import jcsoluciones.com.socialfootball.utils.ImageLoader;
+import jcsoluciones.com.socialfootball.utils.SessionManager;
 
 /**
  * Created by Admin on 07/08/2016.
@@ -42,7 +43,7 @@ public class SearchTeamsAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private ArrayList<Storage.JSONDocument> jsonList;
     private BootstrapCircleThumbnail mImg;
-
+    private SessionManager sessionManager;
     private int position;
     /**
      * The async service.
@@ -76,6 +77,7 @@ public class SearchTeamsAdapter extends BaseAdapter {
         if(convertView==null)
             convertView = inflater.inflate(R.layout.list_row_events,null);
 
+        sessionManager = new SessionManager(activity.getApplicationContext());
         TextView title = (TextView) convertView.findViewById(R.id.title);
         TextView message = (TextView) convertView.findViewById(R.id.message);
         mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
@@ -96,11 +98,16 @@ public class SearchTeamsAdapter extends BaseAdapter {
         makeInvite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(activity, InvitePlayActivity.class);
-                intent.putExtra("object",jsonList.get(position).getJsonDoc());
-                intent.putExtra("IdTeams", jsonList.get(position).getDocId());
-                intent.putExtra("flagAccept", false);
-                activity.startActivity(intent);
+                if(!sessionManager.isLoggedIn()) {
+                    Intent intent = new Intent(activity, SignInActivity.class);
+                    activity.startActivity(intent);
+                }else {
+                    Intent intent = new Intent(activity, InvitePlayActivity.class);
+                    intent.putExtra("object", jsonList.get(position).getJsonDoc());
+                    intent.putExtra("IdTeams", jsonList.get(position).getDocId());
+                    intent.putExtra("flagAccept", false);
+                    activity.startActivity(intent);
+                }
             }
         });
 

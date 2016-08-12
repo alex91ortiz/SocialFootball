@@ -60,6 +60,8 @@ import java.io.File;
 
 import java.util.ArrayList;
 
+import jcsoluciones.com.socialfootball.utils.SessionManager;
+
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
@@ -123,6 +125,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
     private final int SELECT_PICTURE = 300;
     private JSONObject jsonObject;
     private SwitchCompat switchCancel;
+    private SessionManager sessionManager;
 
     /**
      * The Flag for create/update
@@ -147,6 +150,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         mRlView = (RelativeLayout) findViewById(R.id.layout_main);
         cumplimiento =(RatingBar) findViewById(R.id.rtbCumplimiento);
 
+        sessionManager = new SessionManager(this);
         switchCancel = (SwitchCompat) findViewById(R.id.switchCancel);
         switchCancel.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -233,7 +237,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
                         jsonObject.put("city",spncity.getSelectedItem());
                         jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");
                         jsonObject.put("active",true);
-                        jsonObject.put("email","alexortizcortes@gmail.com");
+                        jsonObject.put("email",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
                         asyncService.insertJSONDoc(Constants.App42DBName, "Teams", jsonObject, this);
                     }else{
                         createAlertDialog("Input Picture");
@@ -263,7 +267,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
     @Override
     public void onDocumentInserted(Storage response) {
 
-        asyncService.uploadImage( edtname.getText().toString().replaceAll("^\\s*",""), selectedImage, UploadFileType.IMAGE,
+        asyncService.uploadImage( sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), selectedImage, UploadFileType.IMAGE,
                 edtname.getText().toString(), this);
 
     }
@@ -345,7 +349,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
     @Override
     public void onDeleteImageSuccess() {
-        asyncService.uploadImage( edtname.getText().toString().replaceAll("^\\s*",""), selectedImage, UploadFileType.IMAGE,
+        asyncService.uploadImage( sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), selectedImage, UploadFileType.IMAGE,
                 edtname.getText().toString(), this);
     }
 
@@ -423,7 +427,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
             progressDialog = ProgressDialog.show(this, "", "Deleting..");
             progressDialog.setCancelable(true);
             jsonObject.put("active",false);
-            asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getText().toString(), jsonObject, this);
+            asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "email", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), jsonObject, this);
         } catch (JSONException e) {
             e.printStackTrace();
         }
