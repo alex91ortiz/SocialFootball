@@ -129,7 +129,7 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
     public void onRefresh() {
         //asyncService.findAllDocs(Constants.App42DBName, "Teams", this);
         Query q1 = QueryBuilder.build("active",true, QueryBuilder.Operator.EQUALS);
-        Query q2 = QueryBuilder.build("email","alexortizcortes@gmail.com", QueryBuilder.Operator.EQUALS);
+        Query q2 = QueryBuilder.build("email",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), QueryBuilder.Operator.EQUALS);
         Query q3 = QueryBuilder.compoundOperator(q1, QueryBuilder.Operator.AND,q2);// Build query q1 for key1 equal to name and value1 equal to Nick
         asyncService.findDocByQuery(Constants.App42DBName,"Teams",q3,this);
     }

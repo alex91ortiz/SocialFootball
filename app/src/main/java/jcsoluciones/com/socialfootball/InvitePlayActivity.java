@@ -126,7 +126,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
             JSONObject jsonObjectInvite = new JSONObject();
 
             try {
-                jsonObjectInvite.put(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), txvemail.getText());
+                jsonObjectInvite.put("email", txvemail.getText());
                 jsonObject.put("Accept_invite", false);
                 jsonObjectInvite.put("Teams", jsonObject);
                 asyncService.insertJSONDoc(Constants.App42DBName, "Invites", jsonObjectInvite, this);
@@ -192,13 +192,13 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
 
     @Override
     public void onDocumentInserted(Storage response) {
-        asyncService.onSendPushMessageUser(sessionManager.getUserDetails().get(sessionManager.KEY_NAME), "Tienes una invitacion",this);
+        asyncService.onSendPushMessageUser(txvemail.getText().toString(), "Tienes una invitacion",this);
 
     }
 
     @Override
     public void onUpdateDocSuccess(Storage response) {
-        asyncService.onSendPushMessageUser(sessionManager.getUserDetails().get(sessionManager.KEY_NAME), "Aceptaron tu invitacion",this);
+        asyncService.onSendPushMessageUser(txvemail.getText().toString(), "Aceptaron tu invitacion",this);
 
     }
 

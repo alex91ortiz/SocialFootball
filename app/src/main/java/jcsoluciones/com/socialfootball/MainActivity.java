@@ -48,8 +48,7 @@ import jcsoluciones.com.socialfootball.utils.SessionManager;
 public class MainActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
         AsyncApp42ServiceApi.App42StorageServiceListener
-        ,App42GCMController.App42GCMListener
-        ,GoogleApiClient.OnConnectionFailedListener{
+        ,App42GCMController.App42GCMListener {
 
     /**
      * The async service.
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
         asyncService = AsyncApp42ServiceApi.instance(this);
         sessionManager  = new SessionManager(this);
-        asyncService.setLoggedInUser(sessionManager.getUserDetails().get(sessionManager.KEY_NAME));
+        asyncService.setLoggedInUser(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         searchList = (ListView) findViewById(R.id.listsearch);
@@ -122,13 +121,7 @@ public class MainActivity extends AppCompatActivity implements
                 // TODO Auto-generated method stub
             }
         });
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+
 
 
     }
@@ -285,10 +278,6 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();

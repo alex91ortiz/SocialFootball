@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "com.jcsoluciones.socialfootball"
+        applicationId "jcsoluciones.com.socialfootball"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
@@ -30,3 +30,5 @@ dependencies {
     compile "com.google.android.gms:play-services-gcm:9.4.0"
     compile 'com.google.android.gms:play-services-auth:9.4.0'
 }
+
+apply plugin: 'com.google.gms.google-services'

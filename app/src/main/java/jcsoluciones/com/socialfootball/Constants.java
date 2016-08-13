@@ -48,4 +48,6 @@ public class Constants {
 
 	/** Then Google Project No */
 	static  final String GoogleProjectNo="1071669197043";
+	/** Then Google Client Id*/
+	static  final String IdClientGoogle="1071669197043-87276jki2t3ot7bbr0cggdk1ulh7vdlv.apps.googleusercontent.com";
 }

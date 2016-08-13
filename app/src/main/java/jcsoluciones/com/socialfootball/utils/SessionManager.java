@@ -93,10 +93,10 @@ public class SessionManager {
     public HashMap<String, String> getUserDetails(){
         HashMap<String, String> user = new HashMap<String, String>();
         // user name
-        user.put(KEY_NAME, pref.getString(KEY_NAME, null));
+        user.put(KEY_NAME, pref.getString(KEY_NAME, ""));
 
         // user email id
-        user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
+        user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, ""));
 
         // return user
         return user;
