@@ -1,0 +1,52 @@
+{
+  "project_info": {
+    "project_number": "1071669197043",
+    "project_id": "socialsoccer-1470767873720"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1071669197043:android:5f2ca543e885c6a7",
+        "android_client_info": {
+          "package_name": "jcsoluciones.com.socialfootball"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1071669197043-nukep5e7d3si9v2v5j8tn2kh3lmv73o9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "jcsoluciones.com.socialfootball",
+            "certificate_hash": "AD799E63C10F4D109905BA47975BEC777C4ED2FD"
+          }
+        },
+        {
+          "client_id": "1071669197043-87276jki2t3ot7bbr0cggdk1ulh7vdlv.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "1071669197043-b017rp9eda5aildfggs51mgne9053jgq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNuh4aBcN1yhR3II0XJAqd9T9Mmlp1BV0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -20,9 +20,6 @@
     <permission
         android:name="jcsoluciones.com.socialfootball.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
-
-    <uses-permission android:name="jcsoluciones.com.socialfootball.permission.C2D_MESSAGE" />
-
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
@@ -56,40 +53,42 @@
             android:parentActivityName=".MainActivity">
 
         </activity>
+        <activity android:name=".AcceptInviteActivity" />
+        <activity android:name=".SignInActivity">
 
+        </activity>
         <receiver
-            android:name=".plugin.App42GCMReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
-
-                <!-- Receives the actual messages. -->
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <!-- Receives the registration id. -->
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-
-                <!-- Your package name here -->
-                <category android:name="jcsoluciones.com.socialfootball" />
+                <category android:name="com.example.gcm" />
             </intent-filter>
         </receiver>
 
-        <!--
-          Application-specific subclass of intentService that will
-          handle received messages.
-        -->
-        <service android:name=".plugin.App42GCMService" />
+        <service
+            android:name=".plugin.GCMService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
 
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+        <service
+            android:name=".plugin.GCMInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+
 
         <meta-data
             android:name="onMessageOpen"
             android:value="jcsoluciones.com.socialfootball.MainActivity" />
 
-        <activity android:name=".AcceptInviteActivity" />
-        <activity android:name=".SignInActivity">
 
-        </activity>
     </application>
 
 </manifest>

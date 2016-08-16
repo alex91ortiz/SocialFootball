@@ -19,6 +19,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,7 +43,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jcsoluciones.com.socialfootball.plugin.App42GCMController;
-import jcsoluciones.com.socialfootball.plugin.App42GCMService;
+
+import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 
 public class MainActivity extends AppCompatActivity implements
@@ -69,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements
     private ListView searchList;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
+    public static final String REGISTRATION_PROCESS = "registration";
+    public static final String MESSAGE_RECEIVED = "message_received";
     private GoogleApiClient mGoogleApiClient;
     private SessionManager sessionManager;
 
@@ -128,16 +132,30 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onStart() {
         super.onStart();
-        if (App42GCMController.isPlayServiceAvailable(this)) {
-            App42GCMController.getRegistrationId(MainActivity.this,Constants.GoogleProjectNo, this);
-        } else {
-            Log.i("App42PushNotification", "No valid Google Play Services APK found.");
-        }
+        //App42GCMController.storeRegistrationId(this, getDeviceId());
+        //if(!App42GCMController.isApp42Registerd(MainActivity.this)) {
+            if (App42GCMController.isPlayServiceAvailable(this)) {
+                //App42GCMController.getRegistrationId(MainActivity.this,Constants.GoogleProjectNo, this);
+
+                    Intent intent = new Intent(MainActivity.this, RegistrationIntentService.class);
+                    intent.putExtra("DEVICE_ID", "s");
+                    intent.putExtra("DEVICE_NAME",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
+                    startService(intent);
+
+            } else {
+                Log.i("App42PushNotification", "No valid Google Play Services APK found.");
+            }
+        //}
     }
     @Override
     public void onPause() {
         super.onPause();
-        //unregisterReceiver(mBroadcastReceiver);
+
+    }
+
+    private String getDeviceId(){
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        return telephonyManager.getDeviceId();
     }
 
     private void onMessageOpen(View view){
@@ -230,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements
     final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra(App42GCMService.ExtraMessage);
+           /* String message = intent.getStringExtra(App42GCMService.ExtraMessage);
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.common_ic_googleplayservices)
                     .setContentTitle("prueba")
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
@@ -238,34 +256,11 @@ public class MainActivity extends AppCompatActivity implements
                     .setLights(Color.YELLOW, 1, 2).setAutoCancel(true)
                     .setDefaults(Notification.DEFAULT_SOUND)
                     .setDefaults(Notification.DEFAULT_VIBRATE);
-            Log.i("MainActivity-BroadcastReceiver", "Message Recieved " + " : " + message);
+            Log.i("MainActivity-BroadcastReceiver", "Message Recieved " + " : " + message);*/
 
 
         }
     };
-
-    @Override
-    public void onError(String errorMsg) {
-
-    }
-
-    @Override
-    public void onGCMRegistrationId(String gcmRegId) {
-        //responseTv.setText("Registration Id on GCM--" + gcmRegId);
-        App42GCMController.storeRegistrationId(this, gcmRegId);
-        if(!App42GCMController.isApp42Registerd(MainActivity.this))
-            App42GCMController.registerOnApp42(asyncService.getLoggedInUser(), gcmRegId, this);
-    }
-
-    @Override
-    public void onApp42Response(String responseMessage) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
-    }
 
     @Override
     public void onRegisterApp42(String responseMessage) {
