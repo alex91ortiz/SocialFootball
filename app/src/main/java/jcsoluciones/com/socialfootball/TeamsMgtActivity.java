@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import android.graphics.drawable.ColorDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 
@@ -21,18 +20,14 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 
@@ -43,10 +38,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapEditText;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
@@ -60,6 +51,7 @@ import java.io.File;
 
 import java.util.ArrayList;
 
+import jcsoluciones.com.socialfootball.utils.RealPathUtil;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 
 import static android.Manifest.permission.CAMERA;
@@ -506,7 +498,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
                                 public void onScanCompleted(String path, Uri uri) {
                                     Log.i("ExternalStorage", "Scanned " + path + ":");
                                     Log.i("ExternalStorage", "-> Uri = " + uri);
-                                    selectedImage = RealPathUtil.getRealPathFromURI_API19(getBaseContext(),uri);
+                                    selectedImage = RealPathUtil.getRealPathFromURI_API19(getBaseContext(), uri);
                                 }
                             });
 

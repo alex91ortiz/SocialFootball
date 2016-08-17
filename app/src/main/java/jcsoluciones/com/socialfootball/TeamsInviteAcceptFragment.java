@@ -99,6 +99,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
 
         @Override
         public void onFindDocFailed(App42Exception ex) {
+            swipeRefreshLayout.setRefreshing(false);
             createAlertDialog("fallo la busqueda: "+ ex.getMessage());
         }
 

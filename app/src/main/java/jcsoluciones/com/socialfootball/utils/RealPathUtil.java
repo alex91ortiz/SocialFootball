@@ -1,4 +1,4 @@
-package jcsoluciones.com.socialfootball;
+package jcsoluciones.com.socialfootball.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

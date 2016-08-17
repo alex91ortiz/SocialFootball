@@ -2,55 +2,51 @@ package jcsoluciones.com.socialfootball;
 
 import android.app.AlertDialog;
 import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.storage.Query;
 import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import jcsoluciones.com.socialfootball.plugin.App42GCMController;
-
 import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 
 public class MainActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
-        AsyncApp42ServiceApi.App42StorageServiceListener
-        ,App42GCMController.App42GCMListener {
+        AsyncApp42ServiceApi.App42StorageServiceListener {
 
     /**
      * The async service.
@@ -75,6 +71,10 @@ public class MainActivity extends AppCompatActivity implements
     public static final String MESSAGE_RECEIVED = "message_received";
     private GoogleApiClient mGoogleApiClient;
     private SessionManager sessionManager;
+    private boolean isReceiverRegistered;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    public static final String REGISTRATION_COMPLETE = "registrationComplete";
+    public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements
         asyncService = AsyncApp42ServiceApi.instance(this);
         sessionManager  = new SessionManager(this);
         asyncService.setLoggedInUser(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
+
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         searchList = (ListView) findViewById(R.id.listsearch);
@@ -126,37 +127,43 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences.getBoolean(SENT_TOKEN_TO_SERVER, false);
+                if (sentToken) {
+                    String message = intent.getStringExtra("message");
+                    NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.common_ic_googleplayservices)
+                            .setContentTitle("prueba")
+                            .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                            .setContentText(message) //.setWhen(when).setNumber(++msgCount)
+                            .setLights(Color.YELLOW, 1, 2).setAutoCancel(true)
+                            .setDefaults(Notification.DEFAULT_SOUND)
+                            .setDefaults(Notification.DEFAULT_VIBRATE);
+                    Log.i("MainActivity-BroadcastReceiver", "Message Recieved " + " : " + message);
+                    Intent notIntent =  new Intent(getApplicationContext(), MainActivity.class);
+                    PendingIntent contIntent = PendingIntent.getActivity(getApplicationContext(), 0, notIntent, 0);
 
-    }
-    @Override
-    public void onStart() {
-        super.onStart();
-        //App42GCMController.storeRegistrationId(this, getDeviceId());
-        //if(!App42GCMController.isApp42Registerd(MainActivity.this)) {
-            if (App42GCMController.isPlayServiceAvailable(this)) {
-                //App42GCMController.getRegistrationId(MainActivity.this,Constants.GoogleProjectNo, this);
+                    mBuilder.setContentIntent(contIntent);
+                    mNotificationManager.notify(1, mBuilder.build());
 
-                    Intent intent = new Intent(MainActivity.this, RegistrationIntentService.class);
-                    intent.putExtra("DEVICE_ID", "s");
-                    intent.putExtra("DEVICE_NAME",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
-                    startService(intent);
-
-            } else {
-                Log.i("App42PushNotification", "No valid Google Play Services APK found.");
+                }
             }
-        //}
-    }
-    @Override
-    public void onPause() {
-        super.onPause();
+        };
+
+        if(checkPlayServices()){
+            Intent intent = new Intent(MainActivity.this, RegistrationIntentService.class);
+            intent.putExtra("DEVICE_ID", "s");
+            intent.putExtra("DEVICE_NAME",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
+            startService(intent);
+        }
 
     }
 
-    private String getDeviceId(){
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        return telephonyManager.getDeviceId();
-    }
 
     private void onMessageOpen(View view){
         createAlertDialog("registro");
@@ -245,33 +252,9 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-           /* String message = intent.getStringExtra(App42GCMService.ExtraMessage);
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.common_ic_googleplayservices)
-                    .setContentTitle("prueba")
-                    .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
-                    .setContentText(message) //.setWhen(when).setNumber(++msgCount)
-                    .setLights(Color.YELLOW, 1, 2).setAutoCancel(true)
-                    .setDefaults(Notification.DEFAULT_SOUND)
-                    .setDefaults(Notification.DEFAULT_VIBRATE);
-            Log.i("MainActivity-BroadcastReceiver", "Message Recieved " + " : " + message);*/
 
 
-        }
-    };
 
-    @Override
-    public void onRegisterApp42(String responseMessage) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-                App42GCMController.storeApp42Success(MainActivity.this);
-            }
-        });
-    }
 
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -319,5 +302,45 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
         alertbox.show();
+    }
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver();
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        isReceiverRegistered = false;
+        super.onPause();
+    }
+
+    private void registerReceiver(){
+        if(!isReceiverRegistered) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                    new IntentFilter(REGISTRATION_COMPLETE));
+            isReceiverRegistered = true;
+        }
     }
 }
