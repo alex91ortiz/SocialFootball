@@ -38,6 +38,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapEditText;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
@@ -51,6 +53,7 @@ import java.io.File;
 
 import java.util.ArrayList;
 
+import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
 import jcsoluciones.com.socialfootball.utils.RealPathUtil;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 
@@ -106,12 +109,13 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
     private FloatingActionButton floatingActionButton;
     private String selectedImage;
+    private static final String TAG = "MainActivity";
     private String IdTeams;
     private SmartImageView mImg;
     private RelativeLayout mRlView;
     private static String APP_DIRECTORY = "MyPictureApp/";
     private static String MEDIA_DIRECTORY = APP_DIRECTORY + "PictureApp";
-
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final int MY_PERMISSIONS = 100;
     private final int PHOTO_CODE = 200;
     private final int SELECT_PICTURE = 300;
@@ -266,6 +270,12 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
     @Override
     public void onUpdateDocSuccess(Storage response) {
+        if(checkPlayServices()){
+            Intent intents = new Intent(TeamsMgtActivity.this, RegistrationIntentService.class);
+            intents.putExtra("DEVICE_ID", "s");
+            intents.putExtra("DEVICE_NAME",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
+            startService(intents);
+        }
         progressDialog.dismiss();
         finish();
     }
@@ -295,6 +305,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
     @Override
     public void onUpdateDocFailed(App42Exception ex) {
+
         progressDialog.dismiss();
         createAlertDialog("Error: " + ex.getMessage());
     }
@@ -341,7 +352,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
     @Override
     public void onDeleteImageSuccess() {
-        asyncService.uploadImage( sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), selectedImage, UploadFileType.IMAGE,
+        asyncService.uploadImage(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), selectedImage, UploadFileType.IMAGE,
                 edtname.getText().toString(), this);
     }
 
@@ -555,6 +566,25 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
         builder.show();
     }
-
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
 
 }

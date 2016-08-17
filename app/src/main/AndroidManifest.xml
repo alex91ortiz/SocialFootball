@@ -88,11 +88,6 @@
             android:exported="false">
         </service>
 
-        <meta-data
-            android:name="onMessageOpen"
-            android:value="jcsoluciones.com.socialfootball.MainActivity" />
-
-
     </application>
 
 </manifest>

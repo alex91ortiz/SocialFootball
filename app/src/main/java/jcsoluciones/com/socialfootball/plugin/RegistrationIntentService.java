@@ -59,7 +59,8 @@ public class RegistrationIntentService extends IntentService{
 
             // Subscribe to topic channels
             subscribeTopics(token);
-            registerDeviceProcess(deviceName,deviceId,token);
+            //if(!sharedPreferences.getBoolean(SENT_TOKEN_TO_SERVER,false))
+                registerDeviceProcess(deviceName,deviceId,token);
             // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,
             // otherwise your server should have already received the token.
@@ -113,6 +114,7 @@ public class RegistrationIntentService extends IntentService{
             @Override
             public void onException(Exception arg0) {
                 // TODO Auto-generated method stub
+                Log.i("error", arg0.getMessage());
             }
         });
     }

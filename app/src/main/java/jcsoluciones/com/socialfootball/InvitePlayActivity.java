@@ -50,6 +50,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
     private BootstrapCircleThumbnail mImg;
     private BootstrapButton Sendnvite;
     private  String IdTeams;
+    private  String emailSend;
 
     /**
      * The async service.
@@ -93,6 +94,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
                     txvcity.setText(jsonObjectTeams.getString("city"));
                     txvemail.setText(jsonObjectTeams.getString("email"));
                     IdTeams = bundle.getString("IdTeams", "");
+                    emailSend=jsonObject.getString("email");
                     new ImageLoader(mImg).execute(jsonObjectTeams.getString("ImageUrl"));
                 }else{
                     txvname.setText(jsonObject.getString("name"));
@@ -126,7 +128,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
             JSONObject jsonObjectInvite = new JSONObject();
 
             try {
-                jsonObjectInvite.put("email", txvemail.getText());
+                jsonObjectInvite.put("email", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
                 jsonObject.put("Accept_invite", false);
                 jsonObjectInvite.put("Teams", jsonObject);
                 asyncService.insertJSONDoc(Constants.App42DBName, "Invites", jsonObjectInvite, this);
@@ -198,7 +200,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
 
     @Override
     public void onUpdateDocSuccess(Storage response) {
-        asyncService.onSendPushMessageUser(txvemail.getText().toString(), "Aceptaron tu invitacion",this);
+        asyncService.onSendPushMessageUser(emailSend, "Aceptaron tu invitacion",this);
 
     }
 

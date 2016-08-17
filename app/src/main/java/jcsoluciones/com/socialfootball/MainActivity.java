@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -65,16 +66,13 @@ public class MainActivity extends AppCompatActivity implements
     private SearchView mSearchView;
     private MenuItem searchMenuItem;
     private ListView searchList;
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
     public static final String REGISTRATION_PROCESS = "registration";
     public static final String MESSAGE_RECEIVED = "message_received";
-    private GoogleApiClient mGoogleApiClient;
+
     private SessionManager sessionManager;
     private boolean isReceiverRegistered;
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
-    public static final String REGISTRATION_COMPLETE = "registrationComplete";
-    public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,8 +116,7 @@ public class MainActivity extends AppCompatActivity implements
         App42API.buildLogService().setEvent("Message", "Opened", new App42CallBack() {
             public void onSuccess(Object arg0) {
                 // TODO Auto-generated method stub
-                Log.i("MainActivity-BroadcastReceiver", "Message Recieved " + " : "
-                        + arg0.toString());
+                Log.i("MainActivity-BroadcastReceiver", "Message Recieved " + " : " + arg0.toString());
             }
 
             public void onException(Exception arg0) {
@@ -127,47 +124,19 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(context);
-                boolean sentToken = sharedPreferences.getBoolean(SENT_TOKEN_TO_SERVER, false);
-                if (sentToken) {
-                    String message = intent.getStringExtra("message");
-                    NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        registerReceiver();
 
-                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.common_ic_googleplayservices)
-                            .setContentTitle("prueba")
-                            .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
-                            .setContentText(message) //.setWhen(when).setNumber(++msgCount)
-                            .setLights(Color.YELLOW, 1, 2).setAutoCancel(true)
-                            .setDefaults(Notification.DEFAULT_SOUND)
-                            .setDefaults(Notification.DEFAULT_VIBRATE);
-                    Log.i("MainActivity-BroadcastReceiver", "Message Recieved " + " : " + message);
-                    Intent notIntent =  new Intent(getApplicationContext(), MainActivity.class);
-                    PendingIntent contIntent = PendingIntent.getActivity(getApplicationContext(), 0, notIntent, 0);
-
-                    mBuilder.setContentIntent(contIntent);
-                    mNotificationManager.notify(1, mBuilder.build());
-
-                }
+        Intent intent = getIntent();
+        if(intent != null){
+            if(intent.getAction().equals(MESSAGE_RECEIVED)){
+                String message = intent.getStringExtra("message");
+                showAlertDialog(message);
             }
-        };
-
-        if(checkPlayServices()){
-            Intent intent = new Intent(MainActivity.this, RegistrationIntentService.class);
-            intent.putExtra("DEVICE_ID", "s");
-            intent.putExtra("DEVICE_NAME",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
-            startService(intent);
         }
 
     }
 
 
-    private void onMessageOpen(View view){
-        createAlertDialog("registro");
-    }
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -178,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements
         viewPager.setAdapter(adapter);
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -252,11 +222,6 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-
-
-
-
-
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
@@ -303,26 +268,7 @@ public class MainActivity extends AppCompatActivity implements
         });
         alertbox.show();
     }
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
-            } else {
-                Log.i(TAG, "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -331,16 +277,48 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         isReceiverRegistered = false;
         super.onPause();
     }
 
-    private void registerReceiver(){
-        if(!isReceiverRegistered) {
-            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                    new IntentFilter(REGISTRATION_COMPLETE));
-            isReceiverRegistered = true;
+    private void showAlertDialog(String message){
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        builder.setTitle("GCM Message Received !");
+        builder.setMessage(message);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
+    }
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if(intent.getAction().equals(REGISTRATION_PROCESS)){
+
+                String result  = intent.getStringExtra("result");
+                String message = intent.getStringExtra("message");
+                Log.d(TAG, "onReceive: " + result + message);
+            } else if (intent.getAction().equals(MESSAGE_RECEIVED)){
+
+                String message = intent.getStringExtra("message");
+                showAlertDialog(message);
+            }
         }
+    };
+
+    private void registerReceiver(){
+
+        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(REGISTRATION_PROCESS);
+        intentFilter.addAction(MESSAGE_RECEIVED);
+        bManager.registerReceiver(broadcastReceiver, intentFilter);
+
     }
 }
