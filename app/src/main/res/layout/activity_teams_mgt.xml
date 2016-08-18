@@ -5,43 +5,29 @@
     android:background="@color/md_white_1000"
     android:layout_height="match_parent"
     android:id="@+id/layout_main">
-        <LinearLayout
-            android:orientation="vertical"
-            android:id="@+id/layout_info_teams"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-            <android.support.design.widget.CoordinatorLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <RelativeLayout
-                    android:id="@+id/relative_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
 
-                    <com.loopj.android.image.SmartImageView
-                        android:id="@+id/ImageTeams"
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentTop="true"
-                        android:scaleType="fitCenter"
-                        android:background="@color/colorImage"
-                        android:layout_centerInParent="true"
-                        />
-                </RelativeLayout>
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/fabImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_margin="@dimen/fab_margin"
-                    android:src="@android:drawable/ic_menu_camera"/>
-            </android.support.design.widget.CoordinatorLayout>
+            <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
+                android:id="@+id/ImageTeams"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                app:bootstrapSize="xs"
+                android:layout_margin="5dp"
+                app:bootstrapBrand="success"
+                app:hasBorder="true" />
 
-            <Space
+            <TextView
+                android:id="@+id/changeimgtext"
+                android:layout_below="@+id/ImageTeams"
                 android:layout_width="match_parent"
-                android:layout_height="10dp" />
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Image change"
+                android:onClick="ImageChange"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/md_blue_300"
+                />
 
             <com.beardedhen.androidbootstrap.BootstrapEditText
                 android:id="@+id/input_layout_name"
@@ -50,6 +36,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
+                android:layout_below="@+id/changeimgtext"
                 app:roundedCorners="true"
                 app:bootstrapSize="lg"
                 app:bootstrapBrand="info"
@@ -59,6 +46,7 @@
                 android:id="@+id/input_layout_phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/input_layout_name"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
@@ -71,6 +59,7 @@
                 android:id="@+id/input_layout_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/input_layout_phone"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
@@ -82,8 +71,10 @@
             <Spinner
                 android:id="@+id/input_layout_city"
                 android:layout_width="match_parent"
+                android:background="@color/bootstrap_gray_light"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_below="@+id/input_layout_desc"
                 android:layout_height="45dp">
 
             </Spinner>
@@ -92,15 +83,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:paddingTop="5dp"
+                android:id="@+id/input_layout_email"
                 android:paddingLeft="20dp"
+                android:layout_below="@+id/input_layout_city"
                 android:text="@string/teamsmanagement_email"/>
 
             <RatingBar
                 android:id="@+id/rtbCumplimiento"
+                android:layout_below="@+id/input_layout_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="?android:attr/ratingBarStyleIndicator"
-                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
                 android:numStars="5"
                 android:stepSize="1.0"
                 android:visibility="visible"
@@ -109,10 +103,12 @@
             <android.support.v7.widget.SwitchCompat
                 android:id="@+id/switchCancel"
                 android:text="Delete"
+                android:layout_below="@+id/rtbCumplimiento"
                 android:theme="@style/Sugar.Switch.Affiliate"
                 android:paddingLeft="20dp"
+                android:paddingRight="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             </android.support.v7.widget.SwitchCompat>
-        </LinearLayout>
+
 </RelativeLayout>

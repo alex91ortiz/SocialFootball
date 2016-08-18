@@ -15,6 +15,8 @@ import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import java.util.ArrayList;
 
+import jcsoluciones.com.socialfootball.utils.SessionManager;
+
 
 /**
  * Created by ADMIN on 10/08/2016.
@@ -38,7 +40,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
         *  adapter for teams management
         */
         private TeamsInviteAcceptAdapter adapter;
-
+        private SessionManager sessionManager;
         public TeamsInviteAcceptFragment() {
         // Required empty public constructor
         }
@@ -55,6 +57,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
             View view = inflater.inflate(R.layout.fragment_teamsiviteaccept, container, false);
             asyncService = AsyncApp42ServiceApi.instance(getContext());
             listView = (ListView) view.findViewById(R.id.listView);
+            sessionManager = new SessionManager(getActivity());
             swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
             swipeRefreshLayout.setOnRefreshListener(this);
             swipeRefreshLayout.post(new Runnable() {
@@ -116,9 +119,9 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
         @Override
         public void onRefresh() {
             Query q1 = QueryBuilder.build("Teams.active", true, QueryBuilder.Operator.EQUALS);
-            Query q2 = QueryBuilder.build("Teams.email","alexortizcortes@gmail.com", QueryBuilder.Operator.EQUALS);
+            Query q2 = QueryBuilder.build("Teams.email",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), QueryBuilder.Operator.EQUALS);
             Query q3 = QueryBuilder.compoundOperator(q1, QueryBuilder.Operator.AND, q2);
-            Query q4 = QueryBuilder.build("email", "alexortizcortes@gmail.com", QueryBuilder.Operator.EQUALS);
+            Query q4 = QueryBuilder.build("email", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), QueryBuilder.Operator.EQUALS);
             Query q5 = QueryBuilder.build("Teams.active", true, QueryBuilder.Operator.EQUALS);
             Query q6 = QueryBuilder.build("Teams.Accept_invite", true, QueryBuilder.Operator.EQUALS);
             Query q7 = QueryBuilder.compoundOperator(q4, QueryBuilder.Operator.AND, q5);

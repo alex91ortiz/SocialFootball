@@ -37,6 +37,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -54,6 +55,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
+import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.RealPathUtil;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 
@@ -111,7 +113,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
     private String selectedImage;
     private static final String TAG = "MainActivity";
     private String IdTeams;
-    private SmartImageView mImg;
+    private BootstrapCircleThumbnail mImg;
     private RelativeLayout mRlView;
     private static String APP_DIRECTORY = "MyPictureApp/";
     private static String MEDIA_DIRECTORY = APP_DIRECTORY + "PictureApp";
@@ -122,6 +124,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
     private JSONObject jsonObject;
     private SwitchCompat switchCancel;
     private SessionManager sessionManager;
+
 
     /**
      * The Flag for create/update
@@ -141,7 +144,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         edtphone = (BootstrapEditText) findViewById(R.id.input_layout_phone);
         edtdescrip = (BootstrapEditText) findViewById(R.id.input_layout_desc);
         email = (TextView) findViewById(R.id.input_layout_email);
-        mImg= (SmartImageView) findViewById(R.id.ImageTeams);
+        mImg = (BootstrapCircleThumbnail) findViewById(R.id.ImageTeams);
 
         mRlView = (RelativeLayout) findViewById(R.id.layout_main);
         cumplimiento =(RatingBar) findViewById(R.id.rtbCumplimiento);
@@ -161,18 +164,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         ArrayAdapter<CharSequence> adapterspinner = ArrayAdapter.createFromResource(this,R.array.city, android.R.layout.simple_spinner_dropdown_item);
         spncity.setAdapter(adapterspinner);
 
-        floatingActionButton  = (FloatingActionButton) findViewById(R.id.fabImage);
-        if(mayRequestStoragePermission())
-            floatingActionButton.setEnabled(true);
-        else
-            floatingActionButton.setEnabled(false);
 
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showOptions();
-            }
-        });
 
         Bundle bundle =getIntent().getExtras();
         if(bundle!=null){
@@ -186,7 +178,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
                 IdTeams = bundle.getString("IdTeams", "");
                 selectedImage =jsonObject.getString("ImageUrl");
-                mImg.setImageUrl(selectedImage);
+                new ImageLoader(mImg).execute(selectedImage);
                 spncity.setSelection(adapterspinner.getPosition(jsonObject.getString("city")));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -201,6 +193,12 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
             switchCancel.setVisibility(View.VISIBLE);
         }
 
+    }
+
+    public void ImageChange(View view){
+        if(mayRequestStoragePermission()){
+            showOptions();
+        }
     }
 
     @Override
