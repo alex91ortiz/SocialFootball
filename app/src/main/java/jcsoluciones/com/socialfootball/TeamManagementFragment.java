@@ -14,9 +14,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CacheManager;
@@ -26,8 +30,12 @@ import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.shephertz.app42.paas.sdk.android.storage.StorageService;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
+import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 
 /**
@@ -44,25 +52,16 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
      */
     private AsyncApp42ServiceApi asyncService;
     /**
-     * The progress dialog.
-     */
-    private ProgressDialog progressDialog;
-
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private ListView listView;
-    private Context context;
-    /**
-     *  adapter for teams management
-     */
-    private TeamMgtAdapter adapter;
-    /**
      * List of your Teams setting
      */
     private ArrayList<Storage.JSONDocument> listTeamJson = new ArrayList<Storage.JSONDocument>();
     /** The storage service. */
-    private StorageService storageService;
-    private Storage response;
+
     private SessionManager sessionManager;
+    private TextView name;
+    private TextView desc;
+    private BootstrapButton btnedit;
+    private BootstrapCircleThumbnail mImg;
     public TeamManagementFragment() {
         // Required empty public constructor
     }
@@ -79,43 +78,50 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
         asyncService = AsyncApp42ServiceApi.instance(getContext());
 
         View view = inflater.inflate(R.layout.fragment_teamsmanagement, container, false);
-        listView = (ListView)view.findViewById(R.id.listView);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        btnedit =(BootstrapButton) view.findViewById(R.id.button_event);
+        btnedit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+            public void onClick(View view) {
                 Intent intent = new Intent(getContext(), TeamsMgtActivity.class);
-                intent.putExtra("object",adapter.getItem(position).getJsonDoc());
-                intent.putExtra("IdTeams",adapter.getItem(position).getDocId());
+                intent.putExtra("object", sessionManager.getUserDetails().get(sessionManager.CONTENT));
+                intent.putExtra("IdTeams",sessionManager.getUserDetails().get(sessionManager.ID_CONTENT));
                 intent.putExtra("createOrupdate",false);
                 startActivity(intent);
             }
         });
 
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(true);
-                onRefresh();
-            }
-        });
+
+        name =(TextView) view.findViewById(R.id.layout_name);
+        desc =(TextView) view.findViewById(R.id.layout_desc);
+        mImg = (BootstrapCircleThumbnail) view.findViewById(R.id.ImageTeams);
+
         sessionManager = new SessionManager(getContext());
         fabEditTeamMgt = (FloatingActionButton) view.findViewById(R.id.fabEdit);
         fabEditTeamMgt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(!sessionManager.isLoggedIn()) {
+                if (!sessionManager.isLoggedIn()) {
                     Intent intent = new Intent(getContext(), SignInActivity.class);
                     startActivity(intent);
-                }else{
+                } else {
                     Intent intent = new Intent(getContext(), TeamsMgtActivity.class);
                     startActivity(intent);
                 }
             }
         });
+
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
+            name.setText(jsonObject.getString("name"));
+            desc.setText(jsonObject.getString("desc"));
+            String selectedImage =jsonObject.getString("ImageUrl");
+            new ImageLoader(mImg).execute(selectedImage);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         return view;
     }
@@ -127,7 +133,6 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
 
     @Override
     public void onRefresh() {
-        //asyncService.findAllDocs(Constants.App42DBName, "Teams", this);
         Query q1 = QueryBuilder.build("active",true, QueryBuilder.Operator.EQUALS);
         Query q2 = QueryBuilder.build("email",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), QueryBuilder.Operator.EQUALS);
         Query q3 = QueryBuilder.compoundOperator(q1, QueryBuilder.Operator.AND,q2);// Build query q1 for key1 equal to name and value1 equal to Nick
@@ -147,12 +152,7 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
 
     @Override
     public void onFindDocSuccess(Storage response) {
-        listTeamJson = response.getJsonDocList();
-        if(listTeamJson.size()>0) {
-            adapter = new TeamMgtAdapter(getActivity(), listTeamJson);
-            listView.setAdapter(adapter);
-        }
-        swipeRefreshLayout.setRefreshing(false);
+
     }
 
     @Override
@@ -167,7 +167,6 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
 
     @Override
     public void onFindDocFailed(App42Exception ex) {
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override

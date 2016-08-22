@@ -260,19 +260,28 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
     @Override
     public void onDocumentInserted(Storage response) {
+        ArrayList<Storage.JSONDocument> jsonDocList = response.getJsonDocList();
+        for(int i=0;i<jsonDocList.size();i++)
+        {
+            sessionManager.createContentSession(jsonDocList.get(i).getDocId(),jsonDocList.get(i).getJsonDoc());
+        }
 
-        asyncService.uploadImage( sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), selectedImage, UploadFileType.IMAGE,
-                edtname.getText().toString(), this);
-
-    }
-
-    @Override
-    public void onUpdateDocSuccess(Storage response) {
+        asyncService.uploadImage( sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), selectedImage, UploadFileType.IMAGE, edtname.getText().toString(), this);
         if(checkPlayServices()){
             Intent intents = new Intent(TeamsMgtActivity.this, RegistrationIntentService.class);
             intents.putExtra("DEVICE_ID", "s");
             intents.putExtra("DEVICE_NAME",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
             startService(intents);
+        }
+    }
+
+    @Override
+    public void onUpdateDocSuccess(Storage response) {
+
+        ArrayList<Storage.JSONDocument> jsonDocList = response.getJsonDocList();
+        for(int i=0;i<jsonDocList.size();i++)
+        {
+            sessionManager.createContentSession(jsonDocList.get(i).getDocId(),jsonDocList.get(i).getJsonDoc());
         }
         progressDialog.dismiss();
         finish();

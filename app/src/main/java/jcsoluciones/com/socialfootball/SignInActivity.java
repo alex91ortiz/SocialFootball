@@ -14,14 +14,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 
-import java.util.Arrays;
+
 
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 

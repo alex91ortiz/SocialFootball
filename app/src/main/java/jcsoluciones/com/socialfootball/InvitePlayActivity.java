@@ -21,6 +21,8 @@ import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 
@@ -46,10 +48,11 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
      */
     private TextView txvcity;
     private JSONObject jsonObject;
-    private JSONObject jsonObjectTeams;
+    private JSONObject jsonObjectinvite;
     private BootstrapCircleThumbnail mImg;
     private BootstrapButton Sendnvite;
     private  String IdTeams;
+    private  String IdInvite;
     private  String emailSend;
 
     /**
@@ -69,7 +72,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invite_play);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         asyncService = AsyncApp42ServiceApi.instance(this);
 
         mImg = (BootstrapCircleThumbnail) findViewById(R.id.ImageTeams);
@@ -86,25 +89,17 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
             try {
                 flagAccept = bundle.getBoolean("flagAccept", false);
                 jsonObject = new JSONObject(bundle.getString("object",""));
-                if(flagAccept) {
-                    jsonObjectTeams = new JSONObject(jsonObject.getString("Teams"));
-                    txvname.setText(jsonObjectTeams.getString("name"));
-                    txvphone.setText(jsonObjectTeams.getString("phone"));
-                    txvdescrip.setText(jsonObjectTeams.getString("desc"));
-                    txvcity.setText(jsonObjectTeams.getString("city"));
-                    txvemail.setText(jsonObjectTeams.getString("email"));
-                    IdTeams = bundle.getString("IdTeams", "");
-                    emailSend=jsonObject.getString("email");
-                    new ImageLoader(mImg).execute(jsonObjectTeams.getString("ImageUrl"));
-                }else{
+
                     txvname.setText(jsonObject.getString("name"));
                     txvphone.setText(jsonObject.getString("phone"));
                     txvdescrip.setText(jsonObject.getString("desc"));
                     txvcity.setText(jsonObject.getString("city"));
                     txvemail.setText(jsonObject.getString("email"));
+                    IdInvite = bundle.getString("IdInvite", "");
                     IdTeams = bundle.getString("IdTeams", "");
+                    jsonObjectinvite = new JSONObject(bundle.getString("object2",""));
                     new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
-                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -118,9 +113,8 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
         progressDialog.setCancelable(true);
         if(flagAccept){
             try {
-                jsonObjectTeams.put("Accept_invite", true);
-                jsonObject.put("Teams", jsonObjectTeams);
-                asyncService.updateDocById(Constants.App42DBName, "Invites", IdTeams, jsonObject, this);
+                jsonObjectinvite.put("Accept_invite", true);
+                asyncService.updateDocById(Constants.App42DBName, "Invites", IdInvite, jsonObjectinvite, this);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -128,9 +122,9 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
             JSONObject jsonObjectInvite = new JSONObject();
 
             try {
-                jsonObjectInvite.put("email", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
-                jsonObject.put("Accept_invite", false);
-                jsonObjectInvite.put("Teams", jsonObject);
+                jsonObjectInvite.put("id_Teams_invite", sessionManager.getUserDetails().get(sessionManager.ID_CONTENT));
+                jsonObjectInvite.put("Accept_invite", false);
+                jsonObjectInvite.put("id_Teams_accept", IdTeams);
                 asyncService.insertJSONDoc(Constants.App42DBName, "Invites", jsonObjectInvite, this);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -200,7 +194,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
 
     @Override
     public void onUpdateDocSuccess(Storage response) {
-        asyncService.onSendPushMessageUser(emailSend, "Aceptaron tu invitacion",this);
+        asyncService.onSendPushMessageUser(txvemail.getText().toString(), "Aceptaron tu invitacion",this);
 
     }
 
