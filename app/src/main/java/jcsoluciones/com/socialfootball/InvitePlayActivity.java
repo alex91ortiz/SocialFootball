@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,16 +18,26 @@ import com.loopj.android.image.SmartImageView;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.push.PushNotification;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
+import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 
-public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42ServiceApi.App42PushNotificationServiceListener,AsyncApp42ServiceApi.App42StorageServiceListener {
+public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42ServiceApi.App42PushNotificationServiceListener,
+        AsyncApp42ServiceApi.App42StorageServiceListener,TimePickerDialog.OnTimeSetListener,DatePickerDialog.OnDateSetListener {
     /**
      * The name
      */
@@ -51,9 +62,12 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
     private JSONObject jsonObjectinvite;
     private BootstrapCircleThumbnail mImg;
     private BootstrapButton Sendnvite;
+    private BootstrapButton mangerDate;
     private  String IdTeams;
     private  String IdInvite;
-    private  String emailSend;
+    private  int dayOfMonth;
+    private  int monthOfYear;
+    private  int year;
 
     /**
      * The async service.
@@ -72,7 +86,9 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invite_play);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         asyncService = AsyncApp42ServiceApi.instance(this);
 
         mImg = (BootstrapCircleThumbnail) findViewById(R.id.ImageTeams);
@@ -82,6 +98,21 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
         txvcity = (TextView) findViewById(R.id.input_layout_city);
         txvemail = (TextView) findViewById(R.id.input_layout_email);
         Sendnvite = (BootstrapButton) findViewById(R.id.button_event);
+        mangerDate = (BootstrapButton) findViewById(R.id.button_date);
+
+        mangerDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar now = Calendar.getInstance();
+                DatePickerDialog dpd = DatePickerDialog.newInstance(
+                        InvitePlayActivity.this,
+                        now.get(Calendar.YEAR),
+                        now.get(Calendar.MONTH),
+                        now.get(Calendar.DAY_OF_MONTH)
+                );
+                dpd.show(getFragmentManager(), "Datepickerdialog");
+            }
+        });
 
         sessionManager = new SessionManager(this);
         Bundle bundle =getIntent().getExtras();
@@ -98,6 +129,13 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
                     IdInvite = bundle.getString("IdInvite", "");
                     IdTeams = bundle.getString("IdTeams", "");
                     jsonObjectinvite = new JSONObject(bundle.getString("object2",""));
+                    dayOfMonth = jsonObjectinvite.getInt("date_dayOfMonth");
+                    monthOfYear = jsonObjectinvite.getInt("date_monthOfYear");
+                    year = jsonObjectinvite.getInt("date_year");
+                    SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
+                    Calendar dat = Calendar.getInstance();
+                    dat.set(year,monthOfYear,dayOfMonth);
+                    mangerDate.setText( format.format(dat.getTime()));
                     new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
 
             } catch (JSONException e) {
@@ -124,6 +162,9 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
             try {
                 jsonObjectInvite.put("id_Teams_invite", sessionManager.getUserDetails().get(sessionManager.ID_CONTENT));
                 jsonObjectInvite.put("Accept_invite", false);
+                jsonObjectInvite.put("date_dayOfMonth", dayOfMonth);
+                jsonObjectInvite.put("date_monthOfYear", monthOfYear);
+                jsonObjectInvite.put("date_year", year);
                 jsonObjectInvite.put("id_Teams_accept", IdTeams);
                 asyncService.insertJSONDoc(Constants.App42DBName, "Invites", jsonObjectInvite, this);
             } catch (JSONException e) {
@@ -243,5 +284,23 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
             }
         });
         alertbox.show();
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        if(!flagAccept) {
+            this.dayOfMonth = dayOfMonth;
+            this.monthOfYear = monthOfYear;
+            this.year = year;
+            SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
+            Calendar dat = Calendar.getInstance();
+            dat.set(year, monthOfYear, dayOfMonth);
+            mangerDate.setText(format.format(dat.getTime()));
+        }
+    }
+
+    @Override
+    public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute, int second) {
+
     }
 }
