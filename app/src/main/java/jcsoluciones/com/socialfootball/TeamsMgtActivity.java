@@ -243,10 +243,11 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
                     jsonObject.put("phone", srtphone);
                     jsonObject.put("city",spncity.getSelectedItem());
                     jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");
-                    if(resultImageOnSelected)
+                    asyncService.updateDocById(Constants.App42DBName, "Teams", IdTeams, jsonObject, this);
+                    /*if(resultImageOnSelected)
                         asyncService.deleteImage(edtname.getText().toString().replaceAll("^\\s*", ""), this);
                     else
-                        asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getText().toString(), jsonObject, this);
+                        */
 
                 }
 
@@ -268,13 +269,9 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
             sessionManager.createContentSession(jsonDocList.get(i).getDocId(),jsonDocList.get(i).getJsonDoc());
         }
 
-        asyncService.uploadImage( sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), selectedImage, UploadFileType.IMAGE, edtname.getText().toString(), this);
-        if(checkPlayServices()){
-            Intent intents = new Intent(TeamsMgtActivity.this, RegistrationIntentService.class);
-            intents.putExtra("DEVICE_ID", "s");
-            intents.putExtra("DEVICE_NAME",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
-            startService(intents);
-        }
+        asyncService.uploadImage( sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL)+"_profile", selectedImage, UploadFileType.IMAGE, edtname.getText().toString(), this);
+
+
     }
 
     @Override
@@ -285,14 +282,26 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         {
             sessionManager.createContentSession(jsonDocList.get(i).getDocId(),jsonDocList.get(i).getJsonDoc());
         }
-        progressDialog.dismiss();
-        finish();
+
+        if(checkPlayServices()){
+            Intent intents = new Intent(TeamsMgtActivity.this, RegistrationIntentService.class);
+            intents.putExtra("DEVICE_ID", "s");
+            intents.putExtra("DEVICE_NAME",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
+            startService(intents);
+        }
+
+        if(resultImageOnSelected) {
+            asyncService.deleteImage(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL)+ "_profile", this);
+        }else{
+            progressDialog.dismiss();
+            finish();
+        }
+
     }
 
     @Override
     public void onFindDocSuccess(Storage response) {
-        progressDialog.dismiss();
-        finish();
+
     }
 
     @Override
@@ -332,14 +341,16 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         ArrayList<Upload.File> fileList = upload.getFileList();
         if (fileList.size() > 0) {
             try {
+                resultImageOnSelected=false;
                 jsonObject.put("ImageUrl", fileList.get(0).getUrl());
                 asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getText().toString(), jsonObject, this);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        progressDialog.dismiss();
-        finish();
+
+
+
     }
 
 
@@ -351,7 +362,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
     @Override
     public void onGetImageSuccess(Upload response) {
-        finish();
+        //finish();
     }
 
     @Override
@@ -361,8 +372,9 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
 
     @Override
     public void onDeleteImageSuccess() {
-        asyncService.uploadImage(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), selectedImage, UploadFileType.IMAGE,
+        asyncService.uploadImage(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL) + "_profile", selectedImage, UploadFileType.IMAGE,
                 edtname.getText().toString(), this);
+
     }
 
     @Override

@@ -121,22 +121,24 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
                 flagAccept = bundle.getBoolean("flagAccept", false);
                 jsonObject = new JSONObject(bundle.getString("object",""));
 
-                    txvname.setText(jsonObject.getString("name"));
-                    txvphone.setText(jsonObject.getString("phone"));
-                    txvdescrip.setText(jsonObject.getString("desc"));
-                    txvcity.setText(jsonObject.getString("city"));
-                    txvemail.setText(jsonObject.getString("email"));
-                    IdInvite = bundle.getString("IdInvite", "");
-                    IdTeams = bundle.getString("IdTeams", "");
-                    jsonObjectinvite = new JSONObject(bundle.getString("object2",""));
-                    dayOfMonth = jsonObjectinvite.getInt("date_dayOfMonth");
-                    monthOfYear = jsonObjectinvite.getInt("date_monthOfYear");
-                    year = jsonObjectinvite.getInt("date_year");
-                    SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
-                    Calendar dat = Calendar.getInstance();
-                    dat.set(year,monthOfYear,dayOfMonth);
-                    mangerDate.setText( format.format(dat.getTime()));
-                    new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
+                txvname.setText(jsonObject.getString("name"));
+                txvphone.setText(jsonObject.getString("phone"));
+                txvdescrip.setText(jsonObject.getString("desc"));
+                txvcity.setText(jsonObject.getString("city"));
+                txvemail.setText(jsonObject.getString("email"));
+                IdInvite = bundle.getString("IdInvite", "");
+                IdTeams = bundle.getString("IdTeams", "");
+
+
+                jsonObjectinvite = new JSONObject(bundle.getString("object2",""));
+                dayOfMonth = jsonObjectinvite.getInt("date_dayOfMonth");
+                monthOfYear = jsonObjectinvite.getInt("date_monthOfYear");
+                year = jsonObjectinvite.getInt("date_year");
+                SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
+                Calendar dat = Calendar.getInstance();
+                dat.set(year,monthOfYear,dayOfMonth);
+                mangerDate.setText( format.format(dat.getTime()));
+                new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -160,12 +162,12 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
             JSONObject jsonObjectInvite = new JSONObject();
 
             try {
-                jsonObjectInvite.put("id_Teams_invite", sessionManager.getUserDetails().get(sessionManager.ID_CONTENT));
+                jsonObjectInvite.put("Teams_invite", sessionManager.getUserDetails().get(sessionManager.CONTENT));
                 jsonObjectInvite.put("Accept_invite", false);
                 jsonObjectInvite.put("date_dayOfMonth", dayOfMonth);
                 jsonObjectInvite.put("date_monthOfYear", monthOfYear);
                 jsonObjectInvite.put("date_year", year);
-                jsonObjectInvite.put("id_Teams_accept", IdTeams);
+                jsonObjectInvite.put("Teams_accept", jsonObject);
                 asyncService.insertJSONDoc(Constants.App42DBName, "Invites", jsonObjectInvite, this);
             } catch (JSONException e) {
                 e.printStackTrace();

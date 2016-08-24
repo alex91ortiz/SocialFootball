@@ -113,11 +113,18 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
 
         JSONObject jsonObject = null;
         try {
-            jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
-            name.setText(jsonObject.getString("name"));
-            desc.setText(jsonObject.getString("desc"));
-            String selectedImage =jsonObject.getString("ImageUrl");
-            new ImageLoader(mImg).execute(selectedImage);
+            if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()){
+
+                onRefresh();
+            }else{
+
+                jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
+                name.setText(jsonObject.getString("name"));
+                desc.setText(jsonObject.getString("desc"));
+                String selectedImage =jsonObject.getString("ImageUrl");
+                new ImageLoader(mImg).execute(selectedImage);
+                fabEditTeamMgt.setVisibility(View.INVISIBLE);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -153,6 +160,21 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
     @Override
     public void onFindDocSuccess(Storage response) {
 
+        final ArrayList<Storage.JSONDocument> jsonDocList = response.getJsonDocList();
+        if(jsonDocList.size()>0) {
+
+            fabEditTeamMgt.setVisibility(View.INVISIBLE);
+            try {
+                JSONObject jsonObject = new JSONObject(jsonDocList.get(0).getJsonDoc());
+                name.setText(jsonObject.getString("name"));
+                desc.setText(jsonObject.getString("desc"));
+                String selectedImage = jsonObject.getString("ImageUrl");
+                new ImageLoader(mImg).execute(selectedImage);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sessionManager.createContentSession(jsonDocList.get(0).getDocId(),jsonDocList.get(0).getJsonDoc());
+        }
     }
 
     @Override

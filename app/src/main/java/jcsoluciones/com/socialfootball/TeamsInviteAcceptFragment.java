@@ -118,14 +118,10 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
 
         @Override
         public void onRefresh() {
-            Query q1 = QueryBuilder.build("Accept_invite", true, QueryBuilder.Operator.EQUALS);
-            Query q2 = QueryBuilder.build("id_Teams_invite", sessionManager.getUserDetails().get(sessionManager.ID_CONTENT), QueryBuilder.Operator.EQUALS);
-            Query q3 = QueryBuilder.compoundOperator(q1, QueryBuilder.Operator.AND, q2);
-
-            Query q5 = QueryBuilder.build("id_Teams_accept", sessionManager.getUserDetails().get(sessionManager.ID_CONTENT), QueryBuilder.Operator.EQUALS);
-            //Query q6 = QueryBuilder.compoundOperator(q4, QueryBuilder.Operator.AND, q5);
-            Query q7 = QueryBuilder.compoundOperator(q3,QueryBuilder.Operator.OR,q5);
-            asyncService.findDocByQuery(Constants.App42DBName,"Invites",q7,this);
+            Query q1 = QueryBuilder.build("Teams_accept.email", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), QueryBuilder.Operator.EQUALS);
+            Query q2 = QueryBuilder.build("Teams_invite.email", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), QueryBuilder.Operator.EQUALS);
+            Query q3 = QueryBuilder.compoundOperator(q1, QueryBuilder.Operator.OR, q2);
+            asyncService.findDocByQuery(Constants.App42DBName,"Invites",q3,this);
         }
 
         /**

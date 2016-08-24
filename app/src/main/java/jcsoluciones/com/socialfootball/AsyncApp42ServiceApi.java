@@ -97,6 +97,7 @@ public class AsyncApp42ServiceApi {
 	public  static String  getLoggedInUser(){
 		return App42API.getLoggedInUser();
 	}
+
 	/**
 	 * Creates the user.
 	 *
@@ -691,7 +692,7 @@ public class AsyncApp42ServiceApi {
 			@Override
 			public void run() {
 				try {
-					storageService.deleteDocumentById(dbName, collectionName,id);
+					storageService.deleteDocumentById(dbName, collectionName, id);
 					callerThreadHandler.post(new Runnable() {
 						@Override
 						public void run() {
@@ -704,6 +705,43 @@ public class AsyncApp42ServiceApi {
 						public void run() {
 							if (callBack != null) {
 								callBack.onDeleteDocFailed(ex);
+							}
+						}
+					});
+				}
+			}
+		}.start();
+	}
+	/**
+	 * Delete doc by doc Key and Value.
+	 *
+	 * @param dbName the db name
+	 * @param collectionName the collection name
+	 * @param query the query
+	 * @param value the value
+	 * @param callBack the call back
+	 */
+	public void updateDocByQuery(final String dbName,
+									final String collectionName, final Query query,
+									final String value, final App42StorageServiceListener callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					final Storage response = storageService.updateDocumentByQuery(dbName, collectionName,query, value);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onUpdateDocSuccess(response);
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onUpdateDocFailed(ex);
 							}
 						}
 					});
@@ -1013,6 +1051,47 @@ public class AsyncApp42ServiceApi {
 						public void run() {
 							if (callBack != null) {
 								callBack.onDeleteImageFailed(ex);
+							}
+						}
+					});
+				}
+			}
+		}.start();
+	}
+
+
+	/**
+	 * Upload Update image.
+	 *
+	 * @param name the name
+	 * @param filePath the file path
+	 * @param fileType the file type
+	 * @param description the description
+	 * @param callBack the call back
+	 */
+	/*
+	 * This function Uploads File On App42 Cloud.
+	 */
+	public void uploadUpdateImage(final String name,
+							final String filePath, final UploadFileType fileType, final String description, final App42UploadServiceListener callBack) {
+		final Handler callerThreadHandler = new Handler();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					final Upload response = uploadService.uploadFile(name,filePath,fileType,description);
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							callBack.onUploadImageSuccess(response);
+						}
+					});
+				} catch (final App42Exception ex) {
+					callerThreadHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							if (callBack != null) {
+								callBack.onUploadImageFailed(ex);
 							}
 						}
 					});
