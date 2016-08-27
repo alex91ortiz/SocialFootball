@@ -39,15 +39,14 @@ public class Constants {
 	 
 	 /** The Constant IntentUserName. */
  	static final String IntentUserName = "intentUserName";
-	 
  	/** The Constant App42AndroidPref. */
  	static final String App42AndroidPref="App42AndroidPreferences";
-	 
  	/** The Constant UserName. */
  	static final String UserName = "TestUser";
-
 	/** Then Google Project No */
 	static  final String GoogleProjectNo="1071669197043";
+	/**  OpenShift */
+	static  final String HostServer="http://socialsoccer-solucionesjc.rhcloud.com/";
 	/** Then Google Client Id*/
 	static  final String IdClientGoogle="1071669197043-87276jki2t3ot7bbr0cggdk1ulh7vdlv.apps.googleusercontent.com";
 }

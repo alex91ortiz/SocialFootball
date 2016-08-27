@@ -1,25 +1,17 @@
 package jcsoluciones.com.socialfootball;
 
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
@@ -31,18 +23,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.shephertz.app42.paas.sdk.android.App42API;
-import com.shephertz.app42.paas.sdk.android.App42CallBack;
+
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.storage.Query;
 import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import java.util.ArrayList;
 import java.util.List;
-import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
+
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 
 public class MainActivity extends AppCompatActivity implements
@@ -87,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
         asyncService = AsyncApp42ServiceApi.instance(this);
         sessionManager  = new SessionManager(this);
-        asyncService.setLoggedInUser(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
+        sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -114,16 +102,6 @@ public class MainActivity extends AppCompatActivity implements
 
             }
         });
-        App42API.buildLogService().setEvent("Message", "Opened", new App42CallBack() {
-            public void onSuccess(Object arg0) {
-                // TODO Auto-generated method stub
-                Log.i("MainActivity-BroadcastReceiver", "Message Recieved " + " : " + arg0.toString());
-            }
-
-            public void onException(Exception arg0) {
-                // TODO Auto-generated method stub
-            }
-        });
 
         registerReceiver();
 
@@ -136,8 +114,6 @@ public class MainActivity extends AppCompatActivity implements
         }
 
     }
-
-
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -170,12 +146,7 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onQueryTextChange(String newText) {
         searchList.setVisibility(View.VISIBLE);
         viewPager.setVisibility(View.INVISIBLE);
-        Query q1 = QueryBuilder.build("active", true, QueryBuilder.Operator.EQUALS);
-        Query q2 = QueryBuilder.build("name",newText , QueryBuilder.Operator.LIKE);
-        Query q3 = QueryBuilder.compoundOperator(q1, QueryBuilder.Operator.AND, q2);
-        Query q4 = QueryBuilder.build("city",newText, QueryBuilder.Operator.EQUALS);
-        Query q5 = QueryBuilder.compoundOperator(q3, QueryBuilder.Operator.OR, q4);
-        asyncService.findDocByQuery(Constants.App42DBName, "Teams", q5, this);
+
         return false;
     }
 

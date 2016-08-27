@@ -42,18 +42,11 @@ import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.loopj.android.image.SmartImageView;
-import com.shephertz.app42.paas.sdk.android.App42Exception;
-import com.shephertz.app42.paas.sdk.android.storage.Storage;
-import com.shephertz.app42.paas.sdk.android.upload.Upload;
-import com.shephertz.app42.paas.sdk.android.upload.UploadFileType;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-
-import java.util.ArrayList;
 
 import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
 import jcsoluciones.com.socialfootball.utils.ImageLoader;
@@ -64,16 +57,7 @@ import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 
-public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42ServiceApi.App42StorageServiceListener , AsyncApp42ServiceApi.App42UploadServiceListener {
-    /**
-     * The async service.
-     */
-    private AsyncApp42ServiceApi asyncService;
-    /**
-     * The progress dialog.
-     */
-    private ProgressDialog progressDialog;
-
+public class TeamsMgtActivity extends AppCompatActivity {
     /**
      * The name
      */
@@ -125,8 +109,6 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
     private JSONObject jsonObject;
     private SwitchCompat switchCancel;
     private SessionManager sessionManager;
-
-
     /**
      * The Flag for create/update
      */
@@ -138,19 +120,13 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         setContentView(R.layout.activity_teams_mgt);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        asyncService = AsyncApp42ServiceApi.instance(this);
-
-
         edtname = (BootstrapEditText) findViewById(R.id.input_layout_name);
         edtphone = (BootstrapEditText) findViewById(R.id.input_layout_phone);
         edtdescrip = (BootstrapEditText) findViewById(R.id.input_layout_desc);
         email = (TextView) findViewById(R.id.input_layout_email);
         mImg = (BootstrapCircleThumbnail) findViewById(R.id.ImageTeams);
-
         mRlView = (RelativeLayout) findViewById(R.id.layout_main);
         cumplimiento =(RatingBar) findViewById(R.id.rtbCumplimiento);
-
         sessionManager = new SessionManager(this);
         switchCancel = (SwitchCompat) findViewById(R.id.switchCancel);
         switchCancel.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -165,9 +141,6 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         spncity = (Spinner) findViewById(R.id.input_layout_city);
         ArrayAdapter<CharSequence> adapterspinner = ArrayAdapter.createFromResource(this,R.array.city, android.R.layout.simple_spinner_dropdown_item);
         spncity.setAdapter(adapterspinner);
-
-
-
         Bundle bundle =getIntent().getExtras();
         if(bundle!=null){
             try {
@@ -194,7 +167,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
             cumplimiento.setVisibility(View.VISIBLE);
             switchCancel.setVisibility(View.VISIBLE);
         }
-
+        //sessionManager.createContentSession(jsonDocList.get(i).getDocId(),jsonDocList.get(i).getJsonDoc());
     }
 
     public void ImageChange(View view){
@@ -218,168 +191,33 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
             String srtphone = edtphone.getText().toString();
             String srtdesc  = edtdescrip.getText().toString();
 
-
-            try {
-
-                progressDialog = ProgressDialog.show(this, "", "Saving..");
-                progressDialog.setCancelable(true);
-                if(createOrupdate) {
-                    if(selectedImage!=null) {
-                        jsonObject = new JSONObject();
-                        jsonObject.put("name",srtname);
-                        jsonObject.put("countComply",0);
-                        jsonObject.put("complyValue",0);
-                        jsonObject.put("phone",srtphone);
-                        jsonObject.put("city",spncity.getSelectedItem());
-                        jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");
-                        jsonObject.put("active",true);
-                        jsonObject.put("email",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
-                        asyncService.insertJSONDoc(Constants.App42DBName, "Teams", jsonObject, this);
-                    }else{
-                        createAlertDialog("Input Picture");
+            if(createOrupdate) {
+                if(selectedImage!=null) {
+                    if(checkPlayServices()){
+                        Intent intents = new Intent(TeamsMgtActivity.this, RegistrationIntentService.class);
+                        intents.putExtra("TEAM_NAME", srtname);
+                        intents.putExtra("TEAM_PHOTO", srtphone);
+                        intents.putExtra("TEAM_CITY", spncity.getSelectedItem().toString());
+                        intents.putExtra("TEAM_DESC", (srtdesc.length() > 0) ? srtdesc : " ");
+                        intents.putExtra("TEAM_EMAIL", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
+                        intents.putExtra("HOST",Constants.HostServer);
+                        startService(intents);
+                        finish();
                     }
                 }else{
-                    jsonObject.put("name", srtname);
-                    jsonObject.put("phone", srtphone);
-                    jsonObject.put("city",spncity.getSelectedItem());
-                    jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");
-                    asyncService.updateDocById(Constants.App42DBName, "Teams", IdTeams, jsonObject, this);
-                    /*if(resultImageOnSelected)
-                        asyncService.deleteImage(edtname.getText().toString().replaceAll("^\\s*", ""), this);
-                    else
-                        */
-
+                    createAlertDialog("Input Picture");
                 }
-
-
-            } catch (JSONException e) {
-                createAlertDialog("Exception Occurred : " + e.getMessage());
+            }else{
+                /*jsonObject.put("name", srtname);
+                jsonObject.put("phone", srtphone);
+                jsonObject.put("city", spncity.getSelectedItem());
+                jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");*/
             }
+
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onDocumentInserted(Storage response) {
-        ArrayList<Storage.JSONDocument> jsonDocList = response.getJsonDocList();
-        for(int i=0;i<jsonDocList.size();i++)
-        {
-            sessionManager.createContentSession(jsonDocList.get(i).getDocId(),jsonDocList.get(i).getJsonDoc());
-        }
-
-        asyncService.uploadImage( sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL)+"_profile", selectedImage, UploadFileType.IMAGE, edtname.getText().toString(), this);
-
-
-    }
-
-    @Override
-    public void onUpdateDocSuccess(Storage response) {
-
-        ArrayList<Storage.JSONDocument> jsonDocList = response.getJsonDocList();
-        for(int i=0;i<jsonDocList.size();i++)
-        {
-            sessionManager.createContentSession(jsonDocList.get(i).getDocId(),jsonDocList.get(i).getJsonDoc());
-        }
-
-        if(checkPlayServices()){
-            Intent intents = new Intent(TeamsMgtActivity.this, RegistrationIntentService.class);
-            intents.putExtra("DEVICE_ID", "s");
-            intents.putExtra("DEVICE_NAME",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
-            startService(intents);
-        }
-
-        if(resultImageOnSelected) {
-            asyncService.deleteImage(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL)+ "_profile", this);
-        }else{
-            progressDialog.dismiss();
-            finish();
-        }
-
-    }
-
-    @Override
-    public void onFindDocSuccess(Storage response) {
-
-    }
-
-    @Override
-    public void onDeleteDocSuccess() {
-
-    }
-
-    @Override
-    public void onInsertionFailed(App42Exception ex) {
-        progressDialog.dismiss();
-        createAlertDialog("Error: " + ex.getMessage());
-    }
-
-    @Override
-    public void onFindDocFailed(App42Exception ex) {
-        progressDialog.dismiss();
-        createAlertDialog("Error: " + ex.getMessage());
-    }
-
-    @Override
-    public void onUpdateDocFailed(App42Exception ex) {
-
-        progressDialog.dismiss();
-        createAlertDialog("Error: " + ex.getMessage());
-    }
-
-    @Override
-    public void onDeleteDocFailed(App42Exception ex) {
-        progressDialog.dismiss();
-        createAlertDialog("Error: " + ex.getMessage());
-    }
-
-    @Override
-    public void onUploadImageSuccess(Upload response) {
-
-        Upload upload = (Upload) response;
-        ArrayList<Upload.File> fileList = upload.getFileList();
-        if (fileList.size() > 0) {
-            try {
-                resultImageOnSelected=false;
-                jsonObject.put("ImageUrl", fileList.get(0).getUrl());
-                asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "name", edtname.getText().toString(), jsonObject, this);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
-    }
-
-
-
-    @Override
-    public void onUploadImageFailed(App42Exception ex) {
-        createAlertDialog("Error: " + ex.getMessage());
-    }
-
-    @Override
-    public void onGetImageSuccess(Upload response) {
-        //finish();
-    }
-
-    @Override
-    public void onGetImageFailed(App42Exception ex) {
-        createAlertDialog("Error: " + ex.getMessage());
-    }
-
-    @Override
-    public void onDeleteImageSuccess() {
-        asyncService.uploadImage(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL) + "_profile", selectedImage, UploadFileType.IMAGE,
-                edtname.getText().toString(), this);
-
-    }
-
-    @Override
-    public void onDeleteImageFailed(App42Exception ex) {
-        createAlertDialog("Error: " + ex.getMessage());
     }
 
     /**
@@ -432,7 +270,7 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                deleteTeam();
+
             }
         });
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -444,18 +282,6 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         });
 
         builder.show();
-    }
-
-    private void deleteTeam(){
-        try {
-            progressDialog = ProgressDialog.show(this, "", "Deleting..");
-            progressDialog.setCancelable(true);
-            jsonObject.put("active",false);
-            asyncService.updateDocByKeyValue(Constants.App42DBName, "Teams", "email", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), jsonObject, this);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
     }
 
     private void showOptions() {
@@ -607,5 +433,4 @@ public class TeamsMgtActivity extends AppCompatActivity implements AsyncApp42Ser
         }
         return true;
     }
-
 }

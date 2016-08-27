@@ -5,32 +5,45 @@ package jcsoluciones.com.socialfootball.plugin;
  */
 
 import android.app.IntentService;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
-import com.shephertz.app42.paas.sdk.android.App42API;
-import com.shephertz.app42.paas.sdk.android.App42CallBack;
-import com.shephertz.app42.paas.sdk.android.App42Response;
+
 
 
 import java.io.IOException;
 
+import jcsoluciones.com.socialfootball.MainActivity;
 import jcsoluciones.com.socialfootball.R;
+import jcsoluciones.com.socialfootball.RequestInterface;
+import jcsoluciones.com.socialfootball.models.RequestTeamBody;
+import jcsoluciones.com.socialfootball.models.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class RegistrationIntentService extends IntentService{
     private static final int PlayServiceResolutionRequest = 9000;
+    /**
+     * The progress dialog.
+     */
 
     private static final String TAG = "RegIntentService";
     private static final String[] TOPICS = {"global"};
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
+    private  String HOST;
     public RegistrationIntentService() {
         super(TAG);
     }
@@ -46,8 +59,12 @@ public class RegistrationIntentService extends IntentService{
             // R.string.gcm_defaultSenderId (the Sender ID) is typically derived from google-services.json.
             // See https://developers.google.com/cloud-messaging/android/start for details on this file.
             // [START get_token]
-            String deviceId = intent.getStringExtra("DEVICE_ID");
-            String deviceName = intent.getStringExtra("DEVICE_NAME");
+            String name = intent.getStringExtra("TEAM_NAME");
+            String photo = intent.getStringExtra("TEAM_PHOTO");
+            String city = intent.getStringExtra("TEAM_CITY");
+            String desc = intent.getStringExtra("TEAM_DESC");
+            String email = intent.getStringExtra("TEAM_EMAIL");
+            HOST =intent.getStringExtra("HOST");
             InstanceID instanceID = InstanceID.getInstance(this);
             String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
@@ -60,7 +77,7 @@ public class RegistrationIntentService extends IntentService{
             // Subscribe to topic channels
             subscribeTopics(token);
             //if(!sharedPreferences.getBoolean(SENT_TOKEN_TO_SERVER,false))
-                registerDeviceProcess(deviceName,deviceId,token);
+            registerTeamProcess(name,photo,city,desc,email,token);
             // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,
             // otherwise your server should have already received the token.
@@ -104,17 +121,40 @@ public class RegistrationIntentService extends IntentService{
     }
     // [END subscribe_topics]
 
-    private void registerDeviceProcess(String deviceName, String deviceId, String registrationId){
-        App42API.buildPushNotificationService().storeDeviceToken(deviceName, registrationId, new App42CallBack() {
+    private void registerTeamProcess(String name, String phone, String city, String desc,String email,String registrationId){
+        RequestTeamBody requestBody = new RequestTeamBody();
+        requestBody.setName(name);
+        requestBody.setPhone(phone);
+        requestBody.setCity(city);
+        requestBody.setDesc(desc);
+        requestBody.setEmail(email);
+        requestBody.setRegistrationId(registrationId);
+
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HOST)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RequestInterface request = retrofit.create(RequestInterface.class);
+        Call<ResponseBody> call = request.registerTeam(requestBody);
+        call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onSuccess(Object arg0) {
-                App42Response response=(App42Response) arg0;
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                ResponseBody responseBody = response.body();
+                Intent intent = new Intent(MainActivity.REGISTRATION_PROCESS);
+                intent.putExtra("result", responseBody.getResult());
+                intent.putExtra("message", responseBody.getMessage());
+                LocalBroadcastManager.getInstance(RegistrationIntentService.this).sendBroadcast(intent);
+
+                Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
-            public void onException(Exception arg0) {
-                // TODO Auto-generated method stub
-                Log.i("error", arg0.getMessage());
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

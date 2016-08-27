@@ -24,14 +24,12 @@ import com.shephertz.app42.paas.sdk.android.upload.UploadFileType;
 import com.shephertz.app42.paas.sdk.android.upload.UploadService;
 import com.shephertz.app42.paas.sdk.android.user.User;
 import com.shephertz.app42.paas.sdk.android.user.UserService;
-import com.shephertz.app42.paas.sdk.android.util.Base64;
 
 import org.json.JSONObject;
 
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 
 /**
