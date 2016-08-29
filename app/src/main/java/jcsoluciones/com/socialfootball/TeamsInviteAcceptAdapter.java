@@ -11,15 +11,16 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
-import com.beardedhen.androidbootstrap.api.attributes.BootstrapBrand;
 import com.beardedhen.androidbootstrap.api.defaults.DefaultBootstrapBrand;
 import com.beardedhen.androidbootstrap.font.FontAwesome;
-import com.shephertz.app42.paas.sdk.android.App42Exception;
-import com.shephertz.app42.paas.sdk.android.storage.Storage;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.ArrayList;
 
+import java.util.List;
+
+import jcsoluciones.com.socialfootball.models.RequestInviteBody;
 import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 
@@ -30,32 +31,38 @@ public class TeamsInviteAcceptAdapter extends BaseAdapter {
 
     private Activity activity;
     private LayoutInflater inflater;
-    private ArrayList<Storage.JSONDocument> jsonList;
+    private JSONArray inviteBody;
     private BootstrapCircleThumbnail mImg;
     private TextView title;
     private TextView message;
     private BootstrapButton makeInvite;
-    private JSONObject InvitejsonObject;
-    private String IdInvite;
+
     private SessionManager sessionManager;
 
 
 
     private int position;
 
-    public TeamsInviteAcceptAdapter(Activity activity, ArrayList<Storage.JSONDocument> jsonList){
-        this.jsonList = jsonList;
+    public TeamsInviteAcceptAdapter(Activity activity, JSONArray jsonList){
+        this.inviteBody = jsonList;
         this.activity = activity;
     }
 
     @Override
     public int getCount() {
-        return jsonList.size();
+        return inviteBody.length();
     }
 
     @Override
-    public Storage.JSONDocument getItem(int position) {
-        return jsonList.get(position);
+    public Object getItem(int position) {
+
+        try {
+            return inviteBody.get(position);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     @Override
@@ -76,18 +83,15 @@ public class TeamsInviteAcceptAdapter extends BaseAdapter {
         mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
         makeInvite = (BootstrapButton) convertView.findViewById(R.id.button_invite);
         try {
-            final JSONObject jsonObject = new JSONObject(jsonList.get(position).getJsonDoc());
-            final JSONObject jsonObjectteamsacept = new JSONObject(jsonObject.getString("Teams_accept"));
-            final JSONObject jsonObjectteamsinvite = new JSONObject(jsonObject.getString("Teams_invite"));
-            if(jsonObjectteamsacept.getString("email").equals(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL))){
-                if(mImg!=null) {
-                    new ImageLoader(mImg).execute(jsonObjectteamsinvite.getString("ImageUrl"));
-                }
-                title.setText(jsonObjectteamsinvite.getString("name"));
-                message.setText(jsonObjectteamsinvite.getString("desc"));
+            JSONObject jsonInvites = inviteBody.getJSONObject(position);
+            JSONObject jsonCreate = new JSONObject(jsonInvites.getString("create"));
+            JSONObject jsonFriends = new JSONObject(jsonInvites.getString("friends"));
+            if(jsonCreate.getString("email").equals(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL))){
 
-                //Accept_invite
-                if(jsonObject.getBoolean("Accept_invite")) {
+                title.setText(jsonFriends.getString("name"));
+                message.setText(jsonFriends.getString("desc"));
+
+                if(jsonInvites.getBoolean("Acceptinvite")) {
                     makeInvite.setShowOutline(false);
                     makeInvite.setBootstrapBrand(DefaultBootstrapBrand.SUCCESS);
                     makeInvite.setFontAwesomeIcon(FontAwesome.FA_CALENDAR);
@@ -97,13 +101,12 @@ public class TeamsInviteAcceptAdapter extends BaseAdapter {
                 }
             }
 
-            if(jsonObjectteamsinvite.getString("email").equals(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL))){
-                if(mImg!=null) {
-                    new ImageLoader(mImg).execute(jsonObjectteamsacept.getString("ImageUrl"));
-                }
-                title.setText(jsonObjectteamsacept.getString("name"));
-                message.setText(jsonObjectteamsacept.getString("desc"));
-                if(jsonObject.getBoolean("Accept_invite")) {
+            if(jsonFriends.getString("email").equals(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL))){
+
+                title.setText(jsonCreate.getString("name"));
+                message.setText(jsonCreate.getString("desc"));
+
+                if (jsonInvites.getBoolean("Acceptinvite")) {
                     makeInvite.setShowOutline(false);
                     makeInvite.setBootstrapBrand(DefaultBootstrapBrand.SUCCESS);
                     makeInvite.setFontAwesomeIcon(FontAwesome.FA_CALENDAR);
@@ -113,36 +116,22 @@ public class TeamsInviteAcceptAdapter extends BaseAdapter {
                     makeInvite.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
                             makeInvite.setShowOutline(false);
                             Intent intent = new Intent(activity, InvitePlayActivity.class);
-                            intent.putExtra("object", jsonObjectteamsacept.toString());
-                            intent.putExtra("object2", jsonList.get(position).getJsonDoc());
-                            intent.putExtra("IdTeams", "");
-                            intent.putExtra("IdInvite", jsonList.get(position).getDocId());
-
+                            try {
+                                intent.putExtra("object", inviteBody.getJSONObject(position).toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                             intent.putExtra("flagAccept", true);
                             activity.startActivity(intent);
-
                         }
                     });
                 }
-
-
-
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        /*
-
-           if(InvitejsonObject.getBoolean("Accept_invite")){
-
-
-            }else{
-
-            }
-        */
         return convertView;
     }
 }

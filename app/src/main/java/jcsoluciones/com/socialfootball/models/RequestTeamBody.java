@@ -1,7 +1,9 @@
 package jcsoluciones.com.socialfootball.models;
 
 
-public class RequestTeamBody {
+import java.io.Serializable;
+
+public class RequestTeamBody  implements Serializable {
 
     private String name;
     private int countComply;

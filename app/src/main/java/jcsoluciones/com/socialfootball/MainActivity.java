@@ -23,28 +23,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-
 import com.shephertz.app42.paas.sdk.android.App42Exception;
-import com.shephertz.app42.paas.sdk.android.storage.Query;
-import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+import jcsoluciones.com.socialfootball.models.RequestTeamBody;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
-public class MainActivity extends AppCompatActivity implements
-        SearchView.OnQueryTextListener,
-        AsyncApp42ServiceApi.App42StorageServiceListener {
-
-    /**
-     * The async service.
-     */
-    private AsyncApp42ServiceApi asyncService;
-    /**
-     * List of your Teams setting
-     */
-    private ArrayList<Storage.JSONDocument> listTeamJson = new ArrayList<Storage.JSONDocument>();
     /**
      *  adapter for teams management
      */
@@ -73,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        asyncService = AsyncApp42ServiceApi.instance(this);
+
         sessionManager  = new SessionManager(this);
         sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL);
 
@@ -146,52 +136,24 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onQueryTextChange(String newText) {
         searchList.setVisibility(View.VISIBLE);
         viewPager.setVisibility(View.INVISIBLE);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.HostServer)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
-        return false;
-    }
-
-    @Override
-    public void onDocumentInserted(Storage response) {
-
-    }
-
-    @Override
-    public void onUpdateDocSuccess(Storage response) {
-
-    }
-
-    @Override
-    public void onFindDocSuccess(Storage response) {
-        listTeamJson = response.getJsonDocList();
-        if(listTeamJson.size()>0) {
-            adapter = new SearchTeamsAdapter(this, listTeamJson);
-            searchList.setAdapter(adapter);
+        RequestInterface request = retrofit.create(RequestInterface.class);
+        Call<List<RequestTeamBody>> call = request.searchTeams(newText, newText);
+        List<RequestTeamBody> teambody = new ArrayList<RequestTeamBody>();
+        try {
+            teambody=call.execute().body();
+            if(teambody!=null && teambody.size()>0) {
+                adapter = new SearchTeamsAdapter(this, teambody);
+                searchList.setAdapter(adapter);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onDeleteDocSuccess() {
-
-    }
-
-    @Override
-    public void onInsertionFailed(App42Exception ex) {
-
-    }
-
-    @Override
-    public void onFindDocFailed(App42Exception ex) {
-
-    }
-
-    @Override
-    public void onUpdateDocFailed(App42Exception ex) {
-
-    }
-
-    @Override
-    public void onDeleteDocFailed(App42Exception ex) {
-
+        return false;
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

@@ -5,33 +5,39 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import com.shephertz.app42.paas.sdk.android.App42Exception;
-import com.shephertz.app42.paas.sdk.android.storage.Query;
-import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
-import com.shephertz.app42.paas.sdk.android.storage.Storage;
-import java.util.ArrayList;
+import android.widget.Toast;
+
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
+
+import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
+import jcsoluciones.com.socialfootball.models.RequestInviteBody;
 
 import jcsoluciones.com.socialfootball.utils.SessionManager;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
  * Created by ADMIN on 10/08/2016.
  */
-public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefreshLayout.OnRefreshListener,AsyncApp42ServiceApi.App42StorageServiceListener{
+public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefreshLayout.OnRefreshListener{
 
         SwipeRefreshLayout swipeRefreshLayout;
-        /**
-        * The async service.
-        */
-        private AsyncApp42ServiceApi asyncService;
-        /**
-        * List of your Teams setting
-        */
-        private ArrayList<Storage.JSONDocument> listTeamJson = new ArrayList<Storage.JSONDocument>();
+
+
         /**
         *  adapter for teams management
         */
@@ -55,7 +61,6 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             // Inflate the layout for this fragment
             View view = inflater.inflate(R.layout.fragment_teamsiviteaccept, container, false);
-            asyncService = AsyncApp42ServiceApi.instance(getContext());
             listView = (ListView) view.findViewById(R.id.listView);
             sessionManager = new SessionManager(getActivity());
             swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
@@ -70,17 +75,8 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
             return view;
         }
 
-        @Override
-        public void onDocumentInserted(Storage response) {
 
-        }
-
-        @Override
-        public void onUpdateDocSuccess(Storage response) {
-
-        }
-
-        @Override
+       /* @Override
         public void onFindDocSuccess(Storage response) {
             listTeamJson = response.getJsonDocList();
             if(listTeamJson.size()>0) {
@@ -90,38 +86,49 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
             swipeRefreshLayout.setRefreshing(false);
         }
 
-        @Override
-        public void onDeleteDocSuccess() {
 
-        }
-
-        @Override
-        public void onInsertionFailed(App42Exception ex) {
-
-        }
 
         @Override
         public void onFindDocFailed(App42Exception ex) {
             swipeRefreshLayout.setRefreshing(false);
             createAlertDialog("fallo la busqueda: "+ ex.getMessage());
-        }
+        }*/
 
-        @Override
-        public void onUpdateDocFailed(App42Exception ex) {
 
-        }
-
-        @Override
-        public void onDeleteDocFailed(App42Exception ex) {
-
-        }
 
         @Override
         public void onRefresh() {
-            Query q1 = QueryBuilder.build("Teams_accept.email", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), QueryBuilder.Operator.EQUALS);
-            Query q2 = QueryBuilder.build("Teams_invite.email", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), QueryBuilder.Operator.EQUALS);
-            Query q3 = QueryBuilder.compoundOperator(q1, QueryBuilder.Operator.OR, q2);
-            asyncService.findDocByQuery(Constants.App42DBName,"Invites",q3,this);
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(Constants.HostServer)
+                    .addConverterFactory(JSONConverterFactory.create())
+                    .build();
+
+            RequestInterface request = retrofit.create(RequestInterface.class);
+            Call<JSONArray> call = request.invites("57c0a83f9b0e9b48a72f66a2");
+            call.enqueue(new Callback<JSONArray>() {
+                    @Override
+                    public void onResponse(Call<JSONArray> call, Response<JSONArray> response) {
+
+                        JSONArray invitebody = response.body();
+
+
+                        if(invitebody !=null && invitebody.length()>0) {
+                            adapter = new TeamsInviteAcceptAdapter(getActivity(), invitebody);
+                            listView.setAdapter(adapter);
+                        }
+                        //Toast.makeText(getActivity(),invitebody.toString(), Toast.LENGTH_LONG).show();
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onFailure(Call<JSONArray> call, Throwable t) {
+                        swipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                        Log.d("TeamsInviteAcceptFragment", "Failed to ", t);
+
+
+                    }
+            });
         }
 
         /**

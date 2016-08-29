@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,24 +12,11 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
-import com.loopj.android.image.SmartImageView;
-import com.shephertz.app42.paas.sdk.android.storage.Storage;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.net.Uri;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.List;
 
-import jcsoluciones.com.socialfootball.utils.ImageLoader;
+import jcsoluciones.com.socialfootball.models.RequestTeamBody;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 
 /**
@@ -41,7 +25,7 @@ import jcsoluciones.com.socialfootball.utils.SessionManager;
 public class SearchTeamsAdapter extends BaseAdapter {
     private Activity activity;
     private LayoutInflater inflater;
-    private ArrayList<Storage.JSONDocument> jsonList;
+    private List<RequestTeamBody> teambody=new ArrayList<RequestTeamBody>();
     private BootstrapCircleThumbnail mImg;
     private SessionManager sessionManager;
     private int position;
@@ -49,20 +33,19 @@ public class SearchTeamsAdapter extends BaseAdapter {
      * The async service.
      */
     private AsyncApp42ServiceApi asyncService;
-    public SearchTeamsAdapter(Activity activity, ArrayList<Storage.JSONDocument> jsonList){
-        this.jsonList = jsonList;
+    public SearchTeamsAdapter(Activity activity, List<RequestTeamBody> teambody){
+        this.teambody = teambody;
         this.activity = activity;
-        asyncService = AsyncApp42ServiceApi.instance(activity);
     }
 
     @Override
     public int getCount() {
-        return jsonList.size();
+        return teambody.size();
     }
 
     @Override
-    public Storage.JSONDocument getItem(int position) {
-        return jsonList.get(position);
+    public RequestTeamBody getItem(int position) {
+        return teambody.get(position);
     }
 
     @Override
@@ -82,29 +65,19 @@ public class SearchTeamsAdapter extends BaseAdapter {
         TextView message = (TextView) convertView.findViewById(R.id.message);
         mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
         BootstrapButton makeInvite = (BootstrapButton) convertView.findViewById(R.id.button_invite);
-        try {
-            JSONObject jsonObject = new JSONObject(jsonList.get(position).getJsonDoc());
-
-
-            if(mImg!=null) {
-                new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
-            }
-            title.setText(jsonObject.getString("name"));
-            message.setText(jsonObject.getString("desc"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
+        title.setText(teambody.get(position).getName());
+        message.setText(teambody.get(position).getDesc());
         makeInvite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!sessionManager.isLoggedIn()) {
+                if (!sessionManager.isLoggedIn()) {
                     Intent intent = new Intent(activity, SignInActivity.class);
                     activity.startActivity(intent);
-                }else {
+                } else {
                     Intent intent = new Intent(activity, InvitePlayActivity.class);
-                    intent.putExtra("object", jsonList.get(position).getJsonDoc());
-                    intent.putExtra("IdTeams", jsonList.get(position).getDocId());
+
+
+                    intent.putExtra("object", teambody.get(position));
                     intent.putExtra("flagAccept", false);
                     activity.startActivity(intent);
                 }

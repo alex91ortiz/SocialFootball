@@ -1,7 +1,11 @@
 package jcsoluciones.com.socialfootball;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.List;
 
+import jcsoluciones.com.socialfootball.models.RequestInviteBody;
 import jcsoluciones.com.socialfootball.models.RequestTeamBody;
 import jcsoluciones.com.socialfootball.models.ResponseBody;
 import retrofit2.Call;
@@ -17,4 +21,7 @@ public interface RequestInterface {
 
     @GET("searchteams/{name}/{city}")
     Call<List<RequestTeamBody>> searchTeams(@Path("name") String name,@Path("city") String city);
+
+    @POST("invites/{email}")
+    Call<JSONArray> invites(@Path("email") String email);
 }
