@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
@@ -25,11 +26,17 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
+import jcsoluciones.com.socialfootball.models.RequestInviteBody;
+import jcsoluciones.com.socialfootball.models.ResponseBody;
 import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
-public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42ServiceApi.App42PushNotificationServiceListener,
-        AsyncApp42ServiceApi.App42StorageServiceListener,TimePickerDialog.OnTimeSetListener,DatePickerDialog.OnDateSetListener {
+public class InvitePlayActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener,DatePickerDialog.OnDateSetListener {
     /**
      * The name
      */
@@ -60,11 +67,6 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
     private  int dayOfMonth;
     private  int monthOfYear;
     private  int year;
-
-    /**
-     * The async service.
-     */
-    private AsyncApp42ServiceApi asyncService;
     /**
      * The progress dialog.
      */
@@ -81,7 +83,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        asyncService = AsyncApp42ServiceApi.instance(this);
+
 
         mImg = (BootstrapCircleThumbnail) findViewById(R.id.ImageTeams);
         txvname = (TextView) findViewById(R.id.input_layout_name);
@@ -111,7 +113,7 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
         if(bundle!=null){
             try {
                 flagAccept = bundle.getBoolean("flagAccept", false);
-                jsonObject = new JSONObject(bundle.getString("object",""));
+                jsonObject = new JSONObject(bundle.getString("team",""));
 
                 txvname.setText(jsonObject.getString("name"));
                 txvphone.setText(jsonObject.getString("phone"));
@@ -122,15 +124,17 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
                 IdTeams = bundle.getString("IdTeams", "");
 
 
-                jsonObjectinvite = new JSONObject(bundle.getString("object2",""));
-                dayOfMonth = jsonObjectinvite.getInt("date_dayOfMonth");
-                monthOfYear = jsonObjectinvite.getInt("date_monthOfYear");
-                year = jsonObjectinvite.getInt("date_year");
-                SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
-                Calendar dat = Calendar.getInstance();
-                dat.set(year,monthOfYear,dayOfMonth);
-                mangerDate.setText( format.format(dat.getTime()));
-                new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
+                jsonObjectinvite = new JSONObject(bundle.getString("invite",""));
+                if(jsonObjectinvite!=null) {
+                    dayOfMonth = jsonObjectinvite.getInt("date_dayOfMonth");
+                    monthOfYear = jsonObjectinvite.getInt("date_monthOfYear");
+                    year = jsonObjectinvite.getInt("date_year");
+                    SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
+                    Calendar dat = Calendar.getInstance();
+                    dat.set(year, monthOfYear, dayOfMonth);
+                    mangerDate.setText(format.format(dat.getTime()));
+                   // new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
+                }
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -146,122 +150,59 @@ public class InvitePlayActivity extends AppCompatActivity implements AsyncApp42S
         if(flagAccept){
             try {
                 jsonObjectinvite.put("Accept_invite", true);
-                asyncService.updateDocById(Constants.App42DBName, "Invites", IdInvite, jsonObjectinvite, this);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }else {
-            JSONObject jsonObjectInvite = new JSONObject();
 
+            RequestInviteBody requestInviteBody = new RequestInviteBody();
+            requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT).toString());
+            requestInviteBody.setAcceptinvite(false);
+            requestInviteBody.setMessage("");
+            requestInviteBody.setDatedayOfMonth(String.valueOf(dayOfMonth));
+            requestInviteBody.setDatemonthOfYear(String.valueOf(monthOfYear));
+            requestInviteBody.setDateyear(String.valueOf(year));
             try {
-                jsonObjectInvite.put("Teams_invite", sessionManager.getUserDetails().get(sessionManager.CONTENT));
-                jsonObjectInvite.put("Accept_invite", false);
-                jsonObjectInvite.put("date_dayOfMonth", dayOfMonth);
-                jsonObjectInvite.put("date_monthOfYear", monthOfYear);
-                jsonObjectInvite.put("date_year", year);
-                jsonObjectInvite.put("Teams_accept", jsonObject);
-                asyncService.insertJSONDoc(Constants.App42DBName, "Invites", jsonObjectInvite, this);
+                requestInviteBody.setFriends(jsonObject.getString("_id").toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(Constants.HostServer)
+                    .addConverterFactory(JSONConverterFactory.create())
+                    .build();
+
+            RequestInterface request = retrofit.create(RequestInterface.class);
+            Call<JSONObject> call = request.registerInvite(requestInviteBody);
+            call.enqueue(new Callback<JSONObject>() {
+                @Override
+                public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                    JSONObject responseBody = response.body();
+                    Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(Call<JSONObject> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+
         }
 
     }
 
 
-    @Override
-    public void onCreationStoreDeviceTokenSuccess(PushNotification response) {
-
-    }
-
-    @Override
-    public void onStoreDeviceTokenFailed(App42Exception exception) {
-
-    }
-
-    @Override
-    public void onCreateChannelSuccess(PushNotification response) {
-
-    }
-
-    @Override
-    public void onCreateChannelFailed(App42Exception exception) {
-
-    }
-
-    @Override
-    public void onSubscribeToChannelSuccess(PushNotification response) {
-
-    }
-
-    @Override
-    public void onSubscribeToChannelFailed(App42Exception exception) {
-
-    }
-
-    @Override
-    public void onSendPushMessageSuccess(PushNotification response) {
-
-    }
+        //asyncService.onSendPushMessageUser(txvemail.getText().toString(), "Tienes una invitacion",this);
 
 
-    @Override
-    public void onSendPushMessageFailed(App42Exception exception) {
 
-    }
 
-    @Override
-    public void onSendPushMessageUserSuccess(PushNotification response) {
-        //progressDialog.dismiss();
-        finish();
-    }
 
-    @Override
-    public void onSendPushMessageUserFailed(App42Exception exception) {
-        createAlertDialog("fallo envio push"+exception.getMessage());
-    }
+        //asyncService.onSendPushMessageUser(txvemail.getText().toString(), "Aceptaron tu invitacion",this);
 
-    @Override
-    public void onDocumentInserted(Storage response) {
-        asyncService.onSendPushMessageUser(txvemail.getText().toString(), "Tienes una invitacion",this);
 
-    }
 
-    @Override
-    public void onUpdateDocSuccess(Storage response) {
-        asyncService.onSendPushMessageUser(txvemail.getText().toString(), "Aceptaron tu invitacion",this);
-
-    }
-
-    @Override
-    public void onFindDocSuccess(Storage response) {
-
-    }
-
-    @Override
-    public void onDeleteDocSuccess() {
-
-    }
-
-    @Override
-    public void onInsertionFailed(App42Exception ex) {
-        createAlertDialog("fallo insercion"+ex.getMessage());
-    }
-
-    @Override
-    public void onFindDocFailed(App42Exception ex) {
-
-    }
-
-    @Override
-    public void onUpdateDocFailed(App42Exception ex) {
-
-    }
-
-    @Override
-    public void onDeleteDocFailed(App42Exception ex) {
-
-    }
     /**
      * Creates the alert dialog.
      *

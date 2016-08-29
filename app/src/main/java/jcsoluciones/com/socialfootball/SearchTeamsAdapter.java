@@ -13,6 +13,10 @@ import android.widget.TextView;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +29,7 @@ import jcsoluciones.com.socialfootball.utils.SessionManager;
 public class SearchTeamsAdapter extends BaseAdapter {
     private Activity activity;
     private LayoutInflater inflater;
-    private List<RequestTeamBody> teambody=new ArrayList<RequestTeamBody>();
+    private  JSONArray teambody;
     private BootstrapCircleThumbnail mImg;
     private SessionManager sessionManager;
     private int position;
@@ -33,19 +37,24 @@ public class SearchTeamsAdapter extends BaseAdapter {
      * The async service.
      */
     private AsyncApp42ServiceApi asyncService;
-    public SearchTeamsAdapter(Activity activity, List<RequestTeamBody> teambody){
+    public SearchTeamsAdapter(Activity activity, JSONArray teambody){
         this.teambody = teambody;
         this.activity = activity;
     }
 
     @Override
     public int getCount() {
-        return teambody.size();
+        return teambody.length();
     }
 
     @Override
-    public RequestTeamBody getItem(int position) {
-        return teambody.get(position);
+    public Object getItem(int position) {
+        try {
+            return teambody.get(position);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -65,24 +74,29 @@ public class SearchTeamsAdapter extends BaseAdapter {
         TextView message = (TextView) convertView.findViewById(R.id.message);
         mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
         BootstrapButton makeInvite = (BootstrapButton) convertView.findViewById(R.id.button_invite);
-        title.setText(teambody.get(position).getName());
-        message.setText(teambody.get(position).getDesc());
-        makeInvite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!sessionManager.isLoggedIn()) {
-                    Intent intent = new Intent(activity, SignInActivity.class);
-                    activity.startActivity(intent);
-                } else {
-                    Intent intent = new Intent(activity, InvitePlayActivity.class);
 
-
-                    intent.putExtra("object", teambody.get(position));
-                    intent.putExtra("flagAccept", false);
-                    activity.startActivity(intent);
+        try {
+            final JSONObject jsonteambody = teambody.getJSONObject(position);
+            title.setText(jsonteambody.getString("name"));
+            message.setText(jsonteambody.getString("desc"));
+            makeInvite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!sessionManager.isLoggedIn()) {
+                        Intent intent = new Intent(activity, SignInActivity.class);
+                        activity.startActivity(intent);
+                    } else {
+                        Intent intent = new Intent(activity, InvitePlayActivity.class);
+                        intent.putExtra("team", jsonteambody.toString());
+                        intent.putExtra("invite","" );
+                        intent.putExtra("flagAccept", false);
+                        activity.startActivity(intent);
+                    }
                 }
-            }
-        });
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         return convertView;
     }

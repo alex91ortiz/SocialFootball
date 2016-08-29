@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class RequestInviteBody implements Serializable {
     @SerializedName("creator")
-    private RequestTeamBody creator;
+    private String creator;
 
     private boolean Acceptinvite;
     private String message;
@@ -20,54 +20,22 @@ public class RequestInviteBody implements Serializable {
     private boolean status;
 
     @SerializedName("friends")
-    private RequestTeamBody friends;
+    private String friends;
 
-    public RequestTeamBody getCreator() {
+    public String getCreator() {
         return creator;
     }
 
-    public void setCreator(RequestTeamBody creator) {
+    public void setCreator(String creator) {
         this.creator = creator;
     }
 
-    public boolean isAcceptinvite() {
-        return Acceptinvite;
+    public String getFriends() {
+        return friends;
     }
 
-    public void setAcceptinvite(boolean acceptinvite) {
-        Acceptinvite = acceptinvite;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getDatedayOfMonth() {
-        return datedayOfMonth;
-    }
-
-    public void setDatedayOfMonth(String datedayOfMonth) {
-        this.datedayOfMonth = datedayOfMonth;
-    }
-
-    public String getDatemonthOfYear() {
-        return datemonthOfYear;
-    }
-
-    public void setDatemonthOfYear(String datemonthOfYear) {
-        this.datemonthOfYear = datemonthOfYear;
-    }
-
-    public String getDateyear() {
-        return dateyear;
-    }
-
-    public void setDateyear(String dateyear) {
-        this.dateyear = dateyear;
+    public void setFriends(String friends) {
+        this.friends = friends;
     }
 
     public boolean isStatus() {
@@ -78,11 +46,43 @@ public class RequestInviteBody implements Serializable {
         this.status = status;
     }
 
-    public RequestTeamBody getFriends() {
-        return friends;
+    public String getDateyear() {
+        return dateyear;
     }
 
-    public void setFriends(RequestTeamBody friends) {
-        this.friends = friends;
+    public void setDateyear(String dateyear) {
+        this.dateyear = dateyear;
+    }
+
+    public String getDatemonthOfYear() {
+        return datemonthOfYear;
+    }
+
+    public void setDatemonthOfYear(String datemonthOfYear) {
+        this.datemonthOfYear = datemonthOfYear;
+    }
+
+    public String getDatedayOfMonth() {
+        return datedayOfMonth;
+    }
+
+    public void setDatedayOfMonth(String datedayOfMonth) {
+        this.datedayOfMonth = datedayOfMonth;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public boolean isAcceptinvite() {
+        return Acceptinvite;
+    }
+
+    public void setAcceptinvite(boolean acceptinvite) {
+        Acceptinvite = acceptinvite;
     }
 }

@@ -3,7 +3,6 @@ package jcsoluciones.com.socialfootball;
 import android.annotation.TargetApi;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -48,10 +47,18 @@ import org.json.JSONObject;
 
 import java.io.File;
 
+import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
 import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
 import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.RealPathUtil;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -109,6 +116,7 @@ public class TeamsMgtActivity extends AppCompatActivity {
     private JSONObject jsonObject;
     private SwitchCompat switchCancel;
     private SessionManager sessionManager;
+    private  File file;
     /**
      * The Flag for create/update
      */
@@ -128,6 +136,7 @@ public class TeamsMgtActivity extends AppCompatActivity {
         mRlView = (RelativeLayout) findViewById(R.id.layout_main);
         cumplimiento =(RatingBar) findViewById(R.id.rtbCumplimiento);
         sessionManager = new SessionManager(this);
+
         switchCancel = (SwitchCompat) findViewById(R.id.switchCancel);
         switchCancel.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -167,7 +176,7 @@ public class TeamsMgtActivity extends AppCompatActivity {
             cumplimiento.setVisibility(View.VISIBLE);
             switchCancel.setVisibility(View.VISIBLE);
         }
-        //sessionManager.createContentSession(jsonDocList.get(i).getDocId(),jsonDocList.get(i).getJsonDoc());
+        //;
     }
 
     public void ImageChange(View view){
@@ -201,7 +210,9 @@ public class TeamsMgtActivity extends AppCompatActivity {
                         intents.putExtra("TEAM_DESC", (srtdesc.length() > 0) ? srtdesc : " ");
                         intents.putExtra("TEAM_EMAIL", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
                         intents.putExtra("HOST",Constants.HostServer);
+                        intents.putExtra("URL_PHOTO", selectedImage);
                         startService(intents);
+                        //uploadFile();
                         finish();
                     }
                 }else{
@@ -291,13 +302,13 @@ public class TeamsMgtActivity extends AppCompatActivity {
         builder.setItems(option, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(option[which] == "Tomar foto"){
+                if (option[which] == "Tomar foto") {
                     openCamera();
-                }else if(option[which] == "Elegir de galeria"){
+                } else if (option[which] == "Elegir de galeria") {
                     Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     intent.setType("image/*");
                     startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
-                }else {
+                } else {
                     dialog.dismiss();
                 }
             }
@@ -362,12 +373,15 @@ public class TeamsMgtActivity extends AppCompatActivity {
 
 
                     Bitmap bitmap = BitmapFactory.decodeFile(selectedImage);
-
+                    file = new File(selectedImage);
                     mImg.setImageBitmap(bitmap);
                     break;
                 case SELECT_PICTURE:
                     Uri path = data.getData();
+
                     selectedImage = RealPathUtil.getRealPathFromURI_API19(this, path);
+                    file = new File(selectedImage);
+
                     mImg.setImageURI(path);
                     break;
 
@@ -432,5 +446,35 @@ public class TeamsMgtActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    private void uploadFile() {
+        // create upload service client
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.HostServer)
+                .addConverterFactory(JSONConverterFactory.create())
+                .build();
+        RequestInterface service = retrofit.create(RequestInterface.class);
+        // create RequestBody instance from file
+        RequestBody requestFile =
+                RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        // MultipartBody.Part is used to send also the actual file name
+        MultipartBody.Part body = MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
+        // add another part within the multipart request
+        String descriptionString = sessionManager.getUserDetails().get(SessionManager.ID_CONTENT);
+        RequestBody description = RequestBody.create(MediaType.parse("multipart/form-data"), descriptionString);
+        // finally, execute the request
+        Call<JSONObject> call = service.upload(description,body);
+        call.enqueue(new Callback<JSONObject>() {
+            @Override
+            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                Log.v("Upload", "success");
+            }
+
+            @Override
+            public void onFailure(Call<JSONObject> call, Throwable t) {
+                Log.e("Upload error:", t.getMessage());
+            }
+        });
     }
 }

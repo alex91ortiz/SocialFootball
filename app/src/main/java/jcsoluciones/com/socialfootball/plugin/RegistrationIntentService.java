@@ -18,14 +18,23 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 
+import jcsoluciones.com.socialfootball.Constants;
 import jcsoluciones.com.socialfootball.MainActivity;
 import jcsoluciones.com.socialfootball.R;
 import jcsoluciones.com.socialfootball.RequestInterface;
+import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
 import jcsoluciones.com.socialfootball.models.RequestTeamBody;
 import jcsoluciones.com.socialfootball.models.ResponseBody;
+import jcsoluciones.com.socialfootball.utils.SessionManager;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,6 +53,8 @@ public class RegistrationIntentService extends IntentService{
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     private  String HOST;
+    private  String URL_PHOTO;
+    private  SessionManager sessionManager;
     public RegistrationIntentService() {
         super(TAG);
     }
@@ -65,6 +76,7 @@ public class RegistrationIntentService extends IntentService{
             String desc = intent.getStringExtra("TEAM_DESC");
             String email = intent.getStringExtra("TEAM_EMAIL");
             HOST =intent.getStringExtra("HOST");
+            URL_PHOTO =intent.getStringExtra("URL_PHOTO");
             InstanceID instanceID = InstanceID.getInstance(this);
             String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
@@ -135,26 +147,58 @@ public class RegistrationIntentService extends IntentService{
                 .baseUrl(HOST)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
+        sessionManager = new SessionManager(this);
         RequestInterface request = retrofit.create(RequestInterface.class);
-        Call<ResponseBody> call = request.registerTeam(requestBody);
-        call.enqueue(new Callback<ResponseBody>() {
+        Call<RequestTeamBody> call = request.registerTeam(requestBody);
+        call.enqueue(new Callback<RequestTeamBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ResponseBody responseBody = response.body();
-                Intent intent = new Intent(MainActivity.REGISTRATION_PROCESS);
-                intent.putExtra("result", responseBody.getResult());
-                intent.putExtra("message", responseBody.getMessage());
-                LocalBroadcastManager.getInstance(RegistrationIntentService.this).sendBroadcast(intent);
-
+            public void onResponse(Call<RequestTeamBody> call, Response<RequestTeamBody> response) {
+                RequestTeamBody responseBody = response.body();
+                sessionManager.createContentSession(responseBody.getId() , responseBody.toString());
+                /*Intent intent = new Intent(MainActivity.REGISTRATION_PROCESS);
+                intent.putExtra("result", responseBody.getString("_id"));
+                intent.putExtra("message", responseBody.getString("_id"));
+                LocalBroadcastManager.getInstance(RegistrationIntentService.this).sendBroadcast(intent);*/
+                uploadFile();
                 Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(Call<RequestTeamBody> call, Throwable t) {
 
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void uploadFile() {
+        File file = new File(URL_PHOTO);
+        // create upload service client
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HOST)
+                .addConverterFactory(JSONConverterFactory.create())
+                .build();
+        RequestInterface service = retrofit.create(RequestInterface.class);
+        // create RequestBody instance from file
+        RequestBody requestFile =
+                RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        // MultipartBody.Part is used to send also the actual file name
+        MultipartBody.Part body = MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
+        // add another part within the multipart request
+        String descriptionString = sessionManager.getUserDetails().get(SessionManager.ID_CONTENT);
+        RequestBody description = RequestBody.create(MediaType.parse("multipart/form-data"), descriptionString);
+        // finally, execute the request
+        Call<JSONObject> call = service.upload(description, body);
+        call.enqueue(new Callback<JSONObject>() {
+            @Override
+            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                Log.v("Upload", "success");
+            }
+
+            @Override
+            public void onFailure(Call<JSONObject> call, Throwable t) {
+                Log.e("Upload error:", t.getMessage());
             }
         });
     }

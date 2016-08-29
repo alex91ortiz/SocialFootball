@@ -23,16 +23,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import com.shephertz.app42.paas.sdk.android.App42Exception;
-import com.shephertz.app42.paas.sdk.android.storage.Storage;
+import org.json.JSONArray;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import jcsoluciones.com.socialfootball.models.RequestTeamBody;
+import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 import retrofit2.Call;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
     /**
@@ -138,15 +136,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         viewPager.setVisibility(View.INVISIBLE);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.HostServer)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(JSONConverterFactory.create())
                 .build();
 
         RequestInterface request = retrofit.create(RequestInterface.class);
-        Call<List<RequestTeamBody>> call = request.searchTeams(newText, newText);
-        List<RequestTeamBody> teambody = new ArrayList<RequestTeamBody>();
+        Call<JSONArray> call = request.searchTeams(newText, newText);
+        JSONArray teambody;
         try {
             teambody=call.execute().body();
-            if(teambody!=null && teambody.size()>0) {
+            if(teambody!=null && teambody.length()>0) {
                 adapter = new SearchTeamsAdapter(this, teambody);
                 searchList.setAdapter(adapter);
             }

@@ -31,15 +31,13 @@ import jcsoluciones.com.socialfootball.utils.SessionManager;
  * Created by Admin on 31/07/2016.
  */
 
-public class TeamManagementFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,AsyncApp42ServiceApi.App42StorageServiceListener {
+public class TeamManagementFragment extends Fragment implements
+        SwipeRefreshLayout.OnRefreshListener {
     /**
      *  Button for add team
      */
     private FloatingActionButton fabEditTeamMgt;
-    /**
-     * The async service.
-     */
-    private AsyncApp42ServiceApi asyncService;
+
     /**
      * List of your Teams setting
      */
@@ -63,9 +61,6 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-        asyncService = AsyncApp42ServiceApi.instance(getContext());
-
         View view = inflater.inflate(R.layout.fragment_teamsmanagement, container, false);
         btnedit =(BootstrapButton) view.findViewById(R.id.button_event);
         btnedit.setOnClickListener(new View.OnClickListener() {
@@ -127,26 +122,11 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
         super.onResume();
     }
 
-    @Override
-    public void onRefresh() {
-        Query q1 = QueryBuilder.build("active",true, QueryBuilder.Operator.EQUALS);
-        Query q2 = QueryBuilder.build("email",sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), QueryBuilder.Operator.EQUALS);
-        Query q3 = QueryBuilder.compoundOperator(q1, QueryBuilder.Operator.AND,q2);// Build query q1 for key1 equal to name and value1 equal to Nick
-        asyncService.findDocByQuery(Constants.App42DBName,"Teams",q3,this);
-    }
-
-
-    @Override
-    public void onDocumentInserted(Storage response) {
+    public void onRefresh(){
 
     }
 
-    @Override
-    public void onUpdateDocSuccess(Storage response) {
-
-    }
-
-    @Override
+    /*@Override
     public void onFindDocSuccess(Storage response) {
 
         final ArrayList<Storage.JSONDocument> jsonDocList = response.getJsonDocList();
@@ -164,31 +144,7 @@ public class TeamManagementFragment extends Fragment implements SwipeRefreshLayo
             }
             sessionManager.createContentSession(jsonDocList.get(0).getDocId(),jsonDocList.get(0).getJsonDoc());
         }
-    }
-
-    @Override
-    public void onDeleteDocSuccess() {
-
-    }
-
-    @Override
-    public void onInsertionFailed(App42Exception ex) {
-
-    }
-
-    @Override
-    public void onFindDocFailed(App42Exception ex) {
-    }
-
-    @Override
-    public void onUpdateDocFailed(App42Exception ex) {
-
-    }
-
-    @Override
-    public void onDeleteDocFailed(App42Exception ex) {
-
-    }
+    }*/
 
     /**
      * Creates the alert dialog.

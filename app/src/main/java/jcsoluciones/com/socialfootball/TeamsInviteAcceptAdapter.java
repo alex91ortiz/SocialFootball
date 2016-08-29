@@ -83,8 +83,8 @@ public class TeamsInviteAcceptAdapter extends BaseAdapter {
         mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
         makeInvite = (BootstrapButton) convertView.findViewById(R.id.button_invite);
         try {
-            JSONObject jsonInvites = inviteBody.getJSONObject(position);
-            JSONObject jsonCreate = new JSONObject(jsonInvites.getString("create"));
+            final JSONObject jsonInvites = inviteBody.getJSONObject(position);
+            final JSONObject jsonCreate = new JSONObject(jsonInvites.getString("create"));
             JSONObject jsonFriends = new JSONObject(jsonInvites.getString("friends"));
             if(jsonCreate.getString("email").equals(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL))){
 
@@ -118,11 +118,8 @@ public class TeamsInviteAcceptAdapter extends BaseAdapter {
                         public void onClick(View view) {
                             makeInvite.setShowOutline(false);
                             Intent intent = new Intent(activity, InvitePlayActivity.class);
-                            try {
-                                intent.putExtra("object", inviteBody.getJSONObject(position).toString());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            intent.putExtra("team",jsonCreate.toString());
+                            intent.putExtra("invite", jsonInvites.toString());
                             intent.putExtra("flagAccept", true);
                             activity.startActivity(intent);
                         }

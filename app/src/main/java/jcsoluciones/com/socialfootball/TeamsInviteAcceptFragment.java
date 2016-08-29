@@ -11,23 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
-
-
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.List;
-
 import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
-import jcsoluciones.com.socialfootball.models.RequestInviteBody;
-
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+
 
 
 /**
