@@ -98,14 +98,12 @@ public class TeamManagementFragment extends Fragment implements
         JSONObject jsonObject = null;
         try {
             if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()){
-
                 onRefresh();
             }else{
-
                 jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
                 name.setText(jsonObject.getString("name"));
                 desc.setText(jsonObject.getString("desc"));
-                String selectedImage =jsonObject.getString("ImageUrl");
+                String selectedImage =Constants.HostServer+"/img/"+jsonObject.getString("_id")+"/profile.jpg";
                 new ImageLoader(mImg).execute(selectedImage);
                 fabEditTeamMgt.setVisibility(View.INVISIBLE);
             }

@@ -1,7 +1,10 @@
 package jcsoluciones.com.socialfootball;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,6 +33,8 @@ import java.util.List;
 import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
@@ -45,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private static final String TAG = "MainActivity";
     public static final String REGISTRATION_PROCESS = "registration";
     public static final String MESSAGE_RECEIVED = "message_received";
-
+    private  Activity activity;
     private SessionManager sessionManager;
     private boolean isReceiverRegistered;
 
@@ -57,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
-
+        activity=this;
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -121,7 +126,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         searchMenuItem = menu.findItem(R.id.action_search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
         mSearchView.setOnQueryTextListener(this);
-
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(this, MainActivity.class)));
+        mSearchView.setIconifiedByDefault(false);
         return true;
     }
     @Override
@@ -134,22 +141,30 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onQueryTextChange(String newText) {
         searchList.setVisibility(View.VISIBLE);
         viewPager.setVisibility(View.INVISIBLE);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.HostServer)
-                .addConverterFactory(JSONConverterFactory.create())
-                .build();
+        if(newText.length()>0) {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(Constants.HostServer)
+                    .addConverterFactory(JSONConverterFactory.create())
+                    .build();
 
-        RequestInterface request = retrofit.create(RequestInterface.class);
-        Call<JSONArray> call = request.searchTeams(newText, newText);
-        JSONArray teambody;
-        try {
-            teambody=call.execute().body();
-            if(teambody!=null && teambody.length()>0) {
-                adapter = new SearchTeamsAdapter(this, teambody);
-                searchList.setAdapter(adapter);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            RequestInterface request = retrofit.create(RequestInterface.class);
+            Call<JSONArray> call = request.searchTeams(newText, newText);
+            call.enqueue(new Callback<JSONArray>() {
+                    @Override
+                    public void onResponse(Call<JSONArray> call, Response<JSONArray> response) {
+                        JSONArray teambody = response.body();
+                        if (teambody != null && teambody.length() > 0) {
+                            adapter = new SearchTeamsAdapter(activity, teambody);
+                            searchList.setAdapter(adapter);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<JSONArray> call, Throwable t) {
+
+                    }
+                }
+            );
         }
         return false;
     }
@@ -236,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 String result  = intent.getStringExtra("result");
                 String message = intent.getStringExtra("message");
                 Log.d(TAG, "onReceive: " + result + message);
+                setupViewPager(viewPager);
             } else if (intent.getAction().equals(MESSAGE_RECEIVED)){
 
                 String message = intent.getStringExtra("message");

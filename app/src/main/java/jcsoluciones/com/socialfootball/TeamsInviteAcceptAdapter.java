@@ -13,6 +13,7 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 import com.beardedhen.androidbootstrap.api.defaults.DefaultBootstrapBrand;
 import com.beardedhen.androidbootstrap.font.FontAwesome;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,6 +83,7 @@ public class TeamsInviteAcceptAdapter extends BaseAdapter {
         message = (TextView) convertView.findViewById(R.id.message);
         mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
         makeInvite = (BootstrapButton) convertView.findViewById(R.id.button_invite);
+
         try {
             final JSONObject jsonInvites = inviteBody.getJSONObject(position);
             final JSONObject jsonCreate = new JSONObject(jsonInvites.getString("create"));
@@ -90,7 +92,10 @@ public class TeamsInviteAcceptAdapter extends BaseAdapter {
 
                 title.setText(jsonFriends.getString("name"));
                 message.setText(jsonFriends.getString("desc"));
+                String selectedImage =Constants.HostServer+"/img/"+jsonFriends.getString("_id")+"/profile.jpg";
 
+                //new ImageLoader(mImg).execute(selectedImage);
+                Picasso.with(activity).load(selectedImage).into(mImg);
                 if(jsonInvites.getBoolean("Acceptinvite")) {
                     makeInvite.setShowOutline(false);
                     makeInvite.setBootstrapBrand(DefaultBootstrapBrand.SUCCESS);
@@ -105,7 +110,9 @@ public class TeamsInviteAcceptAdapter extends BaseAdapter {
 
                 title.setText(jsonCreate.getString("name"));
                 message.setText(jsonCreate.getString("desc"));
+                String selectedImage =Constants.HostServer+"/img/"+jsonCreate.getString("_id")+"/profile.jpg";
 
+                new ImageLoader(mImg).execute(selectedImage);
                 if (jsonInvites.getBoolean("Acceptinvite")) {
                     makeInvite.setShowOutline(false);
                     makeInvite.setBootstrapBrand(DefaultBootstrapBrand.SUCCESS);

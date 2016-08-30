@@ -15,6 +15,7 @@ import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.push.PushNotification;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
+import com.squareup.picasso.Picasso;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
@@ -35,6 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class InvitePlayActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener,DatePickerDialog.OnDateSetListener {
     /**
@@ -122,17 +124,20 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                 txvemail.setText(jsonObject.getString("email"));
                 IdInvite = bundle.getString("IdInvite", "");
                 IdTeams = bundle.getString("IdTeams", "");
-
+                String selectedImage =Constants.HostServer+"/img/"+jsonObject.getString("_id")+"/profile.jpg";
+                //new ImageLoader(mImg).execute(selectedImage);
+                Picasso.with(this).load(selectedImage).into(mImg);
 
                 jsonObjectinvite = new JSONObject(bundle.getString("invite",""));
                 if(jsonObjectinvite!=null) {
-                    dayOfMonth = jsonObjectinvite.getInt("date_dayOfMonth");
-                    monthOfYear = jsonObjectinvite.getInt("date_monthOfYear");
-                    year = jsonObjectinvite.getInt("date_year");
+                    dayOfMonth = jsonObjectinvite.getInt("datedayOfMonth");
+                    monthOfYear = jsonObjectinvite.getInt("datemonthOfYear");
+                    year = jsonObjectinvite.getInt("dateyear");
                     SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
                     Calendar dat = Calendar.getInstance();
                     dat.set(year, monthOfYear, dayOfMonth);
                     mangerDate.setText(format.format(dat.getTime()));
+
                    // new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
                 }
 
@@ -170,20 +175,20 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(Constants.HostServer)
-                    .addConverterFactory(JSONConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
             RequestInterface request = retrofit.create(RequestInterface.class);
-            Call<JSONObject> call = request.registerInvite(requestInviteBody);
-            call.enqueue(new Callback<JSONObject>() {
+            Call<RequestInviteBody> call = request.registerInvite(requestInviteBody);
+            call.enqueue(new Callback<RequestInviteBody>() {
                 @Override
-                public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-                    JSONObject responseBody = response.body();
+                public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
+                    RequestInviteBody responseBody = response.body();
                     Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
-                public void onFailure(Call<JSONObject> call, Throwable t) {
+                public void onFailure(Call<RequestInviteBody> call, Throwable t) {
                     Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });

@@ -34,5 +34,5 @@ public interface RequestInterface {
     Call<JSONObject> upload(@Part("id") RequestBody description,@Part MultipartBody.Part file);
 
     @POST("invite")
-    Call<JSONObject> registerInvite(@Body RequestInviteBody body);
+    Call<RequestInviteBody> registerInvite(@Body RequestInviteBody body);
 }

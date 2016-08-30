@@ -41,6 +41,7 @@ import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -161,8 +162,9 @@ public class TeamsMgtActivity extends AppCompatActivity {
                 createOrupdate = bundle.getBoolean("createOrupdate", true);
 
                 IdTeams = bundle.getString("IdTeams", "");
-                selectedImage =jsonObject.getString("ImageUrl");
-                new ImageLoader(mImg).execute(selectedImage);
+                selectedImage =Constants.HostServer+"/img/"+jsonObject.getString("_id")+"/profile.jpg";
+                //new ImageLoader(mImg).execute(selectedImage);
+                Picasso.with(this).load(selectedImage).into(mImg);
                 spncity.setSelection(adapterspinner.getPosition(jsonObject.getString("city")));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -212,7 +214,6 @@ public class TeamsMgtActivity extends AppCompatActivity {
                         intents.putExtra("HOST",Constants.HostServer);
                         intents.putExtra("URL_PHOTO", selectedImage);
                         startService(intents);
-                        //uploadFile();
                         finish();
                     }
                 }else{

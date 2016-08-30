@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jcsoluciones.com.socialfootball.models.RequestTeamBody;
+import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 
 /**
@@ -36,7 +38,7 @@ public class SearchTeamsAdapter extends BaseAdapter {
     /**
      * The async service.
      */
-    private AsyncApp42ServiceApi asyncService;
+
     public SearchTeamsAdapter(Activity activity, JSONArray teambody){
         this.teambody = teambody;
         this.activity = activity;
@@ -77,8 +79,11 @@ public class SearchTeamsAdapter extends BaseAdapter {
 
         try {
             final JSONObject jsonteambody = teambody.getJSONObject(position);
-            title.setText(jsonteambody.getString("name"));
-            message.setText(jsonteambody.getString("desc"));
+            title.setText(jsonteambody.getString("name").toString());
+            message.setText(jsonteambody.getString("desc").toString());
+            String selectedImage =Constants.HostServer+"/img/"+jsonteambody.getString("_id")+"/profile.jpg";
+            //new ImageLoader(mImg).execute(selectedImage);
+            Picasso.with(activity).load(selectedImage).into(mImg);
             makeInvite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

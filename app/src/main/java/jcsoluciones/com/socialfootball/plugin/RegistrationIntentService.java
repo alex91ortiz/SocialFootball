@@ -134,7 +134,7 @@ public class RegistrationIntentService extends IntentService{
     // [END subscribe_topics]
 
     private void registerTeamProcess(String name, String phone, String city, String desc,String email,String registrationId){
-        RequestTeamBody requestBody = new RequestTeamBody();
+        final RequestTeamBody requestBody = new RequestTeamBody();
         requestBody.setName(name);
         requestBody.setPhone(phone);
         requestBody.setCity(city);
@@ -154,14 +154,23 @@ public class RegistrationIntentService extends IntentService{
             @Override
             public void onResponse(Call<RequestTeamBody> call, Response<RequestTeamBody> response) {
                 RequestTeamBody responseBody = response.body();
-                sessionManager.createContentSession(responseBody.getId() , responseBody.toString());
-                /*Intent intent = new Intent(MainActivity.REGISTRATION_PROCESS);
-                intent.putExtra("result", responseBody.getString("_id"));
-                intent.putExtra("message", responseBody.getString("_id"));
-                LocalBroadcastManager.getInstance(RegistrationIntentService.this).sendBroadcast(intent);*/
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("_id",responseBody.getId());
+                    jsonObject.put("name",responseBody.getName());
+                    jsonObject.put("phone",responseBody.getPhone());
+                    jsonObject.put("email",responseBody.getEmail());
+                    jsonObject.put("desc",responseBody.getDesc());
+                    jsonObject.put("city",responseBody.getCity());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                sessionManager.createContentSession(responseBody.getId(),jsonObject.toString());
+                Intent intent = new Intent(MainActivity.REGISTRATION_PROCESS);
+                intent.putExtra("result", responseBody.getId());
+                intent.putExtra("message", responseBody.getEmail());
+                LocalBroadcastManager.getInstance(RegistrationIntentService.this).sendBroadcast(intent);
                 uploadFile();
-                Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
-
             }
 
             @Override
@@ -194,6 +203,7 @@ public class RegistrationIntentService extends IntentService{
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
                 Log.v("Upload", "success");
+                Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
