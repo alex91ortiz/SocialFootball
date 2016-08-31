@@ -23,8 +23,8 @@ public interface RequestInterface {
     @POST("team")
     Call<RequestTeamBody> registerTeam(@Body RequestTeamBody body);
 
-    @GET("searchteams/{name}/{city}")
-    Call<JSONArray> searchTeams(@Path("name") String name,@Path("city") String city);
+    @GET("searchteams/{name}/{city}/{email}")
+    Call<JSONArray> searchTeams(@Path("name") String name,@Path("city") String city,@Path("email") String email);
 
     @POST("invites/{email}")
     Call<JSONArray> invites(@Path("email") String email);

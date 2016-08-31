@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     .build();
 
             RequestInterface request = retrofit.create(RequestInterface.class);
-            Call<JSONArray> call = request.searchTeams(newText, newText);
+            Call<JSONArray> call = request.searchTeams(newText, newText,sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
             call.enqueue(new Callback<JSONArray>() {
                     @Override
                     public void onResponse(Call<JSONArray> call, Response<JSONArray> response) {
