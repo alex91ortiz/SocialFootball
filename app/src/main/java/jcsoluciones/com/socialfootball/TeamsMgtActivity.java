@@ -21,6 +21,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -49,6 +50,7 @@ import org.json.JSONObject;
 import java.io.File;
 
 import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
+import jcsoluciones.com.socialfootball.models.RequestTeamBody;
 import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
 import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.RealPathUtil;
@@ -60,6 +62,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -106,6 +109,7 @@ public class TeamsMgtActivity extends AppCompatActivity {
     private String selectedImage;
     private static final String TAG = "MainActivity";
     private String IdTeams;
+    private String RegisterID;
     private BootstrapCircleThumbnail mImg;
     private RelativeLayout mRlView;
     private static String APP_DIRECTORY = "MyPictureApp/";
@@ -159,9 +163,10 @@ public class TeamsMgtActivity extends AppCompatActivity {
                 edtphone.setText(jsonObject.getString("phone"));
                 edtdescrip.setText(jsonObject.getString("desc"));
                 email.setText(jsonObject.getString("email"));
+                RegisterID = jsonObject.getString("registrationId");
                 createOrupdate = bundle.getBoolean("createOrupdate", true);
 
-                IdTeams = bundle.getString("IdTeams", "");
+                IdTeams =jsonObject.getString("_id");
                 selectedImage =Constants.HostServer+"/img/"+jsonObject.getString("_id")+"/profile.jpg";
                 //new ImageLoader(mImg).execute(selectedImage);
                 Picasso.with(this).load(selectedImage).into(mImg);
@@ -203,27 +208,62 @@ public class TeamsMgtActivity extends AppCompatActivity {
             String srtdesc  = edtdescrip.getText().toString();
 
             if(createOrupdate) {
-                if(selectedImage!=null) {
-                    if(checkPlayServices()){
-                        Intent intents = new Intent(TeamsMgtActivity.this, RegistrationIntentService.class);
-                        intents.putExtra("TEAM_NAME", srtname);
-                        intents.putExtra("TEAM_PHOTO", srtphone);
-                        intents.putExtra("TEAM_CITY", spncity.getSelectedItem().toString());
-                        intents.putExtra("TEAM_DESC", (srtdesc.length() > 0) ? srtdesc : " ");
-                        intents.putExtra("TEAM_EMAIL", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
-                        intents.putExtra("HOST",Constants.HostServer);
-                        intents.putExtra("URL_PHOTO", selectedImage);
-                        startService(intents);
-                        finish();
-                    }
-                }else{
-                    createAlertDialog("Input Picture");
+                if(checkPlayServices()){
+                    Intent intents = new Intent(TeamsMgtActivity.this, RegistrationIntentService.class);
+                    intents.putExtra("TEAM_NAME", srtname);
+                    intents.putExtra("TEAM_PHOTO", srtphone);
+                    intents.putExtra("TEAM_CITY", spncity.getSelectedItem().toString());
+                    intents.putExtra("TEAM_DESC", (srtdesc.length() > 0) ? srtdesc : " ");
+                    intents.putExtra("TEAM_EMAIL", sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
+                    intents.putExtra("HOST",Constants.HostServer);
+                    intents.putExtra("URL_PHOTO", selectedImage);
+                    intents.putExtra("CREATEORUPDATE_TEAM", true);
+                    startService(intents);
+                    finish();
                 }
             }else{
-                /*jsonObject.put("name", srtname);
-                jsonObject.put("phone", srtphone);
-                jsonObject.put("city", spncity.getSelectedItem());
-                jsonObject.put("desc", (srtdesc.length() > 0) ? srtdesc : " ");*/
+                final RequestTeamBody requestBody = new RequestTeamBody();
+                requestBody.setId(IdTeams);
+                requestBody.setName(srtname);
+                requestBody.setPhone(srtphone);
+                requestBody.setCity( spncity.getSelectedItem().toString());
+                requestBody.setDesc((srtdesc.length() > 0) ? srtdesc : " ");
+                requestBody.setEmail(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
+                requestBody.setRegistrationId(RegisterID);
+
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(Constants.HostServer)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+                sessionManager = new SessionManager(this);
+                RequestInterface request = retrofit.create(RequestInterface.class);
+                Call<RequestTeamBody> call = request.updateTeam(requestBody);
+                call.enqueue(new Callback<RequestTeamBody>() {
+                    @Override
+                    public void onResponse(Call<RequestTeamBody> call, Response<RequestTeamBody> response) {
+                        RequestTeamBody responseBody = response.body();
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put("_id",responseBody.getId());
+                            jsonObject.put("name",responseBody.getName());
+                            jsonObject.put("phone",responseBody.getPhone());
+                            jsonObject.put("email",responseBody.getEmail());
+                            jsonObject.put("desc",responseBody.getDesc());
+                            jsonObject.put("city",responseBody.getCity());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        sessionManager.createContentSession(responseBody.getId(), jsonObject.toString());
+                        uploadFile();
+                    }
+
+                    @Override
+                    public void onFailure(Call<RequestTeamBody> call, Throwable t) {
+
+                        Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
             }
 
             return true;
@@ -451,31 +491,33 @@ public class TeamsMgtActivity extends AppCompatActivity {
 
     private void uploadFile() {
         // create upload service client
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.HostServer)
-                .addConverterFactory(JSONConverterFactory.create())
-                .build();
-        RequestInterface service = retrofit.create(RequestInterface.class);
-        // create RequestBody instance from file
-        RequestBody requestFile =
-                RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        // MultipartBody.Part is used to send also the actual file name
-        MultipartBody.Part body = MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
-        // add another part within the multipart request
-        String descriptionString = sessionManager.getUserDetails().get(SessionManager.ID_CONTENT);
-        RequestBody description = RequestBody.create(MediaType.parse("multipart/form-data"), descriptionString);
-        // finally, execute the request
-        Call<JSONObject> call = service.upload(description,body);
-        call.enqueue(new Callback<JSONObject>() {
-            @Override
-            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-                Log.v("Upload", "success");
-            }
 
-            @Override
-            public void onFailure(Call<JSONObject> call, Throwable t) {
-                Log.e("Upload error:", t.getMessage());
-            }
-        });
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(Constants.HostServer)
+                    .addConverterFactory(JSONConverterFactory.create())
+                    .build();
+            RequestInterface service = retrofit.create(RequestInterface.class);
+            // create RequestBody instance from file
+            RequestBody requestFile =
+                    RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            // MultipartBody.Part is used to send also the actual file name
+            MultipartBody.Part body = MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
+            // add another part within the multipart request
+            String descriptionString = sessionManager.getUserDetails().get(SessionManager.ID_CONTENT);
+            RequestBody description = RequestBody.create(MediaType.parse("multipart/form-data"), descriptionString);
+            // finally, execute the request
+            Call<JSONObject> call = service.upload(description, body);
+            call.enqueue(new Callback<JSONObject>() {
+                @Override
+                public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                    Log.v("Upload", "success");
+                }
+
+                @Override
+                public void onFailure(Call<JSONObject> call, Throwable t) {
+                    Log.e("Upload error:", t.getMessage());
+                }
+            });
+
     }
 }

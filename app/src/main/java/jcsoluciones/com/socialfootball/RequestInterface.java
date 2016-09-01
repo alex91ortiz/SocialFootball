@@ -2,12 +2,8 @@ package jcsoluciones.com.socialfootball;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.List;
-
 import jcsoluciones.com.socialfootball.models.RequestInviteBody;
 import jcsoluciones.com.socialfootball.models.RequestTeamBody;
-import jcsoluciones.com.socialfootball.models.ResponseBody;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -15,6 +11,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 
@@ -22,6 +19,12 @@ public interface RequestInterface {
 
     @POST("team")
     Call<RequestTeamBody> registerTeam(@Body RequestTeamBody body);
+
+    @PUT("team")
+    Call<RequestTeamBody> updateTeam(@Body RequestTeamBody body);
+
+    @GET("team/{email}/{token}")
+    Call<JSONObject> getTeams(@Path("email") String email,@Path("token") String token);
 
     @GET("searchteams/{name}/{city}/{email}")
     Call<JSONArray> searchTeams(@Path("name") String name,@Path("city") String city,@Path("email") String email);

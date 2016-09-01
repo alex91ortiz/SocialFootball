@@ -6,11 +6,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
@@ -24,8 +27,16 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
+import jcsoluciones.com.socialfootball.models.RequestTeamBody;
+import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
 import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Admin on 31/07/2016.
@@ -95,10 +106,63 @@ public class TeamManagementFragment extends Fragment implements
             }
         });
 
+        validateUser();
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        validateUser();
+    }
+
+    public void onRefresh(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.HostServer)
+                .addConverterFactory(JSONConverterFactory.create())
+                .build();
+        final RequestInterface request = retrofit.create(RequestInterface.class);
+        Call<JSONObject> call = request.getTeams(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), "1234rGSS34567AWS");
+        call.enqueue(new Callback<JSONObject>() {
+            @Override
+            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                JSONObject jsonObject = response.body();
+                try {
+                    Intent intents = new Intent(getActivity(), RegistrationIntentService.class);
+                    intents.putExtra("TEAM_ID", jsonObject.getString("_id"));
+                    intents.putExtra("TEAM_NAME", jsonObject.getString("name"));
+                    intents.putExtra("TEAM_PHOTO", jsonObject.getString("phone"));
+                    intents.putExtra("TEAM_CITY", jsonObject.getString("city"));
+                    intents.putExtra("TEAM_DESC", jsonObject.getString("desc"));
+                    intents.putExtra("TEAM_EMAIL", jsonObject.getString("email"));
+                    intents.putExtra("HOST",Constants.HostServer);
+                    intents.putExtra("CREATEORUPDATE_TEAM", false);
+                    getActivity().startService(intents);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JSONObject> call, Throwable t) {
+                Log.v("Upload", "success");
+            }
+        });
+    }
+
+
+
+    public void validateUser(){
         JSONObject jsonObject = null;
         try {
             if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()){
-                onRefresh();
+                if(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
+                    Intent intent = new Intent(getContext(), SignInActivity.class);
+                    startActivity(intent);
+                }else {
+                    onRefresh();
+                }
             }else{
                 jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
                 name.setText(jsonObject.getString("name"));
@@ -110,39 +174,7 @@ public class TeamManagementFragment extends Fragment implements
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
-        return view;
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    public void onRefresh(){
-
-    }
-
-    /*@Override
-    public void onFindDocSuccess(Storage response) {
-
-        final ArrayList<Storage.JSONDocument> jsonDocList = response.getJsonDocList();
-        if(jsonDocList.size()>0) {
-
-            fabEditTeamMgt.setVisibility(View.INVISIBLE);
-            try {
-                JSONObject jsonObject = new JSONObject(jsonDocList.get(0).getJsonDoc());
-                name.setText(jsonObject.getString("name"));
-                desc.setText(jsonObject.getString("desc"));
-                String selectedImage = jsonObject.getString("ImageUrl");
-                new ImageLoader(mImg).execute(selectedImage);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            sessionManager.createContentSession(jsonDocList.get(0).getDocId(),jsonDocList.get(0).getJsonDoc());
-        }
-    }*/
 
     /**
      * Creates the alert dialog.

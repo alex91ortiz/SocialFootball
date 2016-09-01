@@ -54,6 +54,7 @@ public class RegistrationIntentService extends IntentService{
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     private  String HOST;
     private  String URL_PHOTO;
+    private  boolean CREATEORUPDATE;
     private  SessionManager sessionManager;
     public RegistrationIntentService() {
         super(TAG);
@@ -70,6 +71,7 @@ public class RegistrationIntentService extends IntentService{
             // R.string.gcm_defaultSenderId (the Sender ID) is typically derived from google-services.json.
             // See https://developers.google.com/cloud-messaging/android/start for details on this file.
             // [START get_token]
+            String id = intent.getStringExtra("TEAM_ID");
             String name = intent.getStringExtra("TEAM_NAME");
             String photo = intent.getStringExtra("TEAM_PHOTO");
             String city = intent.getStringExtra("TEAM_CITY");
@@ -77,6 +79,7 @@ public class RegistrationIntentService extends IntentService{
             String email = intent.getStringExtra("TEAM_EMAIL");
             HOST =intent.getStringExtra("HOST");
             URL_PHOTO =intent.getStringExtra("URL_PHOTO");
+            CREATEORUPDATE = intent.getBooleanExtra("CREATEORUPDATE_TEAM", true);
             InstanceID instanceID = InstanceID.getInstance(this);
             String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
@@ -89,7 +92,10 @@ public class RegistrationIntentService extends IntentService{
             // Subscribe to topic channels
             subscribeTopics(token);
             //if(!sharedPreferences.getBoolean(SENT_TOKEN_TO_SERVER,false))
-            registerTeamProcess(name,photo,city,desc,email,token);
+            if(CREATEORUPDATE)
+                registerTeamProcess(name,photo,city,desc,email,token);
+            else
+                updateTeamProcess(id,name, photo, city, desc, email, token);
             // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,
             // otherwise your server should have already received the token.
@@ -180,7 +186,54 @@ public class RegistrationIntentService extends IntentService{
             }
         });
     }
+    private void updateTeamProcess(String id,String name, String phone, String city, String desc,String email,String registrationId){
+        final RequestTeamBody requestBody = new RequestTeamBody();
+        requestBody.setId(id);
+        requestBody.setName(name);
+        requestBody.setPhone(phone);
+        requestBody.setCity(city);
+        requestBody.setDesc(desc);
+        requestBody.setEmail(email);
+        requestBody.setRegistrationId(registrationId);
 
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HOST)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        sessionManager = new SessionManager(this);
+        RequestInterface request = retrofit.create(RequestInterface.class);
+        Call<RequestTeamBody> call = request.updateTeam(requestBody);
+        call.enqueue(new Callback<RequestTeamBody>() {
+            @Override
+            public void onResponse(Call<RequestTeamBody> call, Response<RequestTeamBody> response) {
+                RequestTeamBody responseBody = response.body();
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("_id",responseBody.getId());
+                    jsonObject.put("name",responseBody.getName());
+                    jsonObject.put("phone",responseBody.getPhone());
+                    jsonObject.put("email",responseBody.getEmail());
+                    jsonObject.put("desc",responseBody.getDesc());
+                    jsonObject.put("city",responseBody.getCity());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                sessionManager.createContentSession(responseBody.getId(),jsonObject.toString());
+                Intent intent = new Intent(MainActivity.REGISTRATION_PROCESS);
+                intent.putExtra("result", responseBody.getId());
+                intent.putExtra("message", responseBody.getEmail());
+                LocalBroadcastManager.getInstance(RegistrationIntentService.this).sendBroadcast(intent);
+                //uploadFile();
+            }
+
+            @Override
+            public void onFailure(Call<RequestTeamBody> call, Throwable t) {
+
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
     private void uploadFile() {
         File file = new File(URL_PHOTO);
         // create upload service client
