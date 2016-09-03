@@ -1,17 +1,22 @@
 package jcsoluciones.com.socialfootball;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
 import jcsoluciones.com.socialfootball.models.RequestTeamBody;
@@ -42,8 +48,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by Admin on 31/07/2016.
  */
 
-public class TeamManagementFragment extends Fragment implements
-        SwipeRefreshLayout.OnRefreshListener {
+public class TeamManagementFragment extends ListFragment implements AdapterView.OnItemClickListener {
     /**
      *  Button for add team
      */
@@ -73,7 +78,7 @@ public class TeamManagementFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view;
+       /* View view;
         view = inflater.inflate(R.layout.fragment_teamsmanagement, container, false);
         btnedit = (BootstrapButton) view.findViewById(R.id.button_event);
         btnedit.setOnClickListener(new View.OnClickListener() {
@@ -109,11 +114,18 @@ public class TeamManagementFragment extends Fragment implements
                 }
             }
         });
-        validateUser();
+        validateUser();*/
+        View view = inflater.inflate(R.layout.fragment_teamsmanagement, container, false);
         return view;
     }
 
-
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        //InfoViewAdapter adapter = InfoViewAdapter();
+        //setListAdapter(adapter);
+        getListView().setOnItemClickListener(this);
+    }
 
     public void onRefresh(){
         Retrofit retrofit = new Retrofit.Builder()
@@ -174,21 +186,31 @@ public class TeamManagementFragment extends Fragment implements
         }
     }
 
-    /**
-     * Creates the alert dialog.
-     *
-     * @param msg the msg
-     */
-    public void createAlertDialog(String msg) {
-        AlertDialog.Builder alertbox = new AlertDialog.Builder(getContext());
-        alertbox.setTitle("Response Message");
-        alertbox.setMessage(msg);
-        alertbox.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            // do something when the button is clicked
-            public void onClick(DialogInterface arg0, int arg1) {
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            }
-        });
-        alertbox.show();
+    }
+
+    public class InfoViewAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+            return 0;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return null;
+        }
     }
 }
