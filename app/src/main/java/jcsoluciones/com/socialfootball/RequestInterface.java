@@ -38,4 +38,10 @@ public interface RequestInterface {
 
     @POST("invite")
     Call<RequestInviteBody> registerInvite(@Body RequestInviteBody body);
+
+    @PUT("invite")
+    Call<RequestInviteBody> updateInvite(@Body RequestInviteBody body);
+
+    @POST("send")
+    Call<JSONObject> send(@Body JSONObject body);
 }

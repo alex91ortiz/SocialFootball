@@ -86,7 +86,7 @@ public class TeamsInviteAcceptAdapter extends BaseAdapter {
 
         try {
             final JSONObject jsonInvites = inviteBody.getJSONObject(position);
-            final JSONObject jsonCreate = new JSONObject(jsonInvites.getString("create"));
+            final JSONObject jsonCreate = new JSONObject(jsonInvites.getString("creator"));
             JSONObject jsonFriends = new JSONObject(jsonInvites.getString("friends"));
             if(jsonCreate.getString("email").equals(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL))){
 

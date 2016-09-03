@@ -15,6 +15,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private  Activity activity;
     private SessionManager sessionManager;
     private boolean isReceiverRegistered;
+    private ViewPagerAdapter adapterViewpager;
 
 
     @Override
@@ -109,12 +111,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new TeamsEventsFragment(), "ONE");
-        adapter.addFragment(new TeamsInviteAcceptFragment(), "TWO");
-        adapter.addFragment(new TeamManagementFragment(), "THREE");
-        adapter.addFragment(new TournamentsFragment(), "FOUR");
-        viewPager.setAdapter(adapter);
+        adapterViewpager = new ViewPagerAdapter(getSupportFragmentManager());
+        adapterViewpager.addFragment(new TeamsEventsFragment(), "ONE");
+        adapterViewpager.addFragment(new TeamsInviteAcceptFragment(), "TWO");
+        adapterViewpager.addFragment(new TeamManagementFragment(), "THREE");
+        adapterViewpager.addFragment(new TournamentsFragment(), "FOUR");
+
+        viewPager.setAdapter(adapterViewpager);
 
     }
 
@@ -251,7 +254,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 String result  = intent.getStringExtra("result");
                 String message = intent.getStringExtra("message");
                 Log.d(TAG, "onReceive: " + result + message);
-                setupViewPager(viewPager);
+
+                viewPager.setCurrentItem(2);
+                FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
+                fragTransaction.detach(adapterViewpager.getItem(2));
+                fragTransaction.attach(adapterViewpager.getItem(2));
+                fragTransaction.commit();
+
             } else if (intent.getAction().equals(MESSAGE_RECEIVED)){
 
                 String message = intent.getStringExtra("message");

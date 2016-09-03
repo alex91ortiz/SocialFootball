@@ -9,7 +9,7 @@ import java.io.Serializable;
  * Created by Admin on 28/08/2016.
  */
 public class RequestInviteBody implements Serializable {
-    @SerializedName("creator")
+    @SerializedName("_creator")
     private String creator;
 
     private boolean Acceptinvite;
@@ -21,6 +21,8 @@ public class RequestInviteBody implements Serializable {
 
     @SerializedName("friends")
     private String friends;
+
+    private String id;
 
     public String getCreator() {
         return creator;
@@ -84,5 +86,13 @@ public class RequestInviteBody implements Serializable {
 
     public void setAcceptinvite(boolean acceptinvite) {
         Acceptinvite = acceptinvite;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

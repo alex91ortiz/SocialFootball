@@ -137,8 +137,6 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                     Calendar dat = Calendar.getInstance();
                     dat.set(year, monthOfYear, dayOfMonth);
                     mangerDate.setText(format.format(dat.getTime()));
-
-                   // new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
                 }
 
             } catch (JSONException e) {
@@ -153,11 +151,43 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
         progressDialog = ProgressDialog.show(this, "", "Invitando..");
         progressDialog.setCancelable(true);
         if(flagAccept){
-            try {
-                jsonObjectinvite.put("Accept_invite", true);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+                RequestInviteBody requestInviteBody = new RequestInviteBody();
+                requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT).toString());
+                requestInviteBody.setAcceptinvite(true);
+                requestInviteBody.setMessage("");
+                requestInviteBody.setDatedayOfMonth(String.valueOf(dayOfMonth));
+                requestInviteBody.setDatemonthOfYear(String.valueOf(monthOfYear));
+                requestInviteBody.setDateyear(String.valueOf(year));
+                try {
+                    requestInviteBody.setId(jsonObjectinvite.getString("_id").toString());
+                    requestInviteBody.setFriends(jsonObject.getString("_id").toString());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(Constants.HostServer)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                RequestInterface request = retrofit.create(RequestInterface.class);
+                Call<RequestInviteBody> call = request.updateInvite(requestInviteBody);
+                call.enqueue(new Callback<RequestInviteBody>() {
+                    @Override
+                    public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
+                        RequestInviteBody responseBody = response.body();
+                        Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onFailure(Call<RequestInviteBody> call, Throwable t) {
+                        Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                        progressDialog.dismiss();
+                    }
+                });
+
         }else {
 
             RequestInviteBody requestInviteBody = new RequestInviteBody();
@@ -169,6 +199,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
             requestInviteBody.setDateyear(String.valueOf(year));
             try {
                 requestInviteBody.setFriends(jsonObject.getString("_id").toString());
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -185,11 +216,13 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                 public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
                     RequestInviteBody responseBody = response.body();
                     Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
                 }
 
                 @Override
                 public void onFailure(Call<RequestInviteBody> call, Throwable t) {
                     Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    progressDialog.dismiss();
                 }
             });
 
@@ -197,15 +230,34 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
 
     }
 
+    public void makeSendnvite(String message,String registrationId){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("registrationId",registrationId);
+            jsonObject.put("message",message);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.HostServer)
+                .addConverterFactory(JSONConverterFactory.create())
+                .build();
 
-        //asyncService.onSendPushMessageUser(txvemail.getText().toString(), "Tienes una invitacion",this);
+        RequestInterface request = retrofit.create(RequestInterface.class);
+        Call<JSONObject> call = request.send(jsonObject);
+        call.enqueue(new Callback<JSONObject>() {
+            @Override
+            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                JSONObject responseBody = response.body();
+                Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
+            }
 
-
-
-
-
-        //asyncService.onSendPushMessageUser(txvemail.getText().toString(), "Aceptaron tu invitacion",this);
-
+            @Override
+            public void onFailure(Call<JSONObject> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
 
     /**

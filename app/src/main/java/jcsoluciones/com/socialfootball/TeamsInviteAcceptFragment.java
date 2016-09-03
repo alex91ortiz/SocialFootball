@@ -95,7 +95,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                     .build();
 
             RequestInterface request = retrofit.create(RequestInterface.class);
-            Call<JSONArray> call = request.invites("57c0a83f9b0e9b48a72f66a2");
+            Call<JSONArray> call = request.invites(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT));
             call.enqueue(new Callback<JSONArray>() {
                     @Override
                     public void onResponse(Call<JSONArray> call, Response<JSONArray> response) {

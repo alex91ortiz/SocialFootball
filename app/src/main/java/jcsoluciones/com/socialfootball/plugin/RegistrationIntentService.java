@@ -168,6 +168,7 @@ public class RegistrationIntentService extends IntentService{
                     jsonObject.put("email",responseBody.getEmail());
                     jsonObject.put("desc",responseBody.getDesc());
                     jsonObject.put("city",responseBody.getCity());
+                    jsonObject.put("registrationId",responseBody.getRegistrationId());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -216,14 +217,18 @@ public class RegistrationIntentService extends IntentService{
                     jsonObject.put("email",responseBody.getEmail());
                     jsonObject.put("desc",responseBody.getDesc());
                     jsonObject.put("city",responseBody.getCity());
+                    jsonObject.put("registrationId",responseBody.getRegistrationId());
+                    sessionManager.createContentSession(responseBody.getId(), jsonObject.toString());
+                    Intent intent = new Intent(MainActivity.REGISTRATION_PROCESS);
+                    intent.putExtra("result", responseBody.getId());
+                    intent.putExtra("message", responseBody.getEmail());
+                    LocalBroadcastManager.getInstance(RegistrationIntentService.this).sendBroadcast(intent);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    sessionManager.createContentSession(null, null);
                 }
-                sessionManager.createContentSession(responseBody.getId(),jsonObject.toString());
-                Intent intent = new Intent(MainActivity.REGISTRATION_PROCESS);
-                intent.putExtra("result", responseBody.getId());
-                intent.putExtra("message", responseBody.getEmail());
-                LocalBroadcastManager.getInstance(RegistrationIntentService.this).sendBroadcast(intent);
+
+
                 //uploadFile();
             }
 
@@ -231,6 +236,7 @@ public class RegistrationIntentService extends IntentService{
             public void onFailure(Call<RequestTeamBody> call, Throwable t) {
 
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                sessionManager.createContentSession(null, null);
             }
         });
     }
@@ -243,8 +249,7 @@ public class RegistrationIntentService extends IntentService{
                 .build();
         RequestInterface service = retrofit.create(RequestInterface.class);
         // create RequestBody instance from file
-        RequestBody requestFile =
-                RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         // MultipartBody.Part is used to send also the actual file name
         MultipartBody.Part body = MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
         // add another part within the multipart request

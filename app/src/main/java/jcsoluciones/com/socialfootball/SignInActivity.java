@@ -109,13 +109,16 @@ public class SignInActivity extends AppCompatActivity implements  GoogleApiClien
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
             Log.d("SigninActivity", acct.getDisplayName());
+
             sessionManager.createLoginSession(acct.getDisplayName(), acct.getEmail());
-            Intent intent = new Intent(getApplicationContext(), TeamsMgtActivity.class);
-            startActivity(intent);
+            if(getIntent().getBooleanExtra("createOrupdate",false)) {
+                Intent intent = new Intent(getApplicationContext(), TeamsMgtActivity.class);
+                startActivity(intent);
+            }
             finish();
         } else {
             // Signed out, show unauthenticated UI.
-            createAlertDialog("connection  :"+ result.getStatus().getStatusMessage());
+                createAlertDialog("connection  :" + result.getStatus().getStatusMessage());
         }
     }
     private void signOut() {

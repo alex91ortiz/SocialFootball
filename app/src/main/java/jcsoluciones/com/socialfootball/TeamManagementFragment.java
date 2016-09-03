@@ -72,22 +72,24 @@ public class TeamManagementFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_teamsmanagement, container, false);
-        btnedit =(BootstrapButton) view.findViewById(R.id.button_event);
+
+        View view;
+        view = inflater.inflate(R.layout.fragment_teamsmanagement, container, false);
+        btnedit = (BootstrapButton) view.findViewById(R.id.button_event);
         btnedit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), TeamsMgtActivity.class);
                 intent.putExtra("object", sessionManager.getUserDetails().get(sessionManager.CONTENT));
-                intent.putExtra("IdTeams",sessionManager.getUserDetails().get(sessionManager.ID_CONTENT));
-                intent.putExtra("createOrupdate",false);
+                intent.putExtra("IdTeams", sessionManager.getUserDetails().get(sessionManager.ID_CONTENT));
+                intent.putExtra("createOrupdate", false);
                 startActivity(intent);
             }
         });
 
 
-        name =(TextView) view.findViewById(R.id.layout_name);
-        desc =(TextView) view.findViewById(R.id.layout_desc);
+        name = (TextView) view.findViewById(R.id.layout_name);
+        desc = (TextView) view.findViewById(R.id.layout_desc);
         mImg = (BootstrapCircleThumbnail) view.findViewById(R.id.ImageTeams);
 
         sessionManager = new SessionManager(getContext());
@@ -98,23 +100,20 @@ public class TeamManagementFragment extends Fragment implements
 
                 if (!sessionManager.isLoggedIn()) {
                     Intent intent = new Intent(getContext(), SignInActivity.class);
+                    intent.putExtra("createOrupdate", true);
                     startActivity(intent);
                 } else {
                     Intent intent = new Intent(getContext(), TeamsMgtActivity.class);
+                    intent.putExtra("createOrupdate", true);
                     startActivity(intent);
                 }
             }
         });
-
         validateUser();
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        validateUser();
-    }
+
 
     public void onRefresh(){
         Retrofit retrofit = new Retrofit.Builder()
@@ -151,28 +150,27 @@ public class TeamManagementFragment extends Fragment implements
         });
     }
 
-
-
     public void validateUser(){
-        JSONObject jsonObject = null;
-        try {
-            if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()){
-                if(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
-                    Intent intent = new Intent(getContext(), SignInActivity.class);
-                    startActivity(intent);
-                }else {
-                    onRefresh();
-                }
+
+        if(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
+            Intent intent = new Intent(getContext(), SignInActivity.class);
+            startActivity(intent);
+        }else {
+            if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()) {
+                onRefresh();
             }else{
-                jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
-                name.setText(jsonObject.getString("name"));
-                desc.setText(jsonObject.getString("desc"));
-                String selectedImage =Constants.HostServer+"/img/"+jsonObject.getString("_id")+"/profile.jpg";
-                new ImageLoader(mImg).execute(selectedImage);
-                fabEditTeamMgt.setVisibility(View.INVISIBLE);
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
+                    name.setText(jsonObject.getString("name"));
+                    desc.setText(jsonObject.getString("desc"));
+                    String selectedImage = Constants.HostServer + "/img/" + jsonObject.getString("_id") + "/profile.jpg";
+                    new ImageLoader(mImg).execute(selectedImage);
+                    fabEditTeamMgt.setVisibility(View.INVISIBLE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 

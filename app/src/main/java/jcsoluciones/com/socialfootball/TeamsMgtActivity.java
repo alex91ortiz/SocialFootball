@@ -164,11 +164,10 @@ public class TeamsMgtActivity extends AppCompatActivity {
                 edtdescrip.setText(jsonObject.getString("desc"));
                 email.setText(jsonObject.getString("email"));
                 RegisterID = jsonObject.getString("registrationId");
-                createOrupdate = bundle.getBoolean("createOrupdate", true);
+                createOrupdate = getIntent().getBooleanExtra("createOrupdate", false);
 
                 IdTeams =jsonObject.getString("_id");
                 selectedImage =Constants.HostServer+"/img/"+jsonObject.getString("_id")+"/profile.jpg";
-                //new ImageLoader(mImg).execute(selectedImage);
                 Picasso.with(this).load(selectedImage).into(mImg);
                 spncity.setSelection(adapterspinner.getPosition(jsonObject.getString("city")));
             } catch (JSONException e) {
@@ -251,11 +250,13 @@ public class TeamsMgtActivity extends AppCompatActivity {
                             jsonObject.put("email",responseBody.getEmail());
                             jsonObject.put("desc",responseBody.getDesc());
                             jsonObject.put("city",responseBody.getCity());
+                            jsonObject.put("registrationId",responseBody.getRegistrationId());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         sessionManager.createContentSession(responseBody.getId(), jsonObject.toString());
                         uploadFile();
+
                     }
 
                     @Override
@@ -491,33 +492,36 @@ public class TeamsMgtActivity extends AppCompatActivity {
 
     private void uploadFile() {
         // create upload service client
+            if(file!=null) {
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(Constants.HostServer)
+                        .addConverterFactory(JSONConverterFactory.create())
+                        .build();
+                RequestInterface service = retrofit.create(RequestInterface.class);
+                // create RequestBody instance from file
+                RequestBody requestFile =
+                        RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                // MultipartBody.Part is used to send also the actual file name
+                MultipartBody.Part body = MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
+                // add another part within the multipart request
+                String descriptionString = sessionManager.getUserDetails().get(SessionManager.ID_CONTENT);
+                RequestBody description = RequestBody.create(MediaType.parse("multipart/form-data"), descriptionString);
+                // finally, execute the request
+                Call<JSONObject> call = service.upload(description, body);
+                call.enqueue(new Callback<JSONObject>() {
+                    @Override
+                    public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                        Log.v("Upload", "success");
+                        finish();
+                    }
 
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(Constants.HostServer)
-                    .addConverterFactory(JSONConverterFactory.create())
-                    .build();
-            RequestInterface service = retrofit.create(RequestInterface.class);
-            // create RequestBody instance from file
-            RequestBody requestFile =
-                    RequestBody.create(MediaType.parse("multipart/form-data"), file);
-            // MultipartBody.Part is used to send also the actual file name
-            MultipartBody.Part body = MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
-            // add another part within the multipart request
-            String descriptionString = sessionManager.getUserDetails().get(SessionManager.ID_CONTENT);
-            RequestBody description = RequestBody.create(MediaType.parse("multipart/form-data"), descriptionString);
-            // finally, execute the request
-            Call<JSONObject> call = service.upload(description, body);
-            call.enqueue(new Callback<JSONObject>() {
-                @Override
-                public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-                    Log.v("Upload", "success");
-                }
-
-                @Override
-                public void onFailure(Call<JSONObject> call, Throwable t) {
-                    Log.e("Upload error:", t.getMessage());
-                }
-            });
-
+                    @Override
+                    public void onFailure(Call<JSONObject> call, Throwable t) {
+                        Log.e("Upload error:", t.getMessage());
+                    }
+                });
+            }else{
+                finish();
+            }
     }
 }
