@@ -27,15 +27,16 @@ import jcsoluciones.com.socialfootball.utils.ImageLoader;
 public class TeamMgtAdapter extends BaseAdapter  {
     private Activity activity;
     private LayoutInflater inflater;
-    private ArrayList<Storage.JSONDocument> jsonList;
+    private ArrayList<String> jsonList;
     private BootstrapCircleThumbnail mImg;
-    private int position;
+    private String id;
+    private String name;
+
 
     private AsyncApp42ServiceApi asyncService;
-    public  TeamMgtAdapter (Activity activity,ArrayList<Storage.JSONDocument> jsonList){
+    public  TeamMgtAdapter (Activity activity,ArrayList<String> jsonList,String id,String name){
         this.jsonList = jsonList;
         this.activity = activity;
-        asyncService = AsyncApp42ServiceApi.instance(activity);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class TeamMgtAdapter extends BaseAdapter  {
     }
 
     @Override
-    public Storage.JSONDocument getItem(int position) {
+    public String getItem(int position) {
         return jsonList.get(position);
     }
 
@@ -63,18 +64,9 @@ public class TeamMgtAdapter extends BaseAdapter  {
         TextView title = (TextView) convertView.findViewById(R.id.title);
         TextView message = (TextView) convertView.findViewById(R.id.message);
 
-        try {
-            JSONObject jsonObject = new JSONObject(jsonList.get(position).getJsonDoc());
-            mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
+        title.setText(jsonList.get(position).toString());
 
-            if(mImg!=null) {
-                new ImageLoader(mImg).execute(jsonObject.getString("ImageUrl"));
-            }
-            title.setText(jsonObject.getString("name"));
-            message.setText(jsonObject.getString("desc"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
 
 
         return convertView;

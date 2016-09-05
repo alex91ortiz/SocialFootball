@@ -13,5 +13,8 @@
         <item>Bogota</item>
         <item>Barranquilla</item>
     </string-array>
+
+
+
     <string name="title_activity_teams_mgt">TeamsMgtActivity</string>
 </resources>

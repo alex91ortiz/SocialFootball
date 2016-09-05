@@ -1,5 +1,6 @@
 package jcsoluciones.com.socialfootball;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,6 +33,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Inflater;
 
 import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
 import jcsoluciones.com.socialfootball.models.RequestTeamBody;
@@ -122,8 +124,15 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //InfoViewAdapter adapter = InfoViewAdapter();
-        //setListAdapter(adapter);
+        ArrayList<TeamMgtMenu> teamMgtMenus = new ArrayList<TeamMgtMenu>();
+        teamMgtMenus.add(new TeamMgtMenu("crear perfil","",1));
+        teamMgtMenus.add(new TeamMgtMenu("crear perfil","",2));
+        teamMgtMenus.add(new TeamMgtMenu("crear perfil","",3));
+        teamMgtMenus.add(new TeamMgtMenu("crear perfil","",4));
+
+
+        setListAdapter(new TeamMgtAdapter(getActivity(),teamMgtMenus));
+        
         getListView().setOnItemClickListener(this);
     }
 
@@ -191,26 +200,85 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
 
     }
 
-    public class InfoViewAdapter extends BaseAdapter {
+    private class TeamMgtMenu{
+        private String title;
+        private String desc;
+        private int tipo;
 
-        @Override
-        public int getCount() {
-            return 0;
+        public TeamMgtMenu(String title, String desc, int tipo) {
+            this.title = title;
+            this.desc = desc;
+            this.tipo = tipo;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+
+        public void setDesc(String desc) {
+            this.desc = desc;
+        }
+
+        public int getTipo() {
+            return tipo;
+        }
+
+        public void setTipo(int tipo) {
+            this.tipo = tipo;
+        }
+    }
+
+    private class TeamMgtAdapter extends BaseAdapter  {
+        private Activity activity;
+        private LayoutInflater inflater;
+        private ArrayList<TeamMgtMenu> jsonList;
+        private BootstrapCircleThumbnail mImg;
+
+        public  TeamMgtAdapter (Activity activity,ArrayList<TeamMgtMenu> jsonList){
+            this.jsonList = jsonList;
+            this.activity = activity;
         }
 
         @Override
-        public Object getItem(int position) {
-            return null;
+        public int getCount() {
+            return jsonList.size();
+        }
+
+        @Override
+        public TeamMgtMenu getItem(int position) {
+            return jsonList.get(position);
         }
 
         @Override
         public long getItemId(int position) {
-            return 0;
+            return position;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
+            if (inflater==null)
+                inflater= (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            if(convertView==null)
+                convertView = inflater.inflate(R.layout.list_group_teamsmanagement,null);
+
+            TextView title = (TextView) convertView.findViewById(R.id.title);
+            TextView message = (TextView) convertView.findViewById(R.id.message);
+
+            title.setText(jsonList.get(position).getTitle());
+
+            mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
+
+
+            return convertView;
         }
+
     }
 }
