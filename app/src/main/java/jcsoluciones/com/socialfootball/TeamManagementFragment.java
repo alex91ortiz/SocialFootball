@@ -124,14 +124,7 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ArrayList<TeamMgtMenu> teamMgtMenus = new ArrayList<TeamMgtMenu>();
-        teamMgtMenus.add(new TeamMgtMenu("crear perfil","",1));
-        teamMgtMenus.add(new TeamMgtMenu("crear perfil","",2));
-        teamMgtMenus.add(new TeamMgtMenu("crear perfil","",3));
-        teamMgtMenus.add(new TeamMgtMenu("crear perfil","",4));
 
-
-        setListAdapter(new TeamMgtAdapter(getActivity(),teamMgtMenus));
         
         getListView().setOnItemClickListener(this);
     }
@@ -173,26 +166,37 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
 
     public void validateUser(){
 
-        if(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
+        /*if(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
             Intent intent = new Intent(getContext(), SignInActivity.class);
             startActivity(intent);
-        }else {
+        }else {*/
             if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()) {
                 onRefresh();
             }else{
                 JSONObject jsonObject = null;
                 try {
-                    jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
+                    /*jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
                     name.setText(jsonObject.getString("name"));
                     desc.setText(jsonObject.getString("desc"));
                     String selectedImage = Constants.HostServer + "/img/" + jsonObject.getString("_id") + "/profile.jpg";
                     new ImageLoader(mImg).execute(selectedImage);
-                    fabEditTeamMgt.setVisibility(View.INVISIBLE);
+                    fabEditTeamMgt.setVisibility(View.INVISIBLE);*/
+                    String selectedImage = Constants.HostServer + "/img/" + jsonObject.getString("_id") + "/profile.jpg";
+                    jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
+                    ArrayList<TeamMgtMenu> teamMgtMenus = new ArrayList<TeamMgtMenu>();
+                    teamMgtMenus.add(new TeamMgtMenu(jsonObject.getString("name"),selectedImage,1));
+                    teamMgtMenus.add(new TeamMgtMenu("crear perfil","",2));
+                    teamMgtMenus.add(new TeamMgtMenu("crear perfil", "", 3));
+                    teamMgtMenus.add(new TeamMgtMenu("crear perfil", "", 4));
+
+
+                    setListAdapter(new TeamMgtAdapter(getActivity(), teamMgtMenus));
                 } catch (JSONException e) {
+
                     e.printStackTrace();
                 }
             }
-        }
+        //}
     }
 
     @Override
