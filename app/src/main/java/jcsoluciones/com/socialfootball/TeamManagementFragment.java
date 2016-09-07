@@ -1,50 +1,38 @@
 package jcsoluciones.com.socialfootball;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
-import com.shephertz.app42.paas.sdk.android.App42Exception;
-import com.shephertz.app42.paas.sdk.android.storage.Query;
-import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.Inflater;
 
 import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
-import jcsoluciones.com.socialfootball.models.RequestTeamBody;
 import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
-import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Admin on 31/07/2016.
@@ -117,6 +105,7 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
             }
         });
         validateUser();*/
+        sessionManager = new SessionManager(getContext());
         View view = inflater.inflate(R.layout.fragment_teamsmanagement, container, false);
         return view;
     }
@@ -125,7 +114,11 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        
+        validateUser();
+        ListView lv = getListView();
+        //ColorDrawable white = new ColorDrawable(this.getResources().getColor(R.color.md_white_1000,null));
+        //lv.setDivider(white);
+        lv.setDividerHeight(0);
         getListView().setOnItemClickListener(this);
     }
 
@@ -148,7 +141,7 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
                     intents.putExtra("TEAM_CITY", jsonObject.getString("city"));
                     intents.putExtra("TEAM_DESC", jsonObject.getString("desc"));
                     intents.putExtra("TEAM_EMAIL", jsonObject.getString("email"));
-                    intents.putExtra("HOST",Constants.HostServer);
+                    intents.putExtra("HOST", Constants.HostServer);
                     intents.putExtra("CREATEORUPDATE_TEAM", false);
                     getActivity().startService(intents);
 
@@ -164,12 +157,24 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
         });
     }
 
+    public  void createList(String name,String title,String UrlImg){
+        ArrayList<TeamMgtMenu> teamMgtMenus = new ArrayList<TeamMgtMenu>();
+        teamMgtMenus.add(new TeamMgtMenu(name,title,UrlImg,1));
+        teamMgtMenus.add(new TeamMgtMenu("Eventos","","",2));
+        teamMgtMenus.add(new TeamMgtMenu("Canchas","", "", 3));
+        teamMgtMenus.add(new TeamMgtMenu("Contactenos","" ,"", 4));
+
+
+        setListAdapter(new TeamMgtAdapter(getActivity(), teamMgtMenus));
+    }
+
     public void validateUser(){
 
-        /*if(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
-            Intent intent = new Intent(getContext(), SignInActivity.class);
-            startActivity(intent);
-        }else {*/
+        if(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
+            /*Intent intent = new Intent(getContext(), SignInActivity.class);
+            startActivity(intent);*/
+            createList("Crear Perfil","","");
+        }else {
             if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()) {
                 onRefresh();
             }else{
@@ -181,22 +186,15 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
                     String selectedImage = Constants.HostServer + "/img/" + jsonObject.getString("_id") + "/profile.jpg";
                     new ImageLoader(mImg).execute(selectedImage);
                     fabEditTeamMgt.setVisibility(View.INVISIBLE);*/
-                    String selectedImage = Constants.HostServer + "/img/" + jsonObject.getString("_id") + "/profile.jpg";
                     jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
-                    ArrayList<TeamMgtMenu> teamMgtMenus = new ArrayList<TeamMgtMenu>();
-                    teamMgtMenus.add(new TeamMgtMenu(jsonObject.getString("name"),selectedImage,1));
-                    teamMgtMenus.add(new TeamMgtMenu("crear perfil","",2));
-                    teamMgtMenus.add(new TeamMgtMenu("crear perfil", "", 3));
-                    teamMgtMenus.add(new TeamMgtMenu("crear perfil", "", 4));
-
-
-                    setListAdapter(new TeamMgtAdapter(getActivity(), teamMgtMenus));
+                    String selectedImage = Constants.HostServer + "/img/" + jsonObject.getString("_id") + "/profile.jpg";
+                    createList(jsonObject.getString("name"),"Ver tu perfil", selectedImage);
                 } catch (JSONException e) {
 
                     e.printStackTrace();
                 }
             }
-        //}
+        }
     }
 
     @Override
@@ -207,12 +205,14 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
     private class TeamMgtMenu{
         private String title;
         private String desc;
+        private String imgurl;
         private int tipo;
 
-        public TeamMgtMenu(String title, String desc, int tipo) {
+        public TeamMgtMenu(String title, String desc,String imgurl, int tipo) {
             this.title = title;
             this.desc = desc;
             this.tipo = tipo;
+            this.imgurl = imgurl;
         }
 
         public String getTitle() {
@@ -238,13 +238,21 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
         public void setTipo(int tipo) {
             this.tipo = tipo;
         }
+
+        public String getImgurl() {
+            return imgurl;
+        }
+
+        public void setImgurl(String imgurl) {
+            this.imgurl = imgurl;
+        }
     }
 
     private class TeamMgtAdapter extends BaseAdapter  {
         private Activity activity;
         private LayoutInflater inflater;
         private ArrayList<TeamMgtMenu> jsonList;
-        private BootstrapCircleThumbnail mImg;
+
 
         public  TeamMgtAdapter (Activity activity,ArrayList<TeamMgtMenu> jsonList){
             this.jsonList = jsonList;
@@ -268,20 +276,52 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
             if (inflater==null)
-                inflater= (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            if(convertView==null)
-                convertView = inflater.inflate(R.layout.list_group_teamsmanagement,null);
+                inflater=(LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            if(convertView==null) {
+                convertView = inflater.inflate(R.layout.list_group_teamsmanagement, null);
+                viewHolder = new ViewHolder();
+                viewHolder.text1 = (TextView) convertView.findViewById(R.id.title);
+                viewHolder.text2 = (TextView) convertView.findViewById(R.id.message);
+                viewHolder.mImg =(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
+                viewHolder.divider = (View) convertView.findViewById(R.id.divider);
+                convertView.setTag(viewHolder);
+            }else{
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
 
-            TextView title = (TextView) convertView.findViewById(R.id.title);
-            TextView message = (TextView) convertView.findViewById(R.id.message);
+            TeamMgtMenu teamMgtMenu = jsonList.get(position);
+            if(teamMgtMenu !=null) {
+                viewHolder.text1.setText(teamMgtMenu.getTitle());
+                viewHolder.text2.setText(teamMgtMenu.getDesc());
 
-            title.setText(jsonList.get(position).getTitle());
+                switch (teamMgtMenu.getTipo()) {
+                    case 1:
+                        if (!teamMgtMenu.getImgurl().isEmpty()) {
+                            //new ImageLoader(viewHolder.mImg).execute(jsonList.get(position).getImgurl());
+                            Picasso.with(activity).load(teamMgtMenu.getImgurl()).into(viewHolder.mImg);
+                            viewHolder.divider.setVisibility(View.VISIBLE);
+                        }
+                        break;
+                    case 2:
 
-            mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
-
-
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            viewHolder.mImg.setImageDrawable( getResources().getDrawable(R.drawable.events,activity.getTheme()));
+                        }else{
+                            viewHolder.mImg.setImageDrawable(getResources().getDrawable(R.drawable.events));
+                        }
+                        break;
+                }
+            }
             return convertView;
+        }
+
+        private  class ViewHolder {
+            public TextView text1;
+            public TextView text2;
+            public BootstrapCircleThumbnail mImg;
+            public View divider;
         }
 
     }

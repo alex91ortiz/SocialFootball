@@ -5,17 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
-
-
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
-
 import java.io.InputStream;
-
-import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import jcsoluciones.com.socialfootball.R;
 
 
@@ -68,8 +61,10 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
                 return bitmap;
             }
         } catch (Exception e) {
-            urlConnection.disconnect();
-            Log.w("ImageDownloader", "Error downloading image from " + url);
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+                Log.w("ImageDownloader", "Error downloading image from " + url);
+            }
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
