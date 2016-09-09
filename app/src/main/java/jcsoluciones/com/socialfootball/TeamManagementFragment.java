@@ -199,7 +199,15 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+            switch(position){
+                case 0:
+                    Intent intent = new Intent(getActivity(),InvitePlayActivity.class);
+                    startActivity(intent);
+                    break;
+                case 1:break;
+                case 2:break;
+                case 3:break;
+            }
     }
 
     private class TeamMgtMenu{
