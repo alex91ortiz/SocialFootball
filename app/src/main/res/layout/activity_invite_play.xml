@@ -39,7 +39,7 @@
             app:bootstrapBrand="success"
             app:hasBorder="true" />
 
-        <!--<com.beardedhen.androidbootstrap.BootstrapButton
+        <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/button_event_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -132,13 +132,14 @@
             app:buttonMode="regular"
             android:onClick="SendInvite"
             app:checked="true"
-            app:roundedCorners="true" />-->
-        <TableLayout
+            app:roundedCorners="true" />
+        <LinearLayout
             android:layout_below="@+id/ImageTeams"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        </TableLayout>
+        </LinearLayout>
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

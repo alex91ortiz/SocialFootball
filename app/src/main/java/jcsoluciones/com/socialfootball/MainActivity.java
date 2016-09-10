@@ -150,9 +150,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private void setupTabIcons() {
 
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_web_yellow_24px);
+        /*tabLayout.getTabAt(0).setIcon(R.drawable.ic_web_yellow_24px);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_public_green_24px);
-        tabLayout.getTabAt(2).setIcon(R.drawable.ic_group_work_green_24px);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_group_work_green_24px);*/
         //tabLayout.getTabAt(3).setIcon(R.drawable.ic_web_green_24px);
     }
 

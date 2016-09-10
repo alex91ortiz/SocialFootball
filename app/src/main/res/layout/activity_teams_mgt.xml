@@ -99,7 +99,6 @@
                     android:layout_height="45dp">
 
                 </Spinner>
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
@@ -108,7 +107,6 @@
                     android:paddingLeft="20dp"
                     android:layout_below="@+id/input_layout_city"
                     android:text="@string/teamsmanagement_email"/>
-
                 <RatingBar
                     android:id="@+id/rtbCumplimiento"
                     android:layout_below="@+id/input_layout_email"
@@ -120,7 +118,6 @@
                     android:stepSize="1.0"
                     android:visibility="visible"
                     android:rating="2.0" />
-
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/switchCancel"
                     android:text="Delete"
