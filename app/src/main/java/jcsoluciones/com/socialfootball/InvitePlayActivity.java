@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
+import com.beardedhen.androidbootstrap.BootstrapLabel;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.push.PushNotification;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
@@ -46,11 +47,11 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
     /**
      * The phone
      */
-    private TextView txvphone;
+    private BootstrapLabel txvphone;
     /**
      * The description
      */
-    private TextView txvdescrip;
+    private BootstrapLabel txvdescrip;
     /**
      * The email
      */
@@ -88,13 +89,10 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
 
 
         mImg = (BootstrapCircleThumbnail) findViewById(R.id.ImageTeams);
-        /*txvname = (TextView) findViewById(R.id.input_layout_name);
-        txvphone = (TextView) findViewById(R.id.input_layout_phone);
-        txvdescrip = (TextView) findViewById(R.id.input_layout_desc);
-        txvcity = (TextView) findViewById(R.id.input_layout_city);
-        txvemail = (TextView) findViewById(R.id.input_layout_email);
-        Sendnvite = (BootstrapButton) findViewById(R.id.button_event);
-        mangerDate = (BootstrapButton) findViewById(R.id.button_date);*/
+        txvphone = (BootstrapLabel) findViewById(R.id.input_layout_phone);
+        txvdescrip = (BootstrapLabel) findViewById(R.id.input_layout_desc);
+        Sendnvite = (BootstrapButton) findViewById(R.id.button_event_edit_invite);
+        //mangerDate = (BootstrapButton) findViewById(R.id.button_date);
 
 /*        mangerDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,15 +115,18 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                 flagAccept = bundle.getBoolean("flagAccept", false);
                 jsonObject = new JSONObject(bundle.getString("team",""));
 
-                txvname.setText(jsonObject.getString("name"));
-                txvphone.setText(jsonObject.getString("phone"));
+               /* txvname.setText(jsonObject.getString("name"));
+
                 txvdescrip.setText(jsonObject.getString("desc"));
+
+                txvemail.setText(jsonObject.getString("email"));*/
                 txvcity.setText(jsonObject.getString("city"));
-                txvemail.setText(jsonObject.getString("email"));
+                txvphone.setText(jsonObject.getString("phone"));
                 IdInvite = bundle.getString("IdInvite", "");
                 IdTeams = bundle.getString("IdTeams", "");
                 String selectedImage =Constants.HostServer+"/img/"+jsonObject.getString("_id")+"/profile.jpg";
                 //new ImageLoader(mImg).execute(selectedImage);
+
                 Picasso.with(this).load(selectedImage).into(mImg);
 
                 jsonObjectinvite = new JSONObject(bundle.getString("invite",""));
@@ -136,7 +137,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                     SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
                     Calendar dat = Calendar.getInstance();
                     dat.set(year, monthOfYear, dayOfMonth);
-                    mangerDate.setText(format.format(dat.getTime()));
+                    //mangerDate.setText(format.format(dat.getTime()));
                 }
 
             } catch (JSONException e) {

@@ -22,7 +22,7 @@
     </android.support.design.widget.AppBarLayout>
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="570dp"
         android:src="@drawable/ic_escudo_team"/>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -31,6 +31,7 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
+
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
@@ -38,6 +39,7 @@
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+
             app:bootstrapSize="xs"
             android:layout_marginTop="50dp"
             app:bootstrapBrand="success"
@@ -79,7 +81,7 @@
             app:animated="true"
             android:layout_toRightOf="@+id/nivel_label"
             app:bootstrapBrand="success"
-            app:progress="50"
+            app:progress="78"
             android:layout_marginTop="5dp"
             android:layout_marginRight="50dp"
             android:layout_below="@id/button_event_edit_invite"
@@ -89,7 +91,7 @@
             android:id="@+id/city_label"
             android:layout_width="100dp"
             android:layout_height="30dp"
-            app:bootstrapBrand="success"
+            app:bootstrapBrand="warning"
             app:bootstrapHeading="h6"
             app:roundedCorners="true"
             android:text="city"

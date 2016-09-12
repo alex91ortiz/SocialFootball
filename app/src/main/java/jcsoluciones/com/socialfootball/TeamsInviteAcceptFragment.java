@@ -196,6 +196,16 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                         if (jsonCreate.getString("email").equals(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL))) {
 
                             viewHolder.text1.setText(jsonFriends.getString("name"));
+                            viewHolder.text1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(activity, InvitePlayActivity.class);
+                                    intent.putExtra("team", jsonCreate.toString());
+                                    intent.putExtra("invite", jsonInvites.toString());
+                                    intent.putExtra("flagAccept", true);
+                                    activity.startActivity(intent);
+                                }
+                            });
                             viewHolder.text2.setText(jsonFriends.getString("desc"));
                             String selectedImage = Constants.HostServer + "/img/" + jsonFriends.getString("_id") + "/profile.jpg";
 
