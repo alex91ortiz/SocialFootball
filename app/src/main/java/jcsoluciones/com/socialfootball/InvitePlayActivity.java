@@ -88,15 +88,15 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
 
 
         mImg = (BootstrapCircleThumbnail) findViewById(R.id.ImageTeams);
-        txvname = (TextView) findViewById(R.id.input_layout_name);
+        /*txvname = (TextView) findViewById(R.id.input_layout_name);
         txvphone = (TextView) findViewById(R.id.input_layout_phone);
         txvdescrip = (TextView) findViewById(R.id.input_layout_desc);
         txvcity = (TextView) findViewById(R.id.input_layout_city);
         txvemail = (TextView) findViewById(R.id.input_layout_email);
         Sendnvite = (BootstrapButton) findViewById(R.id.button_event);
-        mangerDate = (BootstrapButton) findViewById(R.id.button_date);
+        mangerDate = (BootstrapButton) findViewById(R.id.button_date);*/
 
-        mangerDate.setOnClickListener(new View.OnClickListener() {
+/*        mangerDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Calendar now = Calendar.getInstance();
@@ -108,7 +108,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                 );
                 dpd.show(getFragmentManager(), "Datepickerdialog");
             }
-        });
+        });*/
 
         sessionManager = new SessionManager(this);
         Bundle bundle =getIntent().getExtras();

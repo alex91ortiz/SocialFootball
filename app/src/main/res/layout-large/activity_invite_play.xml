@@ -35,12 +35,12 @@
 
         <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
             android:id="@+id/ImageTeams"
-            android:layout_width="120dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
 
             app:bootstrapSize="xs"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="150dp"
             app:bootstrapBrand="success"
             app:hasBorder="true" />
 
@@ -49,9 +49,9 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             app:bootstrapText="Edit Your Profile"
-            android:layout_marginRight="50dp"
+            android:layout_marginRight="100dp"
             app:typicon="ty_plus_outline"
-            android:layout_marginLeft="50dp"
+            android:layout_marginLeft="100dp"
             android:layout_below="@+id/ImageTeams"
             android:layout_marginTop="5dp"
             app:bootstrapBrand="info"
@@ -69,7 +69,7 @@
             app:bootstrapHeading="h6"
             app:roundedCorners="true"
             android:text="nivel"
-            android:layout_marginLeft="50dp"
+            android:layout_marginLeft="100dp"
             android:layout_marginTop="5dp"
             android:layout_below="@+id/button_event_edit_invite"
             />
@@ -82,7 +82,7 @@
             app:bootstrapBrand="success"
             app:progress="78"
             android:layout_marginTop="5dp"
-            android:layout_marginRight="50dp"
+            android:layout_marginRight="100dp"
             android:layout_below="@id/button_event_edit_invite"
             app:striped="true"
             />
@@ -94,7 +94,7 @@
             app:bootstrapHeading="h6"
             app:roundedCorners="true"
             android:text="city"
-            android:layout_marginLeft="50dp"
+            android:layout_marginLeft="100dp"
             android:layout_marginTop="5dp"
             android:layout_below="@+id/nivel_label"
             />
@@ -106,7 +106,7 @@
             android:text="phtone"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
-            android:layout_marginRight="50dp"
+            android:layout_marginRight="100dp"
             android:layout_toRightOf="@+id/city_label"
             android:layout_below="@+id/nivel_label"
             />

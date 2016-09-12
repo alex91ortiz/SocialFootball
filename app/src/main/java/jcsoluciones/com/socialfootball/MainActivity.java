@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 searchMenuItem.setVisible(tab.getPosition() == 0);
                 viewPager.setVisibility(View.VISIBLE);
                 searchList.setVisibility(View.INVISIBLE);
-                switch (tab.getPosition()){
+                /*switch (tab.getPosition()){
                     case 0:
                         tabLayout.getTabAt(tab.getPosition()).setIcon(R.drawable.ic_web_yellow_24px);
                         break;
@@ -111,13 +111,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     case 2:
                         tabLayout.getTabAt(tab.getPosition()).setIcon(R.drawable.ic_group_work_yellow_24px);
                         break;
-                }
+                }*/
 
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                switch (tab.getPosition()){
+                /*switch (tab.getPosition()){
                     case 0:
                         tabLayout.getTabAt(tab.getPosition()).setIcon(R.drawable.ic_web_green_24px);
                         break;
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     case 2:
                         tabLayout.getTabAt(tab.getPosition()).setIcon(R.drawable.ic_group_work_green_24px);
                         break;
-                }
+                }*/
             }
 
             @Override
@@ -149,10 +149,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void setupTabIcons() {
-
-        /*tabLayout.getTabAt(0).setIcon(R.drawable.ic_web_yellow_24px);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_public_green_24px);
-        tabLayout.getTabAt(2).setIcon(R.drawable.ic_group_work_green_24px);*/
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_web_black_24dp);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_public_black_24dp);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_group_work_black_24dp);
         //tabLayout.getTabAt(3).setIcon(R.drawable.ic_web_green_24px);
     }
 
