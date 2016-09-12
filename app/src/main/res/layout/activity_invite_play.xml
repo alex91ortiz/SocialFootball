@@ -110,7 +110,5 @@
             android:layout_toRightOf="@+id/city_label"
             android:layout_below="@+id/nivel_label"
             />
-
     </RelativeLayout>
-
 </android.support.design.widget.CoordinatorLayout>
