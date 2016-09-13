@@ -171,8 +171,7 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
     public void validateUser(){
 
         if(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
-            /*Intent intent = new Intent(getContext(), SignInActivity.class);
-            startActivity(intent);*/
+
             createList("Crear Perfil","","");
         }else {
             if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()) {
@@ -201,15 +200,19 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             switch(position){
                 case 0:
-                    /*if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()) {
+                    if(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
+                        Intent intent = new Intent(getContext(), SignInActivity.class);
+                        intent.putExtra("createOrupdate",true);
+                        startActivity(intent);
+                    }else if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()) {
                         Intent intent = new Intent(getActivity(), TeamsMgtActivity.class);
                         startActivity(intent);
                     }else{
                         Intent intent = new Intent(getActivity(), InvitePlayActivity.class);
                         startActivity(intent);
-                    }*/
-                    Intent intent = new Intent(getActivity(), InvitePlayActivity.class);
-                    startActivity(intent);
+                    }
+                    /*Intent intent = new Intent(getActivity(), InvitePlayActivity.class);
+                    startActivity(intent);*/
                     break;
                 case 1:break;
                 case 2:break;
