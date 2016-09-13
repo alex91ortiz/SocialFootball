@@ -3,6 +3,7 @@ package jcsoluciones.com.socialfootball;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -63,7 +64,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
     private JSONObject jsonObject;
     private JSONObject jsonObjectinvite;
     private BootstrapCircleThumbnail mImg;
-    private BootstrapButton Sendnvite;
+    private BootstrapButton sendnvite;
     private BootstrapButton mangerDate;
     private  String IdTeams;
     private  String IdInvite;
@@ -77,7 +78,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
     /**
      * The progress dialog.
      */
-    private Boolean flagAccept=false;
+    private int flagAccept=1;
     private SessionManager sessionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +90,15 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
 
 
         mImg = (BootstrapCircleThumbnail) findViewById(R.id.ImageTeams);
-        txvphone = (BootstrapLabel) findViewById(R.id.input_layout_phone);
-        txvdescrip = (BootstrapLabel) findViewById(R.id.input_layout_desc);
-        Sendnvite = (BootstrapButton) findViewById(R.id.button_event_edit_invite);
+        txvphone = (BootstrapLabel) findViewById(R.id.phone_label);
+        txvcity = (BootstrapLabel) findViewById(R.id.city_label);
+        sendnvite = (BootstrapButton) findViewById(R.id.button_event_edit_invite);
+        sendnvite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ActionEvent();
+            }
+        });
         //mangerDate = (BootstrapButton) findViewById(R.id.button_date);
 
 /*        mangerDate.setOnClickListener(new View.OnClickListener() {
@@ -112,7 +119,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
         Bundle bundle =getIntent().getExtras();
         if(bundle!=null){
             try {
-                flagAccept = bundle.getBoolean("flagAccept", false);
+                flagAccept = bundle.getInt("flagAccept");
                 jsonObject = new JSONObject(bundle.getString("team",""));
 
                /* txvname.setText(jsonObject.getString("name"));
@@ -128,30 +135,36 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                 //new ImageLoader(mImg).execute(selectedImage);
 
                 Picasso.with(this).load(selectedImage).into(mImg);
-
-                jsonObjectinvite = new JSONObject(bundle.getString("invite",""));
-                if(jsonObjectinvite!=null) {
-                    dayOfMonth = jsonObjectinvite.getInt("datedayOfMonth");
-                    monthOfYear = jsonObjectinvite.getInt("datemonthOfYear");
-                    year = jsonObjectinvite.getInt("dateyear");
-                    SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
-                    Calendar dat = Calendar.getInstance();
-                    dat.set(year, monthOfYear, dayOfMonth);
-                    //mangerDate.setText(format.format(dat.getTime()));
+                if(!bundle.getString("invite","").isEmpty()) {
+                    jsonObjectinvite = new JSONObject(bundle.getString("invite", ""));
+                    if (jsonObjectinvite != null) {
+                        dayOfMonth = jsonObjectinvite.getInt("datedayOfMonth");
+                        monthOfYear = jsonObjectinvite.getInt("datemonthOfYear");
+                        year = jsonObjectinvite.getInt("dateyear");
+                        SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
+                        Calendar dat = Calendar.getInstance();
+                        dat.set(year, monthOfYear, dayOfMonth);
+                        //mangerDate.setText(format.format(dat.getTime()));
+                    }
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        if(flagAccept)
-            Sendnvite.setText("Accept");
+
+        /*if(flagAccept)
+            Sendnvite.setText("Accept");*/
     }
 
-    public void SendInvite(View view){
-        progressDialog = ProgressDialog.show(this, "", "Invitando..");
-        progressDialog.setCancelable(true);
-        if(flagAccept){
+    public void ActionEvent(){
+
+        if(flagAccept==1) {
+            Intent intent = new Intent(this, TeamsMgtActivity.class);
+            intent.putExtra("object",jsonObject.toString());
+            startActivity(intent);
+            finish();
+        }else if(flagAccept==2){
                 RequestInviteBody requestInviteBody = new RequestInviteBody();
                 requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT).toString());
                 requestInviteBody.setAcceptinvite(true);
@@ -179,13 +192,13 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                     public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
                         RequestInviteBody responseBody = response.body();
                         Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
-                        progressDialog.dismiss();
+                        //progressDialog.dismiss();
                     }
 
                     @Override
                     public void onFailure(Call<RequestInviteBody> call, Throwable t) {
                         Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-                        progressDialog.dismiss();
+                        //progressDialog.dismiss();
                     }
                 });
 
@@ -217,13 +230,13 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                 public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
                     RequestInviteBody responseBody = response.body();
                     Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
+                    //progressDialog.dismiss();
                 }
 
                 @Override
                 public void onFailure(Call<RequestInviteBody> call, Throwable t) {
                     Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-                    progressDialog.dismiss();
+                    //progressDialog.dismiss();
                 }
             });
 
@@ -281,7 +294,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        if(!flagAccept) {
+        if(flagAccept==2) {
             this.dayOfMonth = dayOfMonth;
             this.monthOfYear = monthOfYear;
             this.year = year;

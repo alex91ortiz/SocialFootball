@@ -55,6 +55,7 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
     private TextView desc;
     private BootstrapButton btnedit;
     private BootstrapCircleThumbnail mImg;
+    private JSONObject jsonObject = null;
     public TeamManagementFragment() {
         // Required empty public constructor
     }
@@ -177,7 +178,7 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
             if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()) {
                 onRefresh();
             }else{
-                JSONObject jsonObject = null;
+
                 try {
                     /*jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
                     name.setText(jsonObject.getString("name"));
@@ -209,6 +210,9 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
                         startActivity(intent);
                     }else{
                         Intent intent = new Intent(getActivity(), InvitePlayActivity.class);
+                        intent.putExtra("team", jsonObject.toString());
+                        intent.putExtra("flagAccept", 1);
+
                         startActivity(intent);
                     }
                     /*Intent intent = new Intent(getActivity(), InvitePlayActivity.class);

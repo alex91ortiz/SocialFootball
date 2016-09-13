@@ -20,13 +20,10 @@
 
 
     </android.support.design.widget.AppBarLayout>
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="570dp"
-        android:src="@drawable/ic_escudo_team"
-        />
-
+        android:src="@drawable/ic_escudo_team"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -34,15 +31,14 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        >
+
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
             android:id="@+id/ImageTeams"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-
             app:bootstrapSize="xs"
             android:layout_marginTop="50dp"
             app:bootstrapBrand="success"
@@ -54,14 +50,11 @@
             android:layout_height="50dp"
             app:bootstrapText="Edit Your Profile"
             android:layout_marginRight="50dp"
-            app:typicon="ty_plus_outline"
             android:layout_marginLeft="50dp"
             android:layout_below="@+id/ImageTeams"
             android:layout_marginTop="5dp"
             app:bootstrapBrand="info"
             app:bootstrapSize="md"
-            app:buttonMode="radio"
-            android:onClick="SendInvite"
             app:checked="true"
             app:roundedCorners="true" />
 
@@ -114,5 +107,91 @@
             android:layout_toRightOf="@+id/city_label"
             android:layout_below="@+id/nivel_label"
             />
+       <!-- <TextView
+            android:id="@+id/layout_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/ImageTeams"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/button_event"/>
+        <TextView
+            android:id="@+id/layout_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/ImageTeams"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@+id/layout_name"/>
+        <TextView
+            android:id="@+id/input_layout_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13dp"
+            android:text="Look, I'm in a large well!"
+            />
+        <TextView
+            android:id="@+id/input_layout_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13dp"
+            android:text="Look, I'm in a large well!"
+            />
+        <TextView
+            android:id="@+id/input_layout_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13dp"
+            android:text="Look, I'm in a large well!"
+            />
+        <TextView
+            android:id="@+id/input_layout_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13dp"
+            android:text="Look, I'm in a large well!"
+            />
+        <TextView
+            android:id="@+id/input_layout_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13dp"
+            android:text="Look, I'm in a large well!"
+            />
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/button_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:bootstrapText="Date"
+            android:layout_below="@+id/ImageTeams"
+            app:typicon="ty_plus_outline"
+            android:layout_marginTop="10dp"
+            app:bootstrapBrand="info"
+            app:bootstrapSize="lg"
+            app:buttonMode="regular"
+            app:checked="true"
+            app:roundedCorners="true" />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/button_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:bootstrapText="Invitar"
+            android:layout_below="@+id/button_date"
+            app:typicon="ty_plus_outline"
+            android:layout_marginTop="10dp"
+            app:bootstrapBrand="success"
+            app:bootstrapSize="lg"
+            app:buttonMode="regular"
+            android:onClick="SendInvite"
+            app:checked="true"
+            app:roundedCorners="true" />
+        <LinearLayout
+            android:layout_below="@+id/ImageTeams"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>-->
     </RelativeLayout>
+
 </android.support.design.widget.CoordinatorLayout>
