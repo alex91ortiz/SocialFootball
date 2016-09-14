@@ -267,8 +267,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     protected void onResume() {
+
         super.onResume();
+
         registerReceiver();
+        viewPager.setCurrentItem(2);
+        FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
+        fragTransaction.detach(adapterViewpager.getItem(2));
+        fragTransaction.attach(adapterViewpager.getItem(2));
+        fragTransaction.commit();
     }
 
     @Override

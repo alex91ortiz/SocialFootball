@@ -193,6 +193,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                         RequestInviteBody responseBody = response.body();
                         Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
                         //progressDialog.dismiss();
+                        finish();
                     }
 
                     @Override
@@ -230,6 +231,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                 public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
                     RequestInviteBody responseBody = response.body();
                     Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
+                    finish();
                     //progressDialog.dismiss();
                 }
 

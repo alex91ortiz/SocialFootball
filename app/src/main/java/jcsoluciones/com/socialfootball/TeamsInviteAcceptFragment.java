@@ -202,7 +202,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                                     Intent intent = new Intent(activity, InvitePlayActivity.class);
                                     intent.putExtra("team", jsonCreate.toString());
                                     intent.putExtra("invite", jsonInvites.toString());
-                                    intent.putExtra("flagAccept", true);
+                                    intent.putExtra("flagAccept", 3);
                                     activity.startActivity(intent);
                                 }
                             });
@@ -242,7 +242,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                                         Intent intent = new Intent(activity, InvitePlayActivity.class);
                                         intent.putExtra("team", jsonCreate.toString());
                                         intent.putExtra("invite", jsonInvites.toString());
-                                        intent.putExtra("flagAccept", true);
+                                        intent.putExtra("flagAccept", 2);
                                         activity.startActivity(intent);
                                     }
                                 });
