@@ -30,7 +30,7 @@ public class GCMService extends GcmListenerService {
     private void sendNotification(String message) {
 
         Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.setAction(MainActivity.MESSAGE_RECEIVED);
         intent.putExtra("message", message);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
