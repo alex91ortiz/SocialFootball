@@ -53,7 +53,7 @@
             android:layout_marginLeft="50dp"
             android:layout_below="@+id/ImageTeams"
             android:layout_marginTop="5dp"
-            app:bootstrapBrand="info"
+            app:bootstrapBrand="primary"
             app:bootstrapSize="md"
             app:checked="true"
             app:roundedCorners="true" />
@@ -87,7 +87,7 @@
             android:id="@+id/city_label"
             android:layout_width="100dp"
             android:layout_height="30dp"
-            app:bootstrapBrand="warning"
+            app:bootstrapBrand="success"
             app:bootstrapHeading="h6"
             app:roundedCorners="true"
             android:text="city"

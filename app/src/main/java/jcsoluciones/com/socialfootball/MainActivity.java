@@ -98,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
-                searchMenuItem.setVisible(tab.getPosition() == 0);
+                /*if(searchMenuItem!=null)
+                    searchMenuItem.setVisible(tab.getPosition() == 0);*/
                 viewPager.setVisibility(View.VISIBLE);
                 searchList.setVisibility(View.INVISIBLE);
                 /*switch (tab.getPosition()){
@@ -140,12 +141,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         Intent intent = getIntent();
         if(intent != null){
-            if(intent.getAction().equals(MESSAGE_RECEIVED)){
-                String message = intent.getStringExtra("message");
-                showAlertDialog(message);
+            if(intent.getAction() != null) {
+                if (intent.getAction().equals(MESSAGE_RECEIVED)) {
+                    String message = intent.getStringExtra("message");
+                    showAlertDialog(message);
+                }
             }
         }
-
     }
 
     private void setupTabIcons() {
@@ -271,11 +273,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         super.onResume();
 
         registerReceiver();
-        viewPager.setCurrentItem(2);
-        FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
-        fragTransaction.detach(adapterViewpager.getItem(2));
-        fragTransaction.attach(adapterViewpager.getItem(2));
-        fragTransaction.commit();
+
     }
 
     @Override

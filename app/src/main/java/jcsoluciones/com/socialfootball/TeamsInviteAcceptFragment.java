@@ -192,20 +192,11 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                     if(inviteBody.getJSONObject(position)!=null) {
                         final JSONObject jsonInvites = inviteBody.getJSONObject(position);
                         final JSONObject jsonCreate = new JSONObject(jsonInvites.getString("creator"));
-                        JSONObject jsonFriends = new JSONObject(jsonInvites.getString("friends"));
+                        final JSONObject jsonFriends = new JSONObject(jsonInvites.getString("friends"));
                         if (jsonCreate.getString("email").equals(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL))) {
 
                             viewHolder.text1.setText(jsonFriends.getString("name"));
-                            viewHolder.text1.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Intent intent = new Intent(activity, InvitePlayActivity.class);
-                                    intent.putExtra("team", jsonCreate.toString());
-                                    intent.putExtra("invite", jsonInvites.toString());
-                                    intent.putExtra("flagAccept", 3);
-                                    activity.startActivity(intent);
-                                }
-                            });
+
                             viewHolder.text2.setText(jsonFriends.getString("desc"));
                             String selectedImage = Constants.HostServer + "/img/" + jsonFriends.getString("_id") + "/profile.jpg";
 
@@ -215,9 +206,36 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                                 viewHolder.makeInvite.setShowOutline(false);
                                 viewHolder.makeInvite.setBootstrapBrand(DefaultBootstrapBrand.SUCCESS);
                                 viewHolder.makeInvite.setFontAwesomeIcon(FontAwesome.FA_CALENDAR);
+                                viewHolder.makeInvite.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        viewHolder.makeInvite.setShowOutline(false);
+                                        Intent intent = new Intent(activity, AcceptInviteActivity.class);
+                                        intent.putExtra("invite", jsonInvites.toString());
+                                        intent.putExtra("team", jsonCreate.toString());
+                                        activity.startActivity(intent);
+                                    }
+                                });
+                                viewHolder.text1.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(activity, InvitePlayActivity.class);
+                                        intent.putExtra("team", jsonFriends.toString());
+                                        activity.startActivity(intent);
+                                    }
+                                });
                             } else {
                                 viewHolder.makeInvite.setBootstrapBrand(DefaultBootstrapBrand.WARNING);
                                 viewHolder.makeInvite.setFontAwesomeIcon(FontAwesome.FA_CLOCK_O);
+                                viewHolder.text1.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(activity, InvitePlayActivity.class);
+                                        intent.putExtra("team", jsonFriends.toString());
+                                        intent.putExtra("flagAccept", 1);
+                                        activity.startActivity(intent);
+                                    }
+                                });
                             }
                         }
 
@@ -225,6 +243,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
 
                             viewHolder.text1.setText(jsonCreate.getString("name"));
                             viewHolder.text2.setText(jsonCreate.getString("desc"));
+
                             String selectedImage = Constants.HostServer + "/img/" + jsonCreate.getString("_id") + "/profile.jpg";
 
                             Picasso.with(activity).load(selectedImage).into(viewHolder.mImg);
@@ -240,8 +259,8 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                                     public void onClick(View view) {
                                         viewHolder.makeInvite.setShowOutline(false);
                                         Intent intent = new Intent(activity, InvitePlayActivity.class);
-                                        intent.putExtra("team", jsonCreate.toString());
                                         intent.putExtra("invite", jsonInvites.toString());
+                                        intent.putExtra("team", jsonCreate.toString());
                                         intent.putExtra("flagAccept", 2);
                                         activity.startActivity(intent);
                                     }
