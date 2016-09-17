@@ -9,61 +9,65 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/champions"
     tools:context="jcsoluciones.com.socialfootball.AcceptInviteActivity">
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view"
         android:layout_width="200dp"
         android:layout_height="200dp"
+        android:background="@color/md_blue_grey_300"
         card_view:cardCornerRadius="4dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/title_team"
-                android:layout_width="match_parent"
-                android:layout_weight="30"
-                android:text="sdd"
-                android:layout_height="wrap_content" />
-            <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
-                android:id="@+id/ImageTeams"
-                android:layout_width="120dp"
-                android:layout_weight="50"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:bootstrapSize="xs"
-                app:bootstrapBrand="success"
-                app:hasBorder="true" />
             <RelativeLayout
                 android:id="@+id/level_layout"
                 android:layout_below="@+id/ImageTeams"
                 android:layout_width="match_parent"
-                android:layout_weight="30"
+                android:layout_weight=".25"
                 android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/title_team"
+                    android:layout_width="match_parent"
+                    android:layout_weight=".25"
+                    android:text="sdd"
+                    android:padding="10dp"
+                    android:layout_height="wrap_content" />
+                <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
+                    android:id="@+id/ImageTeams"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    app:bootstrapSize="xs"
+                    android:layout_marginTop="5dp"
+                    app:bootstrapBrand="success"
+                    android:layout_below="@+id/title_team"
+                    app:hasBorder="true" />
                 <com.beardedhen.androidbootstrap.BootstrapLabel
                     android:id="@+id/nivel_label"
                     android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"
                     app:bootstrapBrand="primary"
                     app:bootstrapHeading="h6"
                     app:roundedCorners="true"
                     android:text="nivel"
-                    android:layout_below="@+id/button_event_edit_invite"
+                    android:layout_below="@+id/ImageTeams"
                     />
                 <com.beardedhen.androidbootstrap.BootstrapProgressBar
                     android:id="@+id/progess_nivel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/nivel_label"
+                    android:layout_alignTop="@+id/nivel_label"
                     app:animated="true"
+                    android:layout_marginRight="10dp"
                     android:layout_toRightOf="@+id/nivel_label"
                     app:bootstrapBrand="success"
                     app:progress="78"
-                    android:layout_below="@id/button_event_edit_invite"
                     app:striped="true"
                     />
             </RelativeLayout>
-        </LinearLayout>
+
     </android.support.v7.widget.CardView>
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -71,13 +75,58 @@
         android:layout_gravity="right"
         android:layout_width="200dp"
         android:layout_height="200dp"
+        android:background="@color/md_blue_grey_300"
         card_view:cardCornerRadius="4dp">
 
-        <TextView
-            android:id="@+id/info_text2"
+        <RelativeLayout
+            android:id="@+id/level_layout_inv"
+            android:layout_below="@+id/ImageTeams"
             android:layout_width="match_parent"
-            android:text="sdd"
-            android:layout_height="match_parent" />
+            android:layout_weight=".25"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/title_team_inv"
+                android:layout_width="match_parent"
+                android:layout_weight=".25"
+                android:text="sdd"
+                android:padding="10dp"
+                android:layout_height="wrap_content" />
+            <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
+                android:id="@+id/ImageTeams_inv"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                app:bootstrapSize="xs"
+                android:layout_marginTop="5dp"
+                app:bootstrapBrand="success"
+                android:layout_below="@+id/title_team_inv"
+                app:hasBorder="true" />
+            <com.beardedhen.androidbootstrap.BootstrapLabel
+                android:id="@+id/nivel_label_inv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                app:bootstrapBrand="primary"
+                app:bootstrapHeading="h6"
+                app:roundedCorners="true"
+                android:text="nivel"
+                android:layout_below="@+id/ImageTeams_inv"
+                />
+            <com.beardedhen.androidbootstrap.BootstrapProgressBar
+                android:id="@+id/progess_nivel_inv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/nivel_label_inv"
+                android:layout_alignTop="@+id/nivel_label_inv"
+                android:layout_marginRight="10dp"
+                app:animated="true"
+                android:layout_toRightOf="@+id/nivel_label_inv"
+                app:bootstrapBrand="success"
+                app:progress="78"
+                app:striped="true"
+                />
+        </RelativeLayout>
     </android.support.v7.widget.CardView>
 
 </LinearLayout>
