@@ -134,20 +134,23 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
                 JSONObject jsonObject = response.body();
-                try {
-                    Intent intents = new Intent(getActivity(), RegistrationIntentService.class);
-                    intents.putExtra("TEAM_ID", jsonObject.getString("_id"));
-                    intents.putExtra("TEAM_NAME", jsonObject.getString("name"));
-                    intents.putExtra("TEAM_PHOTO", jsonObject.getString("phone"));
-                    intents.putExtra("TEAM_CITY", jsonObject.getString("city"));
-                    intents.putExtra("TEAM_DESC", jsonObject.getString("desc"));
-                    intents.putExtra("TEAM_EMAIL", jsonObject.getString("email"));
-                    intents.putExtra("HOST", Constants.HostServer);
-                    intents.putExtra("CREATEORUPDATE_TEAM", false);
-                    getActivity().startService(intents);
+                if(response.body()!=null) {
+                    try {
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                        Intent intents = new Intent(getActivity(), RegistrationIntentService.class);
+                        intents.putExtra("TEAM_ID", jsonObject.getString("_id"));
+                        intents.putExtra("TEAM_NAME", jsonObject.getString("name"));
+                        intents.putExtra("TEAM_PHOTO", jsonObject.getString("phone"));
+                        intents.putExtra("TEAM_CITY", jsonObject.getString("city"));
+                        intents.putExtra("TEAM_DESC", jsonObject.getString("desc"));
+                        intents.putExtra("TEAM_EMAIL", jsonObject.getString("email"));
+                        intents.putExtra("HOST", Constants.HostServer);
+                        intents.putExtra("CREATEORUPDATE_TEAM", false);
+                        getActivity().startService(intents);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -164,8 +167,6 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
         teamMgtMenus.add(new TeamMgtMenu("Eventos","","",2));
         teamMgtMenus.add(new TeamMgtMenu("Canchas","", "", 3));
         teamMgtMenus.add(new TeamMgtMenu("Contactenos","" ,"", 4));
-
-
         setListAdapter(new TeamMgtAdapter(getActivity(), teamMgtMenus));
     }
 

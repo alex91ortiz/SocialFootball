@@ -4,45 +4,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
+    android:fitsSystemWindows="false"
     tools:context="jcsoluciones.com.socialfootball.InvitePlayActivity">
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@drawable/background_toolbar_translucent"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
 
-    </android.support.design.widget.AppBarLayout>
+
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:paddingTop="@dimen/activity_horizontal_margin"
+       >
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="40dp"
+            android:orientation="vertical"
             android:background="@drawable/ic_escudo_team"
             android:layout_height="wrap_content">
-            <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
+            <com.beardedhen.androidbootstrap.BootstrapThumbnail
                 android:id="@+id/ImageTeams"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
                 android:layout_centerHorizontal="true"
                 app:bootstrapSize="xs"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="100dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
                 app:bootstrapBrand="success"
+
                 app:hasBorder="true" />
 
             <com.beardedhen.androidbootstrap.BootstrapButton
@@ -50,8 +49,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 app:bootstrapText="Edit Your Profile"
-                android:layout_marginRight="60dp"
-                android:layout_marginLeft="60dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="30dp"
                 android:layout_below="@+id/ImageTeams"
                 android:layout_marginTop="5dp"
                 app:bootstrapBrand="primary"
@@ -67,7 +66,7 @@
                 app:bootstrapHeading="h6"
                 app:roundedCorners="true"
                 android:text="nivel"
-                android:layout_marginLeft="60dp"
+                android:layout_marginLeft="30dp"
                 android:layout_marginTop="5dp"
                 android:layout_below="@+id/button_event_edit_invite"
                 />
@@ -80,7 +79,7 @@
                 app:bootstrapBrand="success"
                 app:progress="78"
                 android:layout_marginTop="5dp"
-                android:layout_marginRight="60dp"
+                android:layout_marginRight="30dp"
                 android:layout_below="@id/button_event_edit_invite"
                 app:striped="true"
                 />
@@ -92,7 +91,7 @@
                 app:bootstrapHeading="h6"
                 app:roundedCorners="true"
                 android:text="city"
-                android:layout_marginLeft="60dp"
+                android:layout_marginLeft="30dp"
                 android:layout_marginTop="5dp"
                 android:layout_below="@+id/nivel_label"
                 />
@@ -104,7 +103,7 @@
                 android:text="phtone"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginRight="60dp"
+                android:layout_marginRight="30dp"
                 android:layout_toRightOf="@+id/city_label"
                 android:layout_below="@+id/nivel_label"
                 />

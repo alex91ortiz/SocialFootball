@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 import com.beardedhen.androidbootstrap.BootstrapLabel;
+import com.beardedhen.androidbootstrap.BootstrapThumbnail;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.push.PushNotification;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
@@ -63,7 +64,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
     private TextView txvcity;
     private JSONObject jsonObject;
     private JSONObject jsonObjectinvite;
-    private BootstrapCircleThumbnail mImg;
+    private BootstrapThumbnail mImg;
     private BootstrapButton sendnvite;
     private BootstrapButton mangerDate;
     private  String IdTeams;
@@ -85,11 +86,13 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invite_play);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
-        mImg = (BootstrapCircleThumbnail) findViewById(R.id.ImageTeams);
+        mImg = (BootstrapThumbnail) findViewById(R.id.ImageTeams);
         txvphone = (BootstrapLabel) findViewById(R.id.phone_label);
         txvcity = (BootstrapLabel) findViewById(R.id.city_label);
         sendnvite = (BootstrapButton) findViewById(R.id.button_event_edit_invite);

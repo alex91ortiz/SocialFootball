@@ -20,7 +20,7 @@
         <item name="colorPrimary">@android:color/transparent</item>
     </style>
     <!-- Base application theme. -->
-    <style name="AppTheme.Transparent" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme.Transparent" parent="Theme.AppCompat.Light.NoActionBar">
 
         <item name="colorPrimary">@android:color/transparent</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -31,5 +31,8 @@
 
     </style>
 
-
+    <style name="TransparentToolbar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="windowActionBarOverlay">true</item>
+    </style>
 </resources>

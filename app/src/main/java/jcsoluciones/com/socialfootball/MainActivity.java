@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -88,10 +89,23 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         searchList = (ListView) findViewById(R.id.listsearch);
-
         tabLayout = (TabLayout) findViewById(R.id.tabs);
-
         tabLayout.setupWithViewPager(viewPager);
+
+        mSearchView = (SearchView) findViewById(R.id.tems_search);
+
+
+        int id = mSearchView.getContext()
+                .getResources()
+                .getIdentifier("android:id/search_src_text", null, null);
+        TextView textView = (TextView) mSearchView.findViewById(id);
+        textView.setTextColor(Color.BLACK);
+
+
+        mSearchView.setOnQueryTextListener(this);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(this, MainActivity.class)));
+        mSearchView.setIconifiedByDefault(false);
 
         setupTabIcons();
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -169,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
 
-    @Override
+   /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
@@ -180,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(this, MainActivity.class)));
         mSearchView.setIconifiedByDefault(false);
         return true;
-    }
+    }*/
     @Override
     public boolean onQueryTextSubmit(String query) {
 
