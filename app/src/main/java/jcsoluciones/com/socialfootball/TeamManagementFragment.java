@@ -68,46 +68,9 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-       /* View view;
-        view = inflater.inflate(R.layout.fragment_teamsmanagement, container, false);
-        btnedit = (BootstrapButton) view.findViewById(R.id.button_event);
-        btnedit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), TeamsMgtActivity.class);
-                intent.putExtra("object", sessionManager.getUserDetails().get(sessionManager.CONTENT));
-                intent.putExtra("IdTeams", sessionManager.getUserDetails().get(sessionManager.ID_CONTENT));
-                intent.putExtra("createOrupdate", false);
-                startActivity(intent);
-            }
-        });
-
-
-        name = (TextView) view.findViewById(R.id.layout_name);
-        desc = (TextView) view.findViewById(R.id.layout_desc);
-        mImg = (BootstrapCircleThumbnail) view.findViewById(R.id.ImageTeams);
-
-        sessionManager = new SessionManager(getContext());
-        fabEditTeamMgt = (FloatingActionButton) view.findViewById(R.id.fabEdit);
-        fabEditTeamMgt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (!sessionManager.isLoggedIn()) {
-                    Intent intent = new Intent(getContext(), SignInActivity.class);
-                    intent.putExtra("createOrupdate", true);
-                    startActivity(intent);
-                } else {
-                    Intent intent = new Intent(getContext(), TeamsMgtActivity.class);
-                    intent.putExtra("createOrupdate", true);
-                    startActivity(intent);
-                }
-            }
-        });
-        validateUser();*/
         sessionManager = new SessionManager(getContext());
         View view = inflater.inflate(R.layout.fragment_teamsmanagement, container, false);
+        createList("Crear Perfil","","");
         return view;
     }
 
@@ -117,8 +80,6 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
 
         validateUser();
         ListView lv = getListView();
-        //ColorDrawable white = new ColorDrawable(this.getResources().getColor(R.color.md_white_1000,null));
-        //lv.setDivider(white);
         lv.setDividerHeight(0);
         getListView().setOnItemClickListener(this);
     }
@@ -157,6 +118,7 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
             @Override
             public void onFailure(Call<JSONObject> call, Throwable t) {
                 Log.v("Upload", "success");
+
             }
         });
     }
@@ -172,21 +134,11 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
 
     public void validateUser(){
 
-        if(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
-
-            createList("Crear Perfil","","");
-        }else {
+        if(!sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
             if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()) {
                 onRefresh();
             }else{
-
                 try {
-                    /*jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
-                    name.setText(jsonObject.getString("name"));
-                    desc.setText(jsonObject.getString("desc"));
-                    String selectedImage = Constants.HostServer + "/img/" + jsonObject.getString("_id") + "/profile.jpg";
-                    new ImageLoader(mImg).execute(selectedImage);
-                    fabEditTeamMgt.setVisibility(View.INVISIBLE);*/
                     jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
                     String selectedImage = Constants.HostServer + "/img/" + jsonObject.getString("_id") + "/profile.jpg";
                     createList(jsonObject.getString("name"),"Ver tu perfil", selectedImage);
@@ -209,15 +161,13 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
                     }else if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()) {
                         Intent intent = new Intent(getActivity(), TeamsMgtActivity.class);
                         startActivity(intent);
-                    }else{
+                    }else {
                         Intent intent = new Intent(getActivity(), InvitePlayActivity.class);
                         intent.putExtra("team", jsonObject.toString());
                         intent.putExtra("flagAccept", 1);
 
                         startActivity(intent);
                     }
-                    /*Intent intent = new Intent(getActivity(), InvitePlayActivity.class);
-                    startActivity(intent);*/
                     break;
                 case 1:break;
                 case 2:break;

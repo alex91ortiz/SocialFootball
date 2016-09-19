@@ -91,14 +91,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-       /*mSearchView = (SearchView) findViewById(R.id.tems_search);
-
-
-        mSearchView.setOnQueryTextListener(this);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(this, MainActivity.class)));
-        mSearchView.setIconifiedByDefault(false);*/
-
         setupTabIcons();
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -398,9 +390,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        viewHolder.relativeLayout.setBackground(getResources().getDrawable(R.drawable.data_sheet_gold,getTheme()));
+                        viewHolder.relativeLayout.setBackground(getResources().getDrawable(R.drawable.data_sheet_bronze,getTheme()));
                     }else {
-                        viewHolder.relativeLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.data_sheet_gold));
+                        viewHolder.relativeLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.data_sheet_bronze));
                     }
 
 

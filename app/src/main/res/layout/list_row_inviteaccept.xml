@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="5dp"
+    android:id="@+id/list_item_team_invite"
     android:background="@android:color/white">
 
     <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
@@ -54,9 +55,9 @@
         android:layout_weight="5"
         android:layout_gravity="center"
         app:bootstrapBrand="regular"
-        app:bootstrapSize="xs"
+        app:bootstrapSize="md"
         app:buttonMode="regular"
-        app:showOutline="true"
+        app:showOutline="false"
         app:checked="true"
         app:roundedCorners="true" />
 </LinearLayout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -38,8 +39,9 @@
             android:orientation="vertical"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:paddingBottom="10dp"
             android:id="@+id/body_team_data_sheet"
-            android:background="@drawable/data_sheet_gold"
+            android:background="@drawable/data_sheet_bronze"
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/title_team_header"
@@ -105,7 +107,7 @@
             android:id="@+id/footer_team_data_sheet"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:background="@drawable/data_sheet_gold"
+            android:background="@drawable/data_sheet_bronze"
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/title_team_body"
@@ -191,8 +193,9 @@
             android:layout_below="@+id/footer_team_data_sheet"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:paddingBottom="10dp"
             android:id="@+id/end_team_data_sheet"
-            android:background="@drawable/data_sheet_gold"
+            android:background="@drawable/data_sheet_bronze"
             android:layout_height="wrap_content">
 
             <TableLayout
@@ -208,6 +211,7 @@
                         android:background="@drawable/data_sheet_header"
                         android:layout_height="wrap_content"
                         android:textAlignment="center"
+                        android:layout_gravity="center"
                         android:text="PJ"/>
                     <TextView
                         android:layout_width="match_parent"
@@ -264,7 +268,6 @@
                 android:id="@+id/nivel_label"
                 android:layout_width="100dp"
                 android:layout_height="30dp"
-
                 app:bootstrapHeading="h6"
                 app:roundedCorners="true"
                 android:text="nivel"

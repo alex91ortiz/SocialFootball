@@ -22,7 +22,7 @@
     </android.support.design.widget.AppBarLayout>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:background="@color/md_white_1000"
+
         android:layout_height="match_parent"
         android:id="@+id/layout_main"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -92,7 +92,7 @@
                 <Spinner
                     android:id="@+id/input_layout_city"
                     android:layout_width="match_parent"
-                    android:background="@color/bootstrap_gray_light"
+                    android:background="@color/md_white_1000"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:layout_below="@+id/input_layout_desc"

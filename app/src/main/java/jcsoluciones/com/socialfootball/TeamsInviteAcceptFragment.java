@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -82,27 +84,6 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
             });
             return view;
         }
-
-
-       /* @Override
-        public void onFindDocSuccess(Storage response) {
-            listTeamJson = response.getJsonDocList();
-            if(listTeamJson.size()>0) {
-                adapter = new TeamsInviteAcceptAdapter(getActivity(), listTeamJson);
-                listView.setAdapter(adapter);
-            }
-            swipeRefreshLayout.setRefreshing(false);
-        }
-
-
-
-        @Override
-        public void onFindDocFailed(App42Exception ex) {
-            swipeRefreshLayout.setRefreshing(false);
-            createAlertDialog("fallo la busqueda: "+ ex.getMessage());
-        }*/
-
-
 
         @Override
         public void onRefresh() {
@@ -184,6 +165,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                     viewHolder.mImg =(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
                     viewHolder.divider = (View) convertView.findViewById(R.id.divider);
                     viewHolder.makeInvite = (BootstrapButton) convertView.findViewById(R.id.button_invite);
+                    viewHolder.relativeLayout = (LinearLayout) convertView.findViewById(R.id.list_item_team_invite);
                     convertView.setTag(viewHolder);
                 }else{
                     viewHolder = (ViewHolder) convertView.getTag();
@@ -201,12 +183,29 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                             viewHolder.text2.setText(jsonFriends.getString("desc"));
                             String selectedImage = Constants.HostServer + "/img/" + jsonFriends.getString("_id") + "/profile.jpg";
 
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                viewHolder.relativeLayout.setBackground(getResources().getDrawable(R.drawable.data_sheet_bronze,getActivity().getTheme()));
+                            }else {
+                                viewHolder.relativeLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.data_sheet_bronze));
+                            }
+
+
                             //new ImageLoader(mImg).execute(selectedImage);
                             Picasso.with(activity).load(selectedImage).into(viewHolder.mImg);
                             if (jsonInvites.getBoolean("Acceptinvite")) {
                                 viewHolder.makeInvite.setShowOutline(false);
                                 viewHolder.makeInvite.setBootstrapBrand(DefaultBootstrapBrand.SUCCESS);
                                 viewHolder.makeInvite.setFontAwesomeIcon(FontAwesome.FA_CALENDAR);
+                                /*viewHolder.makeInvite.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        viewHolder.makeInvite.setShowOutline(false);
+                                        Intent intent = new Intent(activity, AcceptInviteActivity.class);
+                                        intent.putExtra("invite", jsonInvites.toString());
+                                        intent.putExtra("team", jsonCreate.toString());
+                                        activity.startActivity(intent);
+                                    }
+                                });*/
                                 viewHolder.makeInvite.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -214,6 +213,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                                         Intent intent = new Intent(activity, AcceptInviteActivity.class);
                                         intent.putExtra("invite", jsonInvites.toString());
                                         intent.putExtra("team", jsonCreate.toString());
+                                        intent.putExtra("friend", jsonFriends.toString());
                                         activity.startActivity(intent);
                                     }
                                 });
@@ -247,11 +247,26 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
 
                             String selectedImage = Constants.HostServer + "/img/" + jsonCreate.getString("_id") + "/profile.jpg";
 
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                viewHolder.relativeLayout.setBackground(getResources().getDrawable(R.drawable.data_sheet_bronze,getActivity().getTheme()));
+                            }else {
+                                viewHolder.relativeLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.data_sheet_bronze));
+                            }
+
+
                             Picasso.with(activity).load(selectedImage).into(viewHolder.mImg);
                             if (jsonInvites.getBoolean("Acceptinvite")) {
                                 viewHolder.makeInvite.setShowOutline(false);
                                 viewHolder.makeInvite.setBootstrapBrand(DefaultBootstrapBrand.SUCCESS);
                                 viewHolder.makeInvite.setFontAwesomeIcon(FontAwesome.FA_CALENDAR);
+                                viewHolder.makeInvite.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        viewHolder.makeInvite.setShowOutline(false);
+                                        Intent intent = new Intent(activity, AcceptInviteActivity.class);
+                                        activity.startActivity(intent);
+                                    }
+                                });
                             } else {
                                 viewHolder.makeInvite.setBootstrapBrand(DefaultBootstrapBrand.INFO);
                                 viewHolder.makeInvite.setFontAwesomeIcon(FontAwesome.FA_CHECK_CIRCLE);
@@ -279,7 +294,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                 public TextView text1;
                 public TextView text2;
                 public BootstrapCircleThumbnail mImg;
-                public RelativeLayout relativeLayout;
+                public LinearLayout relativeLayout;
                 public View divider;
                 public BootstrapButton makeInvite;
             }

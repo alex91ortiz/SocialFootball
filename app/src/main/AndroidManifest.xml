@@ -56,7 +56,10 @@
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
-        <activity android:name=".AcceptInviteActivity" />
+        <activity android:name=".AcceptInviteActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".SignInActivity" android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
