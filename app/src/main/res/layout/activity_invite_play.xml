@@ -4,71 +4,274 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false"
+    android:fitsSystemWindows="true"
     tools:context="jcsoluciones.com.socialfootball.InvitePlayActivity">
 
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/background_toolbar_translucent"
+            android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+
+    </android.support.design.widget.AppBarLayout>
 
 
 
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:layout_height="match_parent"
+
         android:paddingTop="@dimen/activity_horizontal_margin"
-       >
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
-            android:background="@drawable/ic_escudo_team"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:id="@+id/body_team_data_sheet"
+            android:background="@drawable/data_sheet_gold"
             android:layout_height="wrap_content">
-            <com.beardedhen.androidbootstrap.BootstrapThumbnail
-                android:id="@+id/ImageTeams"
+            <TextView
+                android:id="@+id/title_team_header"
                 android:layout_width="match_parent"
+                android:paddingLeft="5dp"
+                android:background="@drawable/data_sheet_header"
+                android:text="Team"
+                android:layout_height="wrap_content" />
+            <com.beardedhen.androidbootstrap.AwesomeTextView
+                android:id="@+id/layout_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:fontFamily="arial"
+                android:layout_below="@+id/title_team_header"
+                />
+            <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
+                android:id="@+id/ImageTeams"
+
+                android:layout_below="@+id/layout_name"
+                android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 app:bootstrapSize="xs"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginBottom="10dp"
                 app:bootstrapBrand="success"
 
                 app:hasBorder="true" />
 
             <com.beardedhen.androidbootstrap.BootstrapButton
                 android:id="@+id/button_event_edit_invite"
-                android:layout_width="match_parent"
+                android:layout_width="150dp"
                 android:layout_height="50dp"
                 app:bootstrapText="Edit Your Profile"
-                android:layout_marginRight="30dp"
-                android:layout_marginLeft="30dp"
-                android:layout_below="@+id/ImageTeams"
-                android:layout_marginTop="5dp"
-                app:bootstrapBrand="primary"
+                android:layout_marginTop="15dp"
+                android:layout_alignTop="@+id/ImageTeams"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="5dp"
+                android:layout_toRightOf="@+id/ImageTeams"
+                app:bootstrapBrand="success"
                 app:bootstrapSize="md"
                 app:checked="true"
                 app:roundedCorners="true" />
+            <TextView
+                android:id="@+id/layout_descripttion"
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@+id/ImageTeams"
+                android:layout_below="@+id/button_event_edit_invite"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="5dp"
+                android:padding="5dp"
+                android:background="@drawable/data_sheet_header"
+                android:layout_height="70dp" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/body_team_data_sheet"
+            android:id="@+id/footer_team_data_sheet"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:background="@drawable/data_sheet_gold"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/title_team_body"
+                android:layout_width="match_parent"
+                android:paddingLeft="5dp"
+                android:background="@drawable/data_sheet_header"
+                android:text="Information"
+                android:layout_height="wrap_content" />
+            <com.beardedhen.androidbootstrap.BootstrapLabel
+                android:id="@+id/city_text"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
 
+                app:bootstrapHeading="h6"
+                app:roundedCorners="true"
+                android:text="city"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="30dp" />
+            <com.beardedhen.androidbootstrap.BootstrapLabel
+                android:id="@+id/city_label"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                app:bootstrapHeading="h6"
+                app:roundedCorners="true"
+                android:text="city"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_toRightOf="@+id/city_text" />
+            <com.beardedhen.androidbootstrap.BootstrapLabel
+                android:id="@+id/phone_text"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+
+                app:bootstrapHeading="h6"
+                app:roundedCorners="true"
+                android:text="phone"
+                android:layout_marginLeft="30dp"
+                android:layout_below="@+id/city_label"
+                android:layout_marginTop="5dp" />
+            <com.beardedhen.androidbootstrap.BootstrapLabel
+                android:id="@+id/phone_label"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="phtone"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="30dp"
+                android:layout_toRightOf="@+id/phone_text"
+                android:layout_below="@+id/city_label"
+                />
+            <com.beardedhen.androidbootstrap.BootstrapLabel
+                android:id="@+id/recomen_text"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+
+                app:bootstrapHeading="h6"
+                app:roundedCorners="true"
+                android:text="Compromiso"
+                android:layout_marginLeft="30dp"
+                android:layout_below="@+id/phone_text"
+                android:layout_marginTop="5dp" />
+
+            <RatingBar
+                android:id="@+id/rtbCumplimiento"
+                android:layout_below="@+id/phone_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/ratingBarStyleIndicator"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@+id/recomen_text"
+                android:numStars="5"
+                android:stepSize="1.0"
+                android:visibility="visible"
+                android:rating="2.0" />
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/footer_team_data_sheet"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:id="@+id/end_team_data_sheet"
+            android:background="@drawable/data_sheet_gold"
+            android:layout_height="wrap_content">
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:id="@+id/metric_team"
+                android:layout_height="wrap_content">
+                <TableRow
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="20"
+                        android:background="@drawable/data_sheet_header"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:text="PJ"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="20"
+                        android:background="@drawable/data_sheet_header"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:text="PG"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="20"
+                        android:background="@drawable/data_sheet_header"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:text="PE"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="20"
+                        android:background="@drawable/data_sheet_header"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:text="PP"/>
+                </TableRow>
+                <TableRow
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="20"
+                        android:background="@drawable/data_sheet_header"
+                        android:layout_height="wrap_content"
+                        android:text=""/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="20"
+                        android:background="@drawable/data_sheet_header"
+                        android:layout_height="wrap_content"
+                        android:text=""/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="20"
+                        android:background="@drawable/data_sheet_header"
+                        android:layout_height="wrap_content"
+                        android:text=""/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="20"
+                        android:background="@drawable/data_sheet_header"
+                        android:layout_height="wrap_content"
+                        android:text=""/>
+                </TableRow>
+            </TableLayout>
             <com.beardedhen.androidbootstrap.BootstrapLabel
                 android:id="@+id/nivel_label"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="30dp"
-                app:bootstrapBrand="primary"
+
                 app:bootstrapHeading="h6"
                 app:roundedCorners="true"
                 android:text="nivel"
+                android:layout_below="@+id/metric_team"
                 android:layout_marginLeft="30dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginTop="5dp"
-                android:layout_below="@+id/button_event_edit_invite"
                 />
             <com.beardedhen.androidbootstrap.BootstrapProgressBar
                 android:id="@+id/progess_nivel"
@@ -77,36 +280,12 @@
                 app:animated="true"
                 android:layout_toRightOf="@+id/nivel_label"
                 app:bootstrapBrand="success"
+                android:layout_below="@+id/metric_team"
                 app:progress="78"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="30dp"
-                android:layout_below="@id/button_event_edit_invite"
-                app:striped="true"
-                />
-            <com.beardedhen.androidbootstrap.BootstrapLabel
-                android:id="@+id/city_label"
-                android:layout_width="100dp"
-                android:layout_height="30dp"
-                app:bootstrapBrand="success"
-                app:bootstrapHeading="h6"
-                app:roundedCorners="true"
-                android:text="city"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="5dp"
-                android:layout_below="@+id/nivel_label"
-                />
-            <com.beardedhen.androidbootstrap.BootstrapLabel
-                android:id="@+id/phone_label"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                app:bootstrapBrand="success"
-                android:text="phtone"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="30dp"
-                android:layout_toRightOf="@+id/city_label"
-                android:layout_below="@+id/nivel_label"
-                />
+                app:striped="true"/>
         </RelativeLayout>
     </RelativeLayout>
 

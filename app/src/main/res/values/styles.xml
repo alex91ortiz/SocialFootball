@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/bootstrap_brand_success</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
@@ -34,5 +34,12 @@
     <style name="TransparentToolbar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:windowActionBarOverlay">true</item>
         <item name="windowActionBarOverlay">true</item>
+    </style>
+
+    <style name="AppActionBarSearchView" parent="Widget.AppCompat.SearchView.ActionBar">
+        <item name="queryBackground">@color/md_blue_grey_300</item>
+        <item name="submitBackground">@color/md_blue_grey_300</item>
+        <item name="searchHintIcon">@color/md_blue_grey_300</item>
+        <item name="queryHint">your query hint</item>
     </style>
 </resources>

@@ -11,10 +11,13 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.AwesomeTextView;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 import com.beardedhen.androidbootstrap.BootstrapLabel;
 import com.beardedhen.androidbootstrap.BootstrapThumbnail;
+import com.beardedhen.androidbootstrap.api.defaults.DefaultBootstrapBrand;
+import com.beardedhen.androidbootstrap.font.FontAwesome;
 import com.shephertz.app42.paas.sdk.android.App42Exception;
 import com.shephertz.app42.paas.sdk.android.push.PushNotification;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
@@ -45,7 +48,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
     /**
      * The name
      */
-    private TextView txvname;
+    private AwesomeTextView txvname;
     /**
      * The phone
      */
@@ -64,9 +67,10 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
     private TextView txvcity;
     private JSONObject jsonObject;
     private JSONObject jsonObjectinvite;
-    private BootstrapThumbnail mImg;
+    private BootstrapCircleThumbnail mImg;
     private BootstrapButton sendnvite;
     private BootstrapButton mangerDate;
+    private TextView txvdesc;
     private  String IdTeams;
     private  String IdInvite;
     private  int dayOfMonth;
@@ -89,19 +93,16 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
 
-        mImg = (BootstrapThumbnail) findViewById(R.id.ImageTeams);
+        mImg = (BootstrapCircleThumbnail) findViewById(R.id.ImageTeams);
         txvphone = (BootstrapLabel) findViewById(R.id.phone_label);
         txvcity = (BootstrapLabel) findViewById(R.id.city_label);
         sendnvite = (BootstrapButton) findViewById(R.id.button_event_edit_invite);
-        sendnvite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActionEvent();
-            }
-        });
+        txvdesc = (TextView) findViewById(R.id.layout_descripttion);
+        txvname = (AwesomeTextView) findViewById(R.id.layout_name);
+
         //mangerDate = (BootstrapButton) findViewById(R.id.button_date);
 
 /*        mangerDate.setOnClickListener(new View.OnClickListener() {
@@ -125,11 +126,8 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                 flagAccept = bundle.getInt("flagAccept");
                 jsonObject = new JSONObject(bundle.getString("team",""));
 
-               /* txvname.setText(jsonObject.getString("name"));
-
-                txvdescrip.setText(jsonObject.getString("desc"));
-
-                txvemail.setText(jsonObject.getString("email"));*/
+                txvname.setText(jsonObject.getString("name"));
+                txvdesc.setText(jsonObject.getString("desc"));
                 txvcity.setText(jsonObject.getString("city"));
                 txvphone.setText(jsonObject.getString("phone"));
                 IdInvite = bundle.getString("IdInvite", "");
@@ -155,96 +153,114 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                 e.printStackTrace();
             }
         }
-
+        ActionEvent();
         /*if(flagAccept)
             Sendnvite.setText("Accept");*/
     }
 
     public void ActionEvent(){
-
+        sendnvite.setBootstrapBrand(DefaultBootstrapBrand.PRIMARY);
+        sendnvite.setText("Editar");
         if(flagAccept==1) {
-            Intent intent = new Intent(this, TeamsMgtActivity.class);
-            intent.putExtra("object",jsonObject.toString());
-            startActivity(intent);
-            finish();
-        }else if(flagAccept==2){
-                RequestInviteBody requestInviteBody = new RequestInviteBody();
-                requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT).toString());
-                requestInviteBody.setAcceptinvite(true);
-                requestInviteBody.setMessage("");
-                requestInviteBody.setDatedayOfMonth(String.valueOf(dayOfMonth));
-                requestInviteBody.setDatemonthOfYear(String.valueOf(monthOfYear));
-                requestInviteBody.setDateyear(String.valueOf(year));
-                try {
-                    requestInviteBody.setId(jsonObjectinvite.getString("_id").toString());
-                    requestInviteBody.setFriends(jsonObject.getString("_id").toString());
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(Constants.HostServer)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-
-                RequestInterface request = retrofit.create(RequestInterface.class);
-                Call<RequestInviteBody> call = request.updateInvite(requestInviteBody);
-                call.enqueue(new Callback<RequestInviteBody>() {
-                    @Override
-                    public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
-                        RequestInviteBody responseBody = response.body();
-                        Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
-                        //progressDialog.dismiss();
-                        finish();
-                    }
-
-                    @Override
-                    public void onFailure(Call<RequestInviteBody> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-                        //progressDialog.dismiss();
-                    }
-                });
-
-        }else {
-
-            RequestInviteBody requestInviteBody = new RequestInviteBody();
-            requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT).toString());
-            requestInviteBody.setAcceptinvite(false);
-            requestInviteBody.setMessage("");
-            requestInviteBody.setDatedayOfMonth(String.valueOf(dayOfMonth));
-            requestInviteBody.setDatemonthOfYear(String.valueOf(monthOfYear));
-            requestInviteBody.setDateyear(String.valueOf(year));
-            try {
-                requestInviteBody.setFriends(jsonObject.getString("_id").toString());
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(Constants.HostServer)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            RequestInterface request = retrofit.create(RequestInterface.class);
-            Call<RequestInviteBody> call = request.registerInvite(requestInviteBody);
-            call.enqueue(new Callback<RequestInviteBody>() {
+            sendnvite.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
-                    RequestInviteBody responseBody = response.body();
-                    Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
-                    finish();
-                    //progressDialog.dismiss();
-                }
-
-                @Override
-                public void onFailure(Call<RequestInviteBody> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-                    //progressDialog.dismiss();
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), TeamsMgtActivity.class);
+                    intent.putExtra("object",jsonObject.toString());
+                    startActivity(intent);
                 }
             });
 
+
+        }else if(flagAccept==2){
+            sendnvite.setBootstrapBrand(DefaultBootstrapBrand.PRIMARY);
+            sendnvite.setText("Aceptar");
+            sendnvite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RequestInviteBody requestInviteBody = new RequestInviteBody();
+                    requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT).toString());
+                    requestInviteBody.setAcceptinvite(true);
+                    requestInviteBody.setMessage("");
+                    requestInviteBody.setDatedayOfMonth(String.valueOf(dayOfMonth));
+                    requestInviteBody.setDatemonthOfYear(String.valueOf(monthOfYear));
+                    requestInviteBody.setDateyear(String.valueOf(year));
+                    try {
+                        requestInviteBody.setId(jsonObjectinvite.getString("_id").toString());
+                        requestInviteBody.setFriends(jsonObject.getString("_id").toString());
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(Constants.HostServer)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+
+                    RequestInterface request = retrofit.create(RequestInterface.class);
+                    Call<RequestInviteBody> call = request.updateInvite(requestInviteBody);
+                    call.enqueue(new Callback<RequestInviteBody>() {
+                        @Override
+                        public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
+                            RequestInviteBody responseBody = response.body();
+                            Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
+                            //progressDialog.dismiss();
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<RequestInviteBody> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                            //progressDialog.dismiss();
+                        }
+                    });
+                }
+            });
+        }else {
+            sendnvite.setBootstrapBrand(DefaultBootstrapBrand.PRIMARY);
+            sendnvite.setText("Invitar");
+            sendnvite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RequestInviteBody requestInviteBody = new RequestInviteBody();
+                    requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT).toString());
+                    requestInviteBody.setAcceptinvite(false);
+                    requestInviteBody.setMessage("");
+                    requestInviteBody.setDatedayOfMonth(String.valueOf(dayOfMonth));
+                    requestInviteBody.setDatemonthOfYear(String.valueOf(monthOfYear));
+                    requestInviteBody.setDateyear(String.valueOf(year));
+                    try {
+                        requestInviteBody.setFriends(jsonObject.getString("_id").toString());
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(Constants.HostServer)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+
+                    RequestInterface request = retrofit.create(RequestInterface.class);
+                    Call<RequestInviteBody> call = request.registerInvite(requestInviteBody);
+                    call.enqueue(new Callback<RequestInviteBody>() {
+                        @Override
+                        public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
+                            RequestInviteBody responseBody = response.body();
+                            Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
+                            //finish();
+                            //progressDialog.dismiss();
+                        }
+
+                        @Override
+                        public void onFailure(Call<RequestInviteBody> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                            //progressDialog.dismiss();
+                        }
+                    });
+                }
+            });
         }
 
     }

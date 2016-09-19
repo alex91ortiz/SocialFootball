@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -278,6 +279,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                 public TextView text1;
                 public TextView text2;
                 public BootstrapCircleThumbnail mImg;
+                public RelativeLayout relativeLayout;
                 public View divider;
                 public BootstrapButton makeInvite;
             }

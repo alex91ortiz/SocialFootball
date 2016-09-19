@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -32,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
@@ -42,7 +42,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
@@ -92,20 +91,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        mSearchView = (SearchView) findViewById(R.id.tems_search);
-
-
-        int id = mSearchView.getContext()
-                .getResources()
-                .getIdentifier("android:id/search_src_text", null, null);
-        TextView textView = (TextView) mSearchView.findViewById(id);
-        textView.setTextColor(Color.BLACK);
+       /*mSearchView = (SearchView) findViewById(R.id.tems_search);
 
 
         mSearchView.setOnQueryTextListener(this);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(this, MainActivity.class)));
-        mSearchView.setIconifiedByDefault(false);
+        mSearchView.setIconifiedByDefault(false);*/
 
         setupTabIcons();
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -183,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
 
-   /* @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
@@ -194,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(this, MainActivity.class)));
         mSearchView.setIconifiedByDefault(false);
         return true;
-    }*/
+    }
     @Override
     public boolean onQueryTextSubmit(String query) {
 
@@ -391,9 +383,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 convertView = inflater.inflate(R.layout.list_row_events, null);
                 viewHolder = new ViewHolder();
                 viewHolder.text1 = (TextView) convertView.findViewById(R.id.title);
-                viewHolder.text2 = (TextView) convertView.findViewById(R.id.message);
                 viewHolder.mImg =(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
                 viewHolder.divider = (View) convertView.findViewById(R.id.divider);
+                viewHolder.relativeLayout = (RelativeLayout) convertView.findViewById(R.id.list_item_team);
                 convertView.setTag(viewHolder);
             }else{
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -402,30 +394,42 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 if(teambody.getJSONObject(position)!=null) {
 
                     viewHolder.text1 = (TextView) convertView.findViewById(R.id.title);
-                    viewHolder.text2 = (TextView) convertView.findViewById(R.id.message);
                     viewHolder.mImg=(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
+
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        viewHolder.relativeLayout.setBackground(getResources().getDrawable(R.drawable.data_sheet_gold,getTheme()));
+                    }else {
+                        viewHolder.relativeLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.data_sheet_gold));
+                    }
+
 
                     BootstrapButton makeInvite = (BootstrapButton) convertView.findViewById(R.id.button_invite);
                     final JSONObject jsonteambody = teambody.getJSONObject(position);
                     viewHolder.text1.setText(jsonteambody.getString("name").toString());
-                    viewHolder.text2.setText(jsonteambody.getString("desc").toString());
                     String selectedImage = Constants.HostServer + "/img/" + jsonteambody.getString("_id") + "/profile.jpg";
                     Picasso.with(activity).load(selectedImage).into(viewHolder.mImg);
-                    makeInvite.setOnClickListener(new View.OnClickListener() {
+                    viewHolder.text1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(activity, InvitePlayActivity.class);
+                            intent.putExtra("team", jsonteambody.toString());
+                            intent.putExtra("invite", "");
+                            intent.putExtra("flagAccept", 0);
+                            activity.startActivity(intent);
+                        }
+                    });
+                    /*makeInvite.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             if (!sessionManager.isLoggedIn()) {
                                 Intent intent = new Intent(activity, SignInActivity.class);
                                 activity.startActivity(intent);
                             } else {
-                                Intent intent = new Intent(activity, InvitePlayActivity.class);
-                                intent.putExtra("team", jsonteambody.toString());
-                                intent.putExtra("invite", "");
-                                intent.putExtra("flagAccept", false);
-                                activity.startActivity(intent);
-                            }
+
+                            //}
                         }
-                    });
+                    });*/
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -435,8 +439,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
         private  class ViewHolder {
             public TextView text1;
-            public TextView text2;
             public BootstrapCircleThumbnail mImg;
+            public RelativeLayout relativeLayout;
             public View divider;
         }
     }
