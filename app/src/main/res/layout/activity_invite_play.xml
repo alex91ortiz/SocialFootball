@@ -60,7 +60,6 @@
                 />
             <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
                 android:id="@+id/ImageTeams"
-
                 android:layout_below="@+id/layout_name"
                 android:layout_width="150dp"
                 android:layout_height="150dp"

@@ -15,6 +15,6 @@
     </string-array>
 
 
-
     <string name="title_activity_teams_mgt">TeamsMgtActivity</string>
+    <string name="title_activity_events">EventsActivity</string>
 </resources>

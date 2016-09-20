@@ -181,7 +181,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                             viewHolder.text1.setText(jsonFriends.getString("name"));
 
                             viewHolder.text2.setText(jsonFriends.getString("desc"));
-                            String selectedImage = Constants.HostServer + "/img/" + jsonFriends.getString("_id") + "/profile.jpg";
+                            String selectedImage = Constants.HostServer + "img/" + jsonFriends.getString("_id") + "/profile.jpg";
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 viewHolder.relativeLayout.setBackground(getResources().getDrawable(R.drawable.data_sheet_bronze,getActivity().getTheme()));
@@ -196,24 +196,15 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                                 viewHolder.makeInvite.setShowOutline(false);
                                 viewHolder.makeInvite.setBootstrapBrand(DefaultBootstrapBrand.SUCCESS);
                                 viewHolder.makeInvite.setFontAwesomeIcon(FontAwesome.FA_CALENDAR);
-                                /*viewHolder.makeInvite.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        viewHolder.makeInvite.setShowOutline(false);
-                                        Intent intent = new Intent(activity, AcceptInviteActivity.class);
-                                        intent.putExtra("invite", jsonInvites.toString());
-                                        intent.putExtra("team", jsonCreate.toString());
-                                        activity.startActivity(intent);
-                                    }
-                                });*/
                                 viewHolder.makeInvite.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
                                         viewHolder.makeInvite.setShowOutline(false);
-                                        Intent intent = new Intent(activity, AcceptInviteActivity.class);
+                                        Intent intent = new Intent(activity, EventsActivity.class);
                                         intent.putExtra("invite", jsonInvites.toString());
                                         intent.putExtra("team", jsonCreate.toString());
                                         intent.putExtra("friend", jsonFriends.toString());
+                                        intent.putExtra("flagAccept", 2);
                                         activity.startActivity(intent);
                                     }
                                 });
@@ -245,7 +236,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                             viewHolder.text1.setText(jsonCreate.getString("name"));
                             viewHolder.text2.setText(jsonCreate.getString("desc"));
 
-                            String selectedImage = Constants.HostServer + "/img/" + jsonCreate.getString("_id") + "/profile.jpg";
+                            String selectedImage = Constants.HostServer + "img/" + jsonCreate.getString("_id") + "/profile.jpg";
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 viewHolder.relativeLayout.setBackground(getResources().getDrawable(R.drawable.data_sheet_bronze,getActivity().getTheme()));
@@ -263,7 +254,10 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                                     @Override
                                     public void onClick(View view) {
                                         viewHolder.makeInvite.setShowOutline(false);
-                                        Intent intent = new Intent(activity, AcceptInviteActivity.class);
+                                        Intent intent = new Intent(activity, EventsActivity.class);
+                                        intent.putExtra("invite", jsonInvites.toString());
+                                        intent.putExtra("team", jsonCreate.toString());
+                                        intent.putExtra("friend", jsonFriends.toString());
                                         activity.startActivity(intent);
                                     }
                                 });

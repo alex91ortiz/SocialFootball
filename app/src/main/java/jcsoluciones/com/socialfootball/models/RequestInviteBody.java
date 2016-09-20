@@ -11,18 +11,20 @@ import java.io.Serializable;
 public class RequestInviteBody implements Serializable {
     @SerializedName("_creator")
     private String creator;
-
     private boolean Acceptinvite;
     private String message;
-    private String datedayOfMonth;
-    private String datemonthOfYear;
-    private String dateyear;
+    private int datedayOfMonth;
+    private int datemonthOfYear;
+    private int dateyear;
+    private int timehour;
+    private int timeminute;
     private boolean status;
-
     @SerializedName("friends")
     private String friends;
-
     private String id;
+    private String location;
+    private String result;
+
 
     public String getCreator() {
         return creator;
@@ -30,54 +32,6 @@ public class RequestInviteBody implements Serializable {
 
     public void setCreator(String creator) {
         this.creator = creator;
-    }
-
-    public String getFriends() {
-        return friends;
-    }
-
-    public void setFriends(String friends) {
-        this.friends = friends;
-    }
-
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
-
-    public String getDateyear() {
-        return dateyear;
-    }
-
-    public void setDateyear(String dateyear) {
-        this.dateyear = dateyear;
-    }
-
-    public String getDatemonthOfYear() {
-        return datemonthOfYear;
-    }
-
-    public void setDatemonthOfYear(String datemonthOfYear) {
-        this.datemonthOfYear = datemonthOfYear;
-    }
-
-    public String getDatedayOfMonth() {
-        return datedayOfMonth;
-    }
-
-    public void setDatedayOfMonth(String datedayOfMonth) {
-        this.datedayOfMonth = datedayOfMonth;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public boolean isAcceptinvite() {
@@ -88,11 +42,91 @@ public class RequestInviteBody implements Serializable {
         Acceptinvite = acceptinvite;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public int getDatedayOfMonth() {
+        return datedayOfMonth;
+    }
+
+    public void setDatedayOfMonth(int datedayOfMonth) {
+        this.datedayOfMonth = datedayOfMonth;
+    }
+
+    public int getDatemonthOfYear() {
+        return datemonthOfYear;
+    }
+
+    public void setDatemonthOfYear(int datemonthOfYear) {
+        this.datemonthOfYear = datemonthOfYear;
+    }
+
+    public int getDateyear() {
+        return dateyear;
+    }
+
+    public void setDateyear(int dateyear) {
+        this.dateyear = dateyear;
+    }
+
+    public int getTimehour() {
+        return timehour;
+    }
+
+    public void setTimehour(int timehour) {
+        this.timehour = timehour;
+    }
+
+    public int getTimeminute() {
+        return timeminute;
+    }
+
+    public void setTimeminute(int timeminute) {
+        this.timeminute = timeminute;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public String getFriends() {
+        return friends;
+    }
+
+    public void setFriends(String friends) {
+        this.friends = friends;
+    }
+
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

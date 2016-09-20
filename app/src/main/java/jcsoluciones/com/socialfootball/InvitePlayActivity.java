@@ -10,33 +10,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.beardedhen.androidbootstrap.AwesomeTextView;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 import com.beardedhen.androidbootstrap.BootstrapLabel;
-import com.beardedhen.androidbootstrap.BootstrapThumbnail;
 import com.beardedhen.androidbootstrap.api.defaults.DefaultBootstrapBrand;
-import com.beardedhen.androidbootstrap.font.FontAwesome;
-import com.shephertz.app42.paas.sdk.android.App42Exception;
-import com.shephertz.app42.paas.sdk.android.push.PushNotification;
-import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.squareup.picasso.Picasso;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
-import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
-import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-
 import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
 import jcsoluciones.com.socialfootball.models.RequestInviteBody;
-import jcsoluciones.com.socialfootball.models.ResponseBody;
-import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,7 +27,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class InvitePlayActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener,DatePickerDialog.OnDateSetListener {
+public class InvitePlayActivity extends AppCompatActivity{
     /**
      * The name
      */
@@ -69,13 +52,11 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
     private JSONObject jsonObjectinvite;
     private BootstrapCircleThumbnail mImg;
     private BootstrapButton sendnvite;
-    private BootstrapButton mangerDate;
+
     private TextView txvdesc;
     private  String IdTeams;
     private  String IdInvite;
-    private  int dayOfMonth;
-    private  int monthOfYear;
-    private  int year;
+
     /**
      * The progress dialog.
      */
@@ -103,21 +84,6 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
         txvdesc = (TextView) findViewById(R.id.layout_descripttion);
         txvname = (AwesomeTextView) findViewById(R.id.layout_name);
 
-        //mangerDate = (BootstrapButton) findViewById(R.id.button_date);
-
-/*        mangerDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Calendar now = Calendar.getInstance();
-                DatePickerDialog dpd = DatePickerDialog.newInstance(
-                        InvitePlayActivity.this,
-                        now.get(Calendar.YEAR),
-                        now.get(Calendar.MONTH),
-                        now.get(Calendar.DAY_OF_MONTH)
-                );
-                dpd.show(getFragmentManager(), "Datepickerdialog");
-            }
-        });*/
 
         sessionManager = new SessionManager(this);
         Bundle bundle =getIntent().getExtras();
@@ -134,21 +100,8 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                 IdTeams = bundle.getString("IdTeams", "");
                 String selectedImage =Constants.HostServer+"/img/"+jsonObject.getString("_id")+"/profile.jpg";
                 //new ImageLoader(mImg).execute(selectedImage);
-
                 Picasso.with(this).load(selectedImage).into(mImg);
-                if(!bundle.getString("invite","").isEmpty()) {
-                    jsonObjectinvite = new JSONObject(bundle.getString("invite", ""));
-                    if (jsonObjectinvite != null) {
-                        dayOfMonth = jsonObjectinvite.getInt("datedayOfMonth");
-                        monthOfYear = jsonObjectinvite.getInt("datemonthOfYear");
-                        year = jsonObjectinvite.getInt("dateyear");
-                        SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
-                        Calendar dat = Calendar.getInstance();
-                        dat.set(year, monthOfYear, dayOfMonth);
-                        //mangerDate.setText(format.format(dat.getTime()));
-                    }
-                }
-
+                jsonObjectinvite = new JSONObject(bundle.getString("invite", ""));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -170,10 +123,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                     startActivity(intent);
                 }
             });
-
-
         }else if(flagAccept==2){
-            sendnvite.setBootstrapBrand(DefaultBootstrapBrand.PRIMARY);
             sendnvite.setText("Aceptar");
             sendnvite.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -181,10 +131,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                     RequestInviteBody requestInviteBody = new RequestInviteBody();
                     requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT).toString());
                     requestInviteBody.setAcceptinvite(true);
-                    requestInviteBody.setMessage("");
-                    requestInviteBody.setDatedayOfMonth(String.valueOf(dayOfMonth));
-                    requestInviteBody.setDatemonthOfYear(String.valueOf(monthOfYear));
-                    requestInviteBody.setDateyear(String.valueOf(year));
+                    requestInviteBody.setMessage("!Aceptaron tu reto");
                     try {
                         requestInviteBody.setId(jsonObjectinvite.getString("_id").toString());
                         requestInviteBody.setFriends(jsonObject.getString("_id").toString());
@@ -217,8 +164,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                     });
                 }
             });
-        }else {
-            sendnvite.setBootstrapBrand(DefaultBootstrapBrand.PRIMARY);
+        }else if(flagAccept==3) {
             sendnvite.setText("Invitar");
             sendnvite.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -226,10 +172,8 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                     RequestInviteBody requestInviteBody = new RequestInviteBody();
                     requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT).toString());
                     requestInviteBody.setAcceptinvite(false);
-                    requestInviteBody.setMessage("");
-                    requestInviteBody.setDatedayOfMonth(String.valueOf(dayOfMonth));
-                    requestInviteBody.setDatemonthOfYear(String.valueOf(monthOfYear));
-                    requestInviteBody.setDateyear(String.valueOf(year));
+                    requestInviteBody.setStatus(true);
+                    requestInviteBody.setMessage("!Te retaron a un partido");
                     try {
                         requestInviteBody.setFriends(jsonObject.getString("_id").toString());
 
@@ -249,7 +193,7 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
                         public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
                             RequestInviteBody responseBody = response.body();
                             Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
-                            //finish();
+                            finish();
                             //progressDialog.dismiss();
                         }
 
@@ -313,21 +257,4 @@ public class InvitePlayActivity extends AppCompatActivity implements TimePickerD
         alertbox.show();
     }
 
-    @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        if(flagAccept==2) {
-            this.dayOfMonth = dayOfMonth;
-            this.monthOfYear = monthOfYear;
-            this.year = year;
-            SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
-            Calendar dat = Calendar.getInstance();
-            dat.set(year, monthOfYear, dayOfMonth);
-            mangerDate.setText(format.format(dat.getTime()));
-        }
-    }
-
-    @Override
-    public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute, int second) {
-
-    }
 }

@@ -17,6 +17,8 @@ public class RequestTeamBody  implements Serializable {
     private Boolean active;
     private String email;
     private String registrationId;
+    private String table;
+    private String result;
 
     public String getId() {
         return id;
@@ -96,5 +98,21 @@ public class RequestTeamBody  implements Serializable {
 
     public void setRegistrationId(String registrationId) {
         this.registrationId = registrationId;
+    }
+
+    public String getTable() {
+        return table;
+    }
+
+    public void setTable(String table) {
+        this.table = table;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }

@@ -407,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                             Intent intent = new Intent(activity, InvitePlayActivity.class);
                             intent.putExtra("team", jsonteambody.toString());
                             intent.putExtra("invite", "");
-                            intent.putExtra("flagAccept", 0);
+                            intent.putExtra("flagAccept", 3);
                             activity.startActivity(intent);
                         }
                     });
