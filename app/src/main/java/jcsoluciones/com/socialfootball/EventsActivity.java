@@ -52,6 +52,8 @@ public class EventsActivity extends AppCompatActivity  implements TimePickerDial
     private  int dayOfMonth,monthOfYear,year,hourDay,minute;
     private SessionManager sessionManager;
     private int flagAccept=1;
+    private DatePickerDialog dpg;
+    private TimePickerDialog tpg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,26 +80,26 @@ public class EventsActivity extends AppCompatActivity  implements TimePickerDial
             @Override
             public void onClick(View view) {
                 Calendar now = Calendar.getInstance();
-                DatePickerDialog dpd = DatePickerDialog.newInstance(
+                dpg = DatePickerDialog.newInstance(
                         EventsActivity.this,
                         now.get(Calendar.YEAR),
                         now.get(Calendar.MONTH),
                         now.get(Calendar.DAY_OF_MONTH)
                 );
-                dpd.show(getFragmentManager(), "Datepickerdialog");
+                dpg.show(getFragmentManager(), "Datepickerdialog");
             }
         });
         managerTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Calendar now = Calendar.getInstance();
-                TimePickerDialog dpd = TimePickerDialog.newInstance(
+                tpg = TimePickerDialog.newInstance(
                         EventsActivity.this,
                         now.get(Calendar.HOUR_OF_DAY),
                         now.get(Calendar.MINUTE),
                         true
                 );
-                dpd.show(getFragmentManager(), "TimePickerDialog");
+                tpg.show(getFragmentManager(), "TimePickerDialog");
             }
         });
         Animation slideLeft = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_left);
@@ -141,10 +143,13 @@ public class EventsActivity extends AppCompatActivity  implements TimePickerDial
                         dayOfMonth = jsonObjectinvite.getInt("datedayOfMonth");
                         monthOfYear = jsonObjectinvite.getInt("datemonthOfYear");
                         year = jsonObjectinvite.getInt("dateyear");
-                        SimpleDateFormat format = new SimpleDateFormat("EEE d, MMMM", Locale.getDefault());
+                        hourDay = jsonObjectinvite.getInt("timehour");
+                        minute = jsonObjectinvite.getInt("timeminute");
+                        SimpleDateFormat format = new SimpleDateFormat("EEE d, MM", Locale.getDefault());
                         Calendar dat = Calendar.getInstance();
                         dat.set(year, monthOfYear, dayOfMonth);
-                        //mangerDate.setText(format.format(dat.getTime()));
+                        infoDate.setText(format.format(dat.getTime()));
+                        infoTime.setText(hourDay +" : "+ minute);
                     }
                 }
                 teamOne.startAnimation(slideLeft);
