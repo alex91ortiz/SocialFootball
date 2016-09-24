@@ -3,14 +3,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="info.androidhive.materialtabs.fragments.OneFragment">
+    android:padding="@dimen/activity_horizontal_margin"
+    tools:context=".TeamprofileActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textSize="40dp"
-        android:textStyle="bold"
-        android:layout_centerInParent="true"/>
-
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/titulo_contacto"
+                android:layout_width="match_parent"
+                android:padding="10dp"
+                android:layout_height="wrap_content"
+                android:text="Contacto"/>
+            <TextView
+                android:id="@+id/celular_contacto"
+                android:layout_below="@+id/titulo_contacto"
+                android:layout_width="wrap_content"
+                android:padding="10dp"
+                android:layout_alignParentLeft="true"
+                android:layout_height="wrap_content"
+                android:text="Celular"/>
+            <TextView
+                android:id="@+id/txt_celular_contacto"
+                android:layout_below="@+id/titulo_contacto"
+                android:layout_width="wrap_content"
+                android:layout_toRightOf="@+id/celular_contacto"
+                android:padding="10dp"
+                android:layout_alignParentRight="true"
+                android:layout_height="wrap_content"
+                android:text="Celular"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 </RelativeLayout>
