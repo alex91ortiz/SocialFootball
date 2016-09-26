@@ -42,4 +42,8 @@
         <item name="searchHintIcon">@color/md_blue_grey_300</item>
         <item name="queryHint">your query hint</item>
     </style>
+
+    <style name="widget_view_flag">
+        <item name="android:background">@drawable/corners_left</item>
+    </style>
 </resources>

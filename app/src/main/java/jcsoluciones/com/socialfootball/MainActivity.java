@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private  Activity activity;
     private SessionManager sessionManager;
     private boolean isReceiverRegistered;
-    private ViewPagerAdapter adapterViewpager;
+
 
 
     @Override
@@ -77,63 +77,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
-        activity=this;
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        sessionManager  = new SessionManager(this);
-        sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL);
-
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
-        searchList = (ListView) findViewById(R.id.listsearch);
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-
-        setupTabIcons();
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-                /*if(searchMenuItem!=null)
-                    searchMenuItem.setVisible(tab.getPosition() == 0);*/
-                viewPager.setVisibility(View.VISIBLE);
-                searchList.setVisibility(View.INVISIBLE);
-                /*switch (tab.getPosition()){
-                    case 0:
-                        tabLayout.getTabAt(tab.getPosition()).setIcon(R.drawable.ic_web_yellow_24px);
-                        break;
-                    case 1:
-                        tabLayout.getTabAt(tab.getPosition()).setIcon(R.drawable.ic_public_yellow_24px);
-                        break;
-                    case 2:
-                        tabLayout.getTabAt(tab.getPosition()).setIcon(R.drawable.ic_group_work_yellow_24px);
-                        break;
-                }*/
-
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                /*switch (tab.getPosition()){
-                    case 0:
-                        tabLayout.getTabAt(tab.getPosition()).setIcon(R.drawable.ic_web_green_24px);
-                        break;
-                    case 1:
-                        tabLayout.getTabAt(tab.getPosition()).setIcon(R.drawable.ic_public_green_24px);
-                        break;
-                    case 2:
-                        tabLayout.getTabAt(tab.getPosition()).setIcon(R.drawable.ic_group_work_green_24px);
-                        break;
-                }*/
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
 
         registerReceiver();
 
@@ -148,40 +95,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
     }
 
-    private void setupTabIcons() {
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_web_black_24dp);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_public_black_24dp);
-        tabLayout.getTabAt(2).setIcon(R.drawable.ic_group_work_black_24dp);
-        //tabLayout.getTabAt(3).setIcon(R.drawable.ic_web_green_24px);
-    }
-
-    private void setupViewPager(ViewPager viewPager) {
-        adapterViewpager = new ViewPagerAdapter(getSupportFragmentManager());
-        adapterViewpager.addFragment(new TeamsEventsFragment(), "ONE");
-        adapterViewpager.addFragment(new TeamsInviteAcceptFragment(), "TWO");
-        adapterViewpager.addFragment(new TeamManagementFragment(), "THREE");
-        //adapterViewpager.addFragment(new TournamentsFragment(), "FOUR");
-
-        viewPager.setAdapter(adapterViewpager);
-
-    }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
-        searchMenuItem = menu.findItem(R.id.action_search);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
-        mSearchView.setOnQueryTextListener(this);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(this, MainActivity.class)));
-        mSearchView.setIconifiedByDefault(false);
         return true;
     }
     @Override
     public boolean onQueryTextSubmit(String query) {
-
         return false;
     }
 
@@ -217,61 +139,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         return false;
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-
-        public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
-
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            //return mFragmentTitleList.get(position);
-            return null;
-        }
-    }
-    /**
-     * Creates the alert dialog.
-     *
-     * @param msg the msg
-     */
-    public void createAlertDialog(String msg) {
-        AlertDialog.Builder alertbox = new AlertDialog.Builder(MainActivity.this);
-        alertbox.setTitle("Response Message");
-        alertbox.setMessage(msg);
-        alertbox.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            // do something when the button is clicked
-            public void onClick(DialogInterface arg0, int arg1) {
-
-            }
-        });
-        alertbox.show();
-    }
 
     @Override
     protected void onResume() {
-
         super.onResume();
-
         registerReceiver();
-
     }
 
     @Override
@@ -291,7 +164,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 dialog.dismiss();
             }
         });
-
         builder.show();
     }
 
@@ -304,12 +176,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 String result  = intent.getStringExtra("result");
                 String message = intent.getStringExtra("message");
                 Log.d(TAG, "onReceive: " + result + message);
-
-                viewPager.setCurrentItem(2);
-                FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
-                fragTransaction.detach(adapterViewpager.getItem(2));
-                fragTransaction.attach(adapterViewpager.getItem(2));
-                fragTransaction.commit();
 
             } else if (intent.getAction().equals(MESSAGE_RECEIVED)){
 

@@ -6,90 +6,17 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="jcsoluciones.com.socialfootball.InvitePlayActivity">
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-
-    </android.support.design.widget.AppBarLayout>
     <RelativeLayout
         android:layout_width="match_parent"
-
         android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
         android:id="@+id/layout_main"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
-                <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
-                    android:id="@+id/ImageTeams"
-                    android:layout_width="170dp"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    app:bootstrapSize="xs"
-                    android:layout_margin="5dp"
-                    app:bootstrapBrand="success"
-                    app:hasBorder="true" />
 
-                <TextView
-                    android:id="@+id/changeimgtext"
-                    android:layout_below="@+id/ImageTeams"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Image change"
-                    android:onClick="ImageChange"
-                    android:layout_marginBottom="10dp"
-                    android:textColor="@color/md_blue_300"
-                    />
-
-                <com.beardedhen.androidbootstrap.BootstrapEditText
-                    android:id="@+id/input_layout_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_below="@+id/changeimgtext"
-                    app:roundedCorners="true"
-                    app:bootstrapSize="lg"
-                    app:bootstrapBrand="info"
-                    android:hint="@string/teamsmanagement_name"
-                    />
-                <com.beardedhen.androidbootstrap.BootstrapEditText
-                    android:id="@+id/input_layout_phone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/input_layout_name"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginBottom="10dp"
-                    app:bootstrapSize="lg"
-                    app:roundedCorners="true"
-                    app:bootstrapBrand="info"
-                    android:hint="@string/teamsmanagement_phone"
-                    />
-                <com.beardedhen.androidbootstrap.BootstrapEditText
-                    android:id="@+id/input_layout_desc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/input_layout_phone"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginBottom="10dp"
-                    app:bootstrapSize="lg"
-                    app:roundedCorners="true"
-                    app:bootstrapBrand="info"
-                    android:hint="@string/teamsmanagement_desc"
-                    />
-                <Spinner
+                <!--<Spinner
                     android:id="@+id/input_layout_city"
                     android:layout_width="match_parent"
                     android:background="@color/md_white_1000"
@@ -98,36 +25,8 @@
                     android:layout_below="@+id/input_layout_desc"
                     android:layout_height="45dp">
 
-                </Spinner>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:paddingTop="5dp"
-                    android:id="@+id/input_layout_email"
-                    android:paddingLeft="20dp"
-                    android:layout_below="@+id/input_layout_city"
-                    android:text="@string/teamsmanagement_email"/>
-                <RatingBar
-                    android:id="@+id/rtbCumplimiento"
-                    android:layout_below="@+id/input_layout_email"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="?android:attr/ratingBarStyleIndicator"
-                    android:layout_marginLeft="20dp"
-                    android:numStars="5"
-                    android:stepSize="1.0"
-                    android:visibility="visible"
-                    android:rating="2.0" />
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/switchCancel"
-                    android:text="Delete"
-                    android:layout_below="@+id/rtbCumplimiento"
-                    android:theme="@style/Sugar.Switch.Affiliate"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                </android.support.v7.widget.SwitchCompat>
+                </Spinner>-->
+
 
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

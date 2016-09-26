@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:layout_weight="17"
+        android:gravity="center"
+        android:text="Bienvenido a nombre , distinguete como un equipo para que puedan encontrarte y confrontarte"/>
+
+    <ImageView
+        android:id="@+id/img_avatar_redsocial"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="15"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:layout_weight="19"
+        android:text="Crea una bandera insginia con la cual te identificarar como equipo"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="15"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_height="match_parent">
+        <View
+            android:id="@+id/view_flag_1"
+            android:background="@color/md_white_1000"
+            android:layout_width="match_parent"
+            android:layout_margin="2dp"
+            android:layout_weight="35"
+            android:layout_height="wrap_content"/>
+        <View
+            android:id="@+id/view_flag_2"
+            android:layout_width="match_parent"
+            android:layout_weight="35"
+            android:layout_margin="2dp"
+            android:background="@color/md_white_1000"
+            android:layout_height="wrap_content"/>
+        <View
+            android:id="@+id/view_flag_3"
+            android:layout_width="match_parent"
+            android:layout_weight="35"
+            android:layout_margin="2dp"
+            android:background="@color/md_white_1000"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="19"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_height="match_parent">
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="match_parent"
+            android:text="omitir"
+            android:layout_weight="50"
+            android:layout_height="wrap_content"/>
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="match_parent"
+            android:layout_weight="50"
+            android:text="Siguiente"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</LinearLayout>

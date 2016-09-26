@@ -3,6 +3,7 @@ package jcsoluciones.com.socialfootball;
 import android.annotation.TargetApi;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,42 +20,37 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
+import android.view.ViewGroup;
 
-import android.widget.RatingBar;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
-import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
-import jcsoluciones.com.socialfootball.models.RequestTeamBody;
-import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
-import jcsoluciones.com.socialfootball.utils.ImageLoader;
 import jcsoluciones.com.socialfootball.utils.RealPathUtil;
-import jcsoluciones.com.socialfootball.utils.SessionManager;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -62,48 +58,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 
 public class TeamsMgtActivity extends AppCompatActivity {
-    /**
-     * The name
-     */
-    private BootstrapEditText edtname;
-    /**
-     * The phone
-     */
-    private BootstrapEditText edtphone;
-    /**
-     * The description
-     */
-    private BootstrapEditText edtdescrip;
-    /**
-     * The city
-     */
-    private Spinner spncity;
-    /**
-     * The cumplimiento
-     */
-
-    private RatingBar cumplimiento;
-    /**
-     * The email
-     */
-
-    private TextView email;
-
-    /**
-     * The status Image of Gallery
-     */
-    private  int SELECT_FILE = 1;
-
-    /**
-     * The Button for open image
-     */
 
     private FloatingActionButton floatingActionButton;
     private String selectedImage;
@@ -118,46 +78,29 @@ public class TeamsMgtActivity extends AppCompatActivity {
     private final int MY_PERMISSIONS = 100;
     private final int PHOTO_CODE = 200;
     private final int SELECT_PICTURE = 300;
-    private JSONObject jsonObject;
-    private SwitchCompat switchCancel;
-    private SessionManager sessionManager;
-    private  File file;
-    /**
-     * The Flag for create/update
-     */
-    private boolean createOrupdate=true;
-    private boolean resultImageOnSelected=false;
+    private File file;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teams_mgt);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        edtname = (BootstrapEditText) findViewById(R.id.input_layout_name);
-        edtphone = (BootstrapEditText) findViewById(R.id.input_layout_phone);
-        edtdescrip = (BootstrapEditText) findViewById(R.id.input_layout_desc);
-        email = (TextView) findViewById(R.id.input_layout_email);
-        mImg = (BootstrapCircleThumbnail) findViewById(R.id.ImageTeams);
-        mRlView = (RelativeLayout) findViewById(R.id.layout_main);
-        cumplimiento =(RatingBar) findViewById(R.id.rtbCumplimiento);
-        sessionManager = new SessionManager(this);
 
-        switchCancel = (SwitchCompat) findViewById(R.id.switchCancel);
-        switchCancel.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    confirmDeleteTeam();
-                }
-            }
-        });
 
-        spncity = (Spinner) findViewById(R.id.input_layout_city);
+        TeamsFlagFragment flagFragment= new TeamsFlagFragment();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.layout_main,flagFragment);
+        fragmentTransaction.commit();
+
+
+        /*spncity = (Spinner) findViewById(R.id.input_layout_city);
         ArrayAdapter<CharSequence> adapterspinner = ArrayAdapter.createFromResource(this,R.array.city, android.R.layout.simple_spinner_dropdown_item);
-        spncity.setAdapter(adapterspinner);
+        spncity.setAdapter(adapterspinner);*/
+
         Bundle bundle =getIntent().getExtras();
         if(bundle!=null){
-            try {
+            /*try {
                 jsonObject = new JSONObject(bundle.getString("object",""));
                 edtname.setText(jsonObject.getString("name"));
                 edtphone.setText(jsonObject.getString("phone"));
@@ -172,17 +115,9 @@ public class TeamsMgtActivity extends AppCompatActivity {
                 spncity.setSelection(adapterspinner.getPosition(jsonObject.getString("city")));
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
-        if(createOrupdate) {
-            cumplimiento.setVisibility(View.INVISIBLE);
-            switchCancel.setVisibility(View.INVISIBLE);
 
-        }else {
-            cumplimiento.setVisibility(View.VISIBLE);
-            switchCancel.setVisibility(View.VISIBLE);
-        }
-        //;
     }
 
     public void ImageChange(View view){
@@ -202,7 +137,7 @@ public class TeamsMgtActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_edit) {
-            String srtname  = edtname.getText().toString();
+           /* String srtname  = edtname.getText().toString();
             String srtphone = edtphone.getText().toString();
             String srtdesc  = edtdescrip.getText().toString();
 
@@ -267,28 +202,10 @@ public class TeamsMgtActivity extends AppCompatActivity {
                 });
             }
 
-            return true;
+            return true;*/
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Creates the alert dialog.
-     *
-     * @param msg the msg
-     */
-    public void createAlertDialog(String msg) {
-        AlertDialog.Builder alertbox = new AlertDialog.Builder(TeamsMgtActivity.this);
-        alertbox.setTitle("Response Message");
-        alertbox.setMessage(msg);
-        alertbox.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            // do something when the button is clicked
-            public void onClick(DialogInterface arg0, int arg1) {
-
-            }
-        });
-        alertbox.show();
     }
 
     private boolean mayRequestStoragePermission() {
@@ -316,31 +233,11 @@ public class TeamsMgtActivity extends AppCompatActivity {
         return false;
     }
 
-    private void confirmDeleteTeam() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(TeamsMgtActivity.this);
-        builder.setTitle("Delete Teams");
-        builder.setMessage("Desea elminar el equipo");
-        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                finish();
-            }
-        });
-
-        builder.show();
-    }
-
     private void showOptions() {
         final CharSequence[] option = {"Tomar foto", "Elegir de galeria", "Cancelar"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(TeamsMgtActivity.this);
         builder.setTitle("Eleige una opción");
+
         builder.setItems(option, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -399,7 +296,7 @@ public class TeamsMgtActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(resultCode == RESULT_OK){
-            resultImageOnSelected=true;
+            //resultImageOnSelected=true;
             switch (requestCode){
                 case PHOTO_CODE:
                     MediaScannerConnection.scanFile(this,
@@ -469,11 +366,7 @@ public class TeamsMgtActivity extends AppCompatActivity {
 
         builder.show();
     }
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
+
     private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
@@ -504,7 +397,7 @@ public class TeamsMgtActivity extends AppCompatActivity {
                 // MultipartBody.Part is used to send also the actual file name
                 MultipartBody.Part body = MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
                 // add another part within the multipart request
-                String descriptionString = sessionManager.getUserDetails().get(SessionManager.ID_CONTENT);
+                String descriptionString =""; //sessionManager.getUserDetails().get(SessionManager.ID_CONTENT);
                 RequestBody description = RequestBody.create(MediaType.parse("multipart/form-data"), descriptionString);
                 // finally, execute the request
                 Call<JSONObject> call = service.upload(description, body);
@@ -523,5 +416,67 @@ public class TeamsMgtActivity extends AppCompatActivity {
             }else{
                 finish();
             }
+    }
+
+    public static class TeamsFlagFragment extends Fragment {
+        public int[] ColorsFlag = new int[]{
+                R.color.md_yellow_500,
+                R.color.md_blue_800,
+                R.color.md_red_500,
+                R.color.md_white_1000,
+                R.color.md_black_1000,
+                R.color.md_blue_200,
+                R.color.md_pink_500,
+                R.color.md_green_500,
+                R.color.md_orange_500
+        };
+        public View view_flag1,view_flag2,view_flag3;
+        public TeamsFlagFragment() {
+            super();
+        }
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_teamflag, container, false);
+            view_flag1 =  view.findViewById(R.id.view_flag_1);
+            view_flag1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showFlagViewColors();
+                }
+            });
+
+            return view;
+        }
+
+        public void  showFlagViewColors(){
+
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View convertView =  inflater.inflate(R.layout.dialog_selectflag, null);
+            GridView lv = (GridView) convertView.findViewById(R.id.list_item_colors);
+            AdapterFlagViewColors adapterFlagViewColors = new AdapterFlagViewColors(getActivity(),ColorsFlag);
+            lv.setAdapter(adapterFlagViewColors);
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    view_flag1.setBackgroundResource(ColorsFlag[position]);
+                }
+            });
+            Dialog dialog = new Dialog(getActivity());
+            dialog.setContentView(convertView);
+            dialog.show();
+        }
+    }
+
+    public static class TeamsInfoComplementFragment extends Fragment {
+        public TeamsInfoComplementFragment() {
+            super();
+        }
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_teaminfoadd, container, false);
+            return view;
+        }
     }
 }
