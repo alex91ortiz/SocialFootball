@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="jcsoluciones.com.socialfootball.TeamprofileActivity"
-    tools:showIn="@layout/activity_teamprofile">
+    tools:context=".MyclubActivity"
+    tools:showIn="@layout/activity_myclub">
 
     <LinearLayout
         android:id="@+id/container"

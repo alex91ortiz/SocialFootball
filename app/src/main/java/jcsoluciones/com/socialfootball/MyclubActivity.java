@@ -1,8 +1,6 @@
 package jcsoluciones.com.socialfootball;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -23,7 +20,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TeamprofileActivity extends AppCompatActivity {
+public class MyclubActivity extends AppCompatActivity {
     /** Informacion */
     private String  AVATAR ="http://147.120.0.123:3000/img/57c4bc8c37cee530271588a3/profile.jpg";
     private String  PHONE;
@@ -39,7 +36,7 @@ public class TeamprofileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_teamprofile);
+        setContentView(R.layout.activity_myclub);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -126,7 +123,7 @@ public class TeamprofileActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             // Inflate the layout for this fragment
-            return inflater.inflate(R.layout.fragment_tournaments, container, false);
+            return inflater.inflate(R.layout.fragment_myclub, container, false);
         }
     }
 }
