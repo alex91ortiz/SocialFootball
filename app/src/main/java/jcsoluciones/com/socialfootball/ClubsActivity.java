@@ -19,9 +19,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
 import jcsoluciones.com.socialfootball.utils.SessionManager;
@@ -31,18 +33,19 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class ClubsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,SearchView.OnQueryTextListener {
-    private GridView gridView;
+
+    private String  AVATAR ="http://192.168.0.13:3000/img/57c4bc8c37cee530271588a3/profile.jpg";
     private SearchClubsAdapter adapter;
     private SearchView mSearchView;
     private MenuItem searchMenuItem;
-    private ListView searchList;
+    private GridView searchList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clubs);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        searchList =(GridView) findViewById(R.id.list_clubs);
 
     }
 
@@ -70,7 +73,7 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
 
             RequestInterface request = retrofit.create(RequestInterface.class);
             //Call<JSONArray> call = request.searchTeams(newText, newText,sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
-            Call<JSONArray> call = request.searchTeams(newText, newText,"");
+            Call<JSONArray> call = request.searchTeams(newText, newText,"alexortizcortes@gmail.com");
             call.enqueue(new Callback<JSONArray>() {
                              @Override
                              public void onResponse(Call<JSONArray> call, Response<JSONArray> response) {
@@ -134,8 +137,8 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
             if(convertView==null) {
                 convertView = inflater.inflate(R.layout.list_grid_clubs, null);
                 viewHolder = new ViewHolder();
-                viewHolder.text1 = (TextView) convertView.findViewById(R.id.title);
-                viewHolder.mImg =(BootstrapCircleThumbnail) convertView.findViewById(R.id.ImageTeams);
+                viewHolder.text1 = (TextView) convertView.findViewById(R.id.name_club);
+                viewHolder.mImg =(ImageView) convertView.findViewById(R.id.imagen_club);
 
                 convertView.setTag(viewHolder);
             }else{
@@ -143,10 +146,10 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
             }
             try {
                 if(teambody.getJSONObject(position)!=null) {
-
-                    viewHolder.text1 = (TextView) convertView.findViewById(R.id.name_club);
-                    viewHolder.mImg=(ImageView) convertView.findViewById(R.id.imagen_club);
-
+                    final JSONObject jsonteambody = teambody.getJSONObject(position);
+                    viewHolder.text1.setText(jsonteambody.getString("name").toString());
+                    //Picasso.with(context).load(AVATAR).into(viewHolder.mImg);
+                    //Picasso.with(context).load(AVATAR).resizeDimen(R.dimen.width,R.dimen.height).centerCrop().into(viewHolder.mImg);
                     /*final JSONObject jsonteambody = teambody.getJSONObject(position);
                     viewHolder.text1.setText(jsonteambody.getString("name").toString());
                     String selectedImage = Constants.HostServer + "/img/" + jsonteambody.getString("_id") + "/profile.jpg";
