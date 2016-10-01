@@ -34,7 +34,7 @@ import retrofit2.Retrofit;
 
 public class ClubsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,SearchView.OnQueryTextListener {
 
-    private String  AVATAR ="http://192.168.0.13:3000/img/57c4bc8c37cee530271588a3/profile.jpg";
+    private String  AVATAR ="http://192.168.0.14:3000/img/57c4bc8c37cee530271588a3/profile.jpg";
     private SearchClubsAdapter adapter;
     private SearchView mSearchView;
     private MenuItem searchMenuItem;
@@ -66,6 +66,7 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
     public boolean onQueryTextChange(String newText) {
 
         if(newText.length()>0) {
+            searchList.setAdapter(null);
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(Constants.HostServer)
                     .addConverterFactory(JSONConverterFactory.create())
@@ -149,7 +150,7 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
                     final JSONObject jsonteambody = teambody.getJSONObject(position);
                     viewHolder.text1.setText(jsonteambody.getString("name").toString());
                     //Picasso.with(context).load(AVATAR).into(viewHolder.mImg);
-                    //Picasso.with(context).load(AVATAR).resizeDimen(R.dimen.width,R.dimen.height).centerCrop().into(viewHolder.mImg);
+                    Picasso.with(context).load(AVATAR).resizeDimen(R.dimen.width,R.dimen.height).centerCrop().into(viewHolder.mImg);
                     /*final JSONObject jsonteambody = teambody.getJSONObject(position);
                     viewHolder.text1.setText(jsonteambody.getString("name").toString());
                     String selectedImage = Constants.HostServer + "/img/" + jsonteambody.getString("_id") + "/profile.jpg";
