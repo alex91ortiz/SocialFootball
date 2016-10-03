@@ -7,6 +7,6 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="width">200dp</dimen>
     <dimen name="height">200dp</dimen>
-    <dimen name="image_thumbnail_size">100dp</dimen>
+    <dimen name="image_thumbnail_size">500dp</dimen>
     <dimen name="image_thumbnail_spacing">1dp</dimen>
 </resources>

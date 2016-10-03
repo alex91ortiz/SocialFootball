@@ -2,11 +2,7 @@ package jcsoluciones.com.socialfootball;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -21,28 +17,15 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.squareup.picasso.Cache;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Target;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
-
 import java.io.IOException;
-
 import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
 import jcsoluciones.com.socialfootball.util.ImageCache;
 import jcsoluciones.com.socialfootball.util.ImageFetcher;
 import jcsoluciones.com.socialfootball.utils.FileCache;
-
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -70,7 +53,7 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
         setSupportActionBar(toolbar);
         searchList =(GridView) findViewById(R.id.list_clubs);
         searchList.setOnItemClickListener(this);
-        setupHttp();
+
 
         mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
@@ -83,7 +66,7 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
         mImageFetcher = new ImageFetcher(this, mImageThumbSize);
         mImageFetcher.setLoadingImage(R.drawable.champions);
         mImageFetcher.addImageCache(this.getSupportFragmentManager(), cacheParams);
-
+        setupHttp();
     }
 
     public void setupHttp(){
@@ -139,7 +122,6 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
         mImageFetcher.setExitTasksEarly(false);
         adapter.notifyDataSetChanged();
     }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -147,7 +129,6 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
         mImageFetcher.setExitTasksEarly(true);
         mImageFetcher.flushCache();
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -192,7 +173,7 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
         }
         return false;
     }
-
+    /** SearchClubsAdapter */
     public class SearchClubsAdapter extends BaseAdapter {
         private Context context;
         private LayoutInflater inflater;
@@ -259,36 +240,6 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
                 e.printStackTrace();
             }
 
-
-            //
-            /*viewHolder.mPicasso.with(context).load(AVATAR).resizeDimen(R.dimen.width, R.dimen.height).centerCrop().into(new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    viewHolder.mImg.setImageBitmap(bitmap);
-                    try {
-
-                        fileCacheImg.writeCache(bitmap);
-                        Log.d("Picasso","file image");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-
-                    }
-                }
-
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-                    Log.d("Picasso","fallo image");
-                    Picasso.with(context).load(AVATAR).resizeDimen(R.dimen.width, R.dimen.height).centerCrop().networkPolicy(NetworkPolicy.OFFLINE).into(viewHolder.mImg);
-                    if(fileCacheImg.hasCache()){
-                        //;
-                    }
-                }
-
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                }
-            });*/
             mImageFetcher.loadImage(AVATAR,viewHolder.mImg);
             return convertView;
         }
@@ -302,7 +253,6 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
         }
 
     }
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
