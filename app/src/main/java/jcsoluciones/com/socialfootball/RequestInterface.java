@@ -26,8 +26,8 @@ public interface RequestInterface {
     @GET("team/{email}/{token}")
     Call<JSONObject> getTeams(@Path("email") String email,@Path("token") String token);
 
-    @GET("searchteams/{name}/{city}/{email}")
-    Call<JSONArray> searchTeams(@Path("name") String name,@Path("city") String city,@Path("email") String email);
+    @GET("searchteams/{name}/{city}/{email}/{all}")
+    Call<JSONArray> searchTeams(@Path("name") String name,@Path("city") String city,@Path("email") String email,@Path("all") int all);
 
     @POST("invites/{email}")
     Call<JSONArray> invites(@Path("email") String email);

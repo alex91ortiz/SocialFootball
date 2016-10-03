@@ -5,6 +5,10 @@
  */
 package jcsoluciones.com.socialfootball;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 /**
  * The Class Constants.
  */
@@ -46,7 +50,15 @@ public class Constants {
 	/** Then Google Project No */
 	static  final String GoogleProjectNo="1071669197043";
 	/**  OpenShift */
-	static  final String HostServer="http://192.168.0.14:3000";//"http://147.120.0.123:3000/";// /";//"http://socialsoccer-solucionesjc.rhcloud.com/";//;
+	static  final String HostServer="http://192.168.0.17:3000";//"http://147.120.0.123:3000/";//;//// /";//"http://socialsoccer-solucionesjc.rhcloud.com/";//;
 	/** Then Google Client Id*/
 	static  final String IdClientGoogle="1071669197043-87276jki2t3ot7bbr0cggdk1ulh7vdlv.apps.googleusercontent.com";
+
+	private static ConnectivityManager manager;
+
+	public static boolean isOnline(Context context) {
+		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+		return networkInfo != null && networkInfo.isAvailable() && networkInfo.isConnected();
+	}
 }

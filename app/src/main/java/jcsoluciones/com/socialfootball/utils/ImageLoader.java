@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
+
 import com.beardedhen.androidbootstrap.BootstrapCircleThumbnail;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -17,8 +19,8 @@ import jcsoluciones.com.socialfootball.R;
  */
 public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
     //private final WeakReference<BootstrapCircleThumbnail> imageViewReference;
-    private final BootstrapCircleThumbnail imageViews;
-    public ImageLoader(BootstrapCircleThumbnail imageView) {
+    private final ImageView imageViews;
+    public ImageLoader(ImageView imageView) {
         imageViews = imageView;
     }
 
