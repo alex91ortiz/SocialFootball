@@ -1,7 +1,6 @@
 package jcsoluciones.com.socialfootball;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -21,11 +20,12 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.IOException;
-import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
+
+import jcsoluciones.com.socialfootball.provider.JSONConverterFactory;
+import jcsoluciones.com.socialfootball.provider.RequestInterface;
 import jcsoluciones.com.socialfootball.util.ImageCache;
 import jcsoluciones.com.socialfootball.util.ImageFetcher;
-import jcsoluciones.com.socialfootball.utils.FileCache;
+import jcsoluciones.com.socialfootball.util.SessionManager;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -39,12 +39,11 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
     private GridView searchList;
     private Retrofit retrofit;
     private RequestInterface request;
-    private FileCache<String> fileCache;
-    private FileCache<Bitmap> fileCacheImg;
     private static final String IMAGE_CACHE_DIR = "thumbs";
     private int mImageThumbSize;
     private int mImageThumbSpacing;
     private ImageFetcher mImageFetcher;
+    private SessionManager mSessionManger;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,31 +65,36 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
         mImageFetcher = new ImageFetcher(this, mImageThumbSize);
         mImageFetcher.setLoadingImage(R.drawable.champions);
         mImageFetcher.addImageCache(this.getSupportFragmentManager(), cacheParams);
+
+        mSessionManger = new SessionManager(this);
+
         setupHttp();
+
     }
 
     public void setupHttp(){
 
-        fileCache = new FileCache<>(ClubsActivity.this,"listSearccTeam.json");
-        retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.HostServer)
-                .addConverterFactory(JSONConverterFactory.create())
-                .build();
-        request = retrofit.create(RequestInterface.class);
-        if(!fileCache.hasCache()) {
+        //String CONTENT_CLUBS=mSessionManger.getUserDetails().get(mSessionManger.CONTENT_ALL_CLUBS);
+
+
+
+
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(Constants.HostServer)
+                    .addConverterFactory(JSONConverterFactory.create())
+                    .build();
+            request = retrofit.create(RequestInterface.class);
+
+
             Log.d("MainActivity", "desde http");
-            Call<JSONArray> call = request.searchTeams(" ", " ", "alexortizcortes@gmail.com", 1);
+            Call<JSONArray> call = request.searchTeams(" ", " ", "alexortizcortes@hotmail.com", 1);
             call.enqueue(new retrofit2.Callback<JSONArray>() {
                              @Override
                              public void onResponse(Call<JSONArray> call, Response<JSONArray> response) {
                                  JSONArray teambody = response.body();
                                  if (teambody != null && teambody.length() > 0) {
 
-                                     try {
-                                         fileCache.writeCache(teambody.toString());
-                                     } catch (IOException e) {
-                                         e.printStackTrace();
-                                     }
+
                                      adapter = new SearchClubsAdapter(getApplicationContext(), teambody);
                                      searchList.setAdapter(adapter);
                                  }
@@ -102,25 +106,15 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
                              }
                          }
             );
-        }else{
-            Log.d("MainActivity", "desde cache");
-            JSONArray teambody = null;
-            try {
-                teambody = new JSONArray(fileCache.readCache());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            adapter = new SearchClubsAdapter(getApplicationContext(), teambody);
-            searchList.setAdapter(adapter);
-        }
+
+
     }
     @Override
     public void onResume() {
         super.onResume();
         mImageFetcher.setExitTasksEarly(false);
-        adapter.notifyDataSetChanged();
+        if(adapter!=null)
+            adapter.notifyDataSetChanged();
     }
     @Override
     public void onPause() {
@@ -153,7 +147,7 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
             searchList.setAdapter(null);
 
             //Call<JSONArray> call = request.searchTeams(newText, newText,sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL));
-            Call<JSONArray> call = request.searchTeams(newText, newText,"alexortizcortes@gmail.com",2);
+            Call<JSONArray> call = request.searchTeams(newText, newText,"alexortizcortes@hotmail.com",2);
             call.enqueue(new retrofit2.Callback<JSONArray>() {
                              @Override
                              public void onResponse(Call<JSONArray> call, Response<JSONArray> response) {
@@ -233,14 +227,14 @@ public class ClubsActivity extends AppCompatActivity implements AdapterView.OnIt
                     viewHolder.text1.setText(jsonteambody.getString("name").toString());
                     idImg = jsonteambody.getString("_id");
                     AVATAR = Constants.HostServer + "/img/" + jsonteambody.getString("_id") + "/profile.jpg";
-                    fileCacheImg = new FileCache<Bitmap>(ClubsActivity.this, idImg);
-                    Picasso.with(context).load(AVATAR).resizeDimen(R.dimen.width, R.dimen.height).centerCrop().fetch();
+
+                    //Picasso.with(context).load(AVATAR).resizeDimen(R.dimen.width, R.dimen.height).centerCrop().fetch();
+                    mImageFetcher.loadImage(AVATAR,viewHolder.mImg);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            mImageFetcher.loadImage(AVATAR,viewHolder.mImg);
             return convertView;
         }
 

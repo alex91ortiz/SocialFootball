@@ -1,4 +1,4 @@
-package jcsoluciones.com.socialfootball.models;
+package jcsoluciones.com.socialfootball.provider;
 import java.io.IOException;
 
 import okhttp3.MediaType;

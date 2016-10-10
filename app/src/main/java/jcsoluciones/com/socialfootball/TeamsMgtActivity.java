@@ -46,10 +46,9 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
-import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
+import jcsoluciones.com.socialfootball.provider.JSONConverterFactory;
+import jcsoluciones.com.socialfootball.provider.RequestInterface;
 import jcsoluciones.com.socialfootball.utils.RealPathUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;

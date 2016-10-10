@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.IntRange;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,9 +26,10 @@ import com.google.android.gms.common.api.Status;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
+import jcsoluciones.com.socialfootball.provider.JSONConverterFactory;
 import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
-import jcsoluciones.com.socialfootball.utils.SessionManager;
+import jcsoluciones.com.socialfootball.provider.RequestInterface;
+import jcsoluciones.com.socialfootball.util.SessionManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -150,8 +150,8 @@ public class SignInActivity extends AppCompatActivity implements  GoogleApiClien
             GoogleSignInAccount acct = result.getSignInAccount();
             Log.d("SigninActivity", acct.getDisplayName());
 
-            sessionManager.createLoginSession(acct.getDisplayName(), acct.getEmail());
-            if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()) {
+            //sessionManager.createLoginSession(acct.getDisplayName(), acct.getEmail());
+            if(sessionManager.getUserDetails().get(sessionManager.CONTENT_MYCLUB).isEmpty()) {
                 onRefresh();
             }else{
                     /*jsonObject = new JSONObject(sessionManager.getUserDetails().get(sessionManager.CONTENT));
@@ -176,7 +176,7 @@ public class SignInActivity extends AppCompatActivity implements  GoogleApiClien
                 .addConverterFactory(JSONConverterFactory.create())
                 .build();
         final RequestInterface request = retrofit.create(RequestInterface.class);
-        Call<JSONObject> call = request.getTeams(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), "1234rGSS34567AWS");
+        Call<JSONObject> call = request.getTeams("", "1234rGSS34567AWS");
         call.enqueue(new Callback<JSONObject>() {
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {

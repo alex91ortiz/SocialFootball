@@ -5,7 +5,6 @@ package jcsoluciones.com.socialfootball.plugin;
  */
 
 import android.app.IntentService;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -24,14 +23,12 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 
-import jcsoluciones.com.socialfootball.Constants;
 import jcsoluciones.com.socialfootball.MainActivity;
 import jcsoluciones.com.socialfootball.R;
-import jcsoluciones.com.socialfootball.RequestInterface;
-import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
-import jcsoluciones.com.socialfootball.models.RequestTeamBody;
-import jcsoluciones.com.socialfootball.models.ResponseBody;
-import jcsoluciones.com.socialfootball.utils.SessionManager;
+import jcsoluciones.com.socialfootball.provider.RequestInterface;
+import jcsoluciones.com.socialfootball.provider.JSONConverterFactory;
+import jcsoluciones.com.socialfootball.provider.RequestTeamBody;
+import jcsoluciones.com.socialfootball.util.SessionManager;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -172,7 +169,7 @@ public class RegistrationIntentService extends IntentService{
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                sessionManager.createContentSession(responseBody.getId(),jsonObject.toString());
+                //sessionManager.createLoginSession(responseBody.getId(),jsonObject.toString());
                 Intent intent = new Intent(MainActivity.REGISTRATION_PROCESS);
                 intent.putExtra("result", responseBody.getId());
                 intent.putExtra("message", responseBody.getEmail());
@@ -218,14 +215,14 @@ public class RegistrationIntentService extends IntentService{
                     jsonObject.put("desc",responseBody.getDesc());
                     jsonObject.put("city",responseBody.getCity());
                     jsonObject.put("registrationId",responseBody.getRegistrationId());
-                    sessionManager.createContentSession(responseBody.getId(), jsonObject.toString());
+                    //sessionManager.createLoginSession(responseBody.getId(), jsonObject.toString());
                     Intent intent = new Intent(MainActivity.REGISTRATION_PROCESS);
                     intent.putExtra("result", responseBody.getId());
                     intent.putExtra("message", responseBody.getEmail());
                     LocalBroadcastManager.getInstance(RegistrationIntentService.this).sendBroadcast(intent);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    sessionManager.createContentSession(null, null);
+                    //sessionManager.createLoginSession(null, null);
                 }
 
 
@@ -236,7 +233,7 @@ public class RegistrationIntentService extends IntentService{
             public void onFailure(Call<RequestTeamBody> call, Throwable t) {
 
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-                sessionManager.createContentSession(null, null);
+                //sessionManager.createLoginSession(null, null);
             }
         });
     }
@@ -253,7 +250,7 @@ public class RegistrationIntentService extends IntentService{
         // MultipartBody.Part is used to send also the actual file name
         MultipartBody.Part body = MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
         // add another part within the multipart request
-        String descriptionString = sessionManager.getUserDetails().get(SessionManager.ID_CONTENT);
+        String descriptionString ="";// sessionManager.getUserDetails().get(SessionManager.ID_CONTENT);
         RequestBody description = RequestBody.create(MediaType.parse("multipart/form-data"), descriptionString);
         // finally, execute the request
         Call<JSONObject> call = service.upload(description, body);

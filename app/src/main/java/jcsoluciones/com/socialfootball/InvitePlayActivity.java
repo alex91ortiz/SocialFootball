@@ -18,9 +18,10 @@ import com.beardedhen.androidbootstrap.api.defaults.DefaultBootstrapBrand;
 import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
-import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
-import jcsoluciones.com.socialfootball.models.RequestInviteBody;
-import jcsoluciones.com.socialfootball.utils.SessionManager;
+import jcsoluciones.com.socialfootball.provider.JSONConverterFactory;
+import jcsoluciones.com.socialfootball.provider.RequestInviteBody;
+import jcsoluciones.com.socialfootball.provider.RequestInterface;
+import jcsoluciones.com.socialfootball.util.SessionManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -129,7 +130,7 @@ public class InvitePlayActivity extends AppCompatActivity{
                 @Override
                 public void onClick(View v) {
                     RequestInviteBody requestInviteBody = new RequestInviteBody();
-                    requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT).toString());
+                    requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT_MYCLUB).toString());
                     requestInviteBody.setAcceptinvite(true);
                     requestInviteBody.setMessage("!Aceptaron tu reto");
                     try {
@@ -170,7 +171,7 @@ public class InvitePlayActivity extends AppCompatActivity{
                 @Override
                 public void onClick(View v) {
                     RequestInviteBody requestInviteBody = new RequestInviteBody();
-                    requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT).toString());
+                    requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT_MYCLUB).toString());
                     requestInviteBody.setAcceptinvite(false);
                     requestInviteBody.setStatus(true);
                     requestInviteBody.setMessage("!Te retaron a un partido");
@@ -237,8 +238,6 @@ public class InvitePlayActivity extends AppCompatActivity{
             }
         });
     }
-
-
     /**
      * Creates the alert dialog.
      *

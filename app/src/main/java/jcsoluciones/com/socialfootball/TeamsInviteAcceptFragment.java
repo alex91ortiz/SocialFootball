@@ -9,14 +9,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,9 +28,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
-import jcsoluciones.com.socialfootball.utils.ImageLoader;
-import jcsoluciones.com.socialfootball.utils.SessionManager;
+import jcsoluciones.com.socialfootball.provider.JSONConverterFactory;
+import jcsoluciones.com.socialfootball.provider.RequestInterface;
+import jcsoluciones.com.socialfootball.util.SessionManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -93,7 +91,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                     .build();
 
             RequestInterface request = retrofit.create(RequestInterface.class);
-            Call<JSONArray> call = request.invites(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT));
+            Call<JSONArray> call = request.invites("");
             call.enqueue(new Callback<JSONArray>() {
                     @Override
                     public void onResponse(Call<JSONArray> call, Response<JSONArray> response) {
@@ -176,11 +174,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                         final JSONObject jsonInvites = inviteBody.getJSONObject(position);
                         final JSONObject jsonCreate = new JSONObject(jsonInvites.getString("creator"));
                         final JSONObject jsonFriends = new JSONObject(jsonInvites.getString("friends"));
-                        if (jsonCreate.getString("email").equals(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL))) {
-
-                            viewHolder.text1.setText(jsonFriends.getString("name"));
-
-                            viewHolder.text2.setText(jsonFriends.getString("desc"));
+                        if (jsonCreate.getString("email").equals("") ){;
                             String selectedImage = Constants.HostServer + "img/" + jsonFriends.getString("_id") + "/profile.jpg";
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -231,7 +225,7 @@ public class TeamsInviteAcceptFragment extends Fragment implements  SwipeRefresh
                             }
                         }
 
-                        if (jsonFriends.getString("email").equals(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL))) {
+                        if (jsonFriends.getString("email").equals(sessionManager.getUserDetails().get(""))) {
 
                             viewHolder.text1.setText(jsonCreate.getString("name"));
                             viewHolder.text2.setText(jsonCreate.getString("desc"));

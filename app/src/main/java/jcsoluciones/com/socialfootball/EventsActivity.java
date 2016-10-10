@@ -29,9 +29,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import jcsoluciones.com.socialfootball.models.RequestInviteBody;
+import jcsoluciones.com.socialfootball.provider.RequestInviteBody;
 
-import jcsoluciones.com.socialfootball.utils.SessionManager;
+import jcsoluciones.com.socialfootball.provider.RequestInterface;
+import jcsoluciones.com.socialfootball.util.SessionManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

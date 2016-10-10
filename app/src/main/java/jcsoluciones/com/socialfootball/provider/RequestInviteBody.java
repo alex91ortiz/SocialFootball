@@ -1,4 +1,4 @@
-package jcsoluciones.com.socialfootball.models;
+package jcsoluciones.com.socialfootball.provider;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

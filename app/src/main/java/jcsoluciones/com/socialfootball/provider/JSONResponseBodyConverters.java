@@ -1,4 +1,4 @@
-package jcsoluciones.com.socialfootball.models;
+package jcsoluciones.com.socialfootball.provider;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

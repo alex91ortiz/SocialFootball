@@ -1,4 +1,4 @@
-package jcsoluciones.com.socialfootball.models;
+package jcsoluciones.com.socialfootball.provider;
 
 
 public class ResponseBody {

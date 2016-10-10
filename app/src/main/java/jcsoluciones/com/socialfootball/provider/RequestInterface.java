@@ -1,9 +1,8 @@
-package jcsoluciones.com.socialfootball;
+package jcsoluciones.com.socialfootball.provider;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import jcsoluciones.com.socialfootball.models.RequestInviteBody;
-import jcsoluciones.com.socialfootball.models.RequestTeamBody;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;

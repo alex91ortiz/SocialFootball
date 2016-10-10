@@ -26,9 +26,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import jcsoluciones.com.socialfootball.models.JSONConverterFactory;
+import jcsoluciones.com.socialfootball.provider.JSONConverterFactory;
 import jcsoluciones.com.socialfootball.plugin.RegistrationIntentService;
-import jcsoluciones.com.socialfootball.utils.SessionManager;
+import jcsoluciones.com.socialfootball.provider.RequestInterface;
+import jcsoluciones.com.socialfootball.util.SessionManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -90,7 +91,7 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
                 .addConverterFactory(JSONConverterFactory.create())
                 .build();
         final RequestInterface request = retrofit.create(RequestInterface.class);
-        Call<JSONObject> call = request.getTeams(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL), "1234rGSS34567AWS");
+        Call<JSONObject> call = request.getTeams("", "1234rGSS34567AWS");
         call.enqueue(new Callback<JSONObject>() {
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
@@ -134,7 +135,7 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
 
     public void validateUser(){
 
-        if(!sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
+       /* if(!sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
             if(sessionManager.getUserDetails().get(sessionManager.CONTENT).isEmpty()) {
                 onRefresh();
             }else{
@@ -147,14 +148,14 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
                     e.printStackTrace();
                 }
             }
-        }
+        }*/
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             switch(position){
                 case 0:
-                    if(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
+                    /*if(sessionManager.getUserDetails().get(sessionManager.KEY_EMAIL).isEmpty()){
                         Intent intent = new Intent(getContext(), SignInActivity.class);
                         intent.putExtra("createOrupdate",true);
                         startActivity(intent);
@@ -167,7 +168,7 @@ public class TeamManagementFragment extends ListFragment implements AdapterView.
                         intent.putExtra("flagAccept", 1);
 
                         startActivity(intent);
-                    }
+                    }*/
                     break;
                 case 1:break;
                 case 2:break;

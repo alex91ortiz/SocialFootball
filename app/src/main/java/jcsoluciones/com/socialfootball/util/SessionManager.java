@@ -1,11 +1,17 @@
-package jcsoluciones.com.socialfootball.utils;
+package jcsoluciones.com.socialfootball.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.telephony.SignalStrength;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 import jcsoluciones.com.socialfootball.SignInActivity;
 
@@ -13,35 +19,29 @@ import jcsoluciones.com.socialfootball.SignInActivity;
  * Created by ADMIN on 12/08/2016.
  */
 public class SessionManager {
+    private static final String TAG = "SessionManager";
     // Shared Preferences
     SharedPreferences pref;
-
     // Editor for Shared preferences
     SharedPreferences.Editor editor;
-
     // Context
     Context _context;
-
     // Shared pref mode
     int PRIVATE_MODE = 0;
-
     // Sharedpref file name
     private static final String PREF_NAME = "AndroidHivePref";
-
     // All Shared Preferences Keys
     private static final String IS_LOGIN = "IsLoggedIn";
-
     // User name (make variable public to access from outside)
-    public static final String KEY_NAME = "name";
-
+    public static final String NAME = "name";
     // Email address (make variable public to access from outside)
-    public static final String KEY_EMAIL = "email";
-
+    public static final String KEY= "key_user";
     // Content  (make variable public to access from outside)
-    public static final String CONTENT = "content";
-
+    public static final String CONTENT_MYCLUB = "content_myclub";
     // ID Content (make variable public to access from outside)
-    public static final String ID_CONTENT = "id_content";
+    public static final String ID_CONTENT_MYCLUB = "id_content_myclub";
+    // Content  (make variable public to access from outside)
+    public static final String CONTENT_ALL_CLUBS = "content_all_clubs";
     // Constructor
     public SessionManager(Context context){
         this._context = context;
@@ -52,30 +52,27 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String name, String email){
+    public void createLoginSession(String name, String key,String id,String content){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
-
         // Storing name in pref
-        editor.putString(KEY_NAME, name);
-
+        editor.putString(NAME, name);
         // Storing email in pref
-        editor.putString(KEY_EMAIL, email);
-
+        editor.putString(KEY, key);
+        // Storing content in pref
+        editor.putString(CONTENT_MYCLUB, content);
+        // Storing content id in pref
+        editor.putString(ID_CONTENT_MYCLUB, id);
         // commit changes
         editor.commit();
     }
 
 
     /**
-     * Create login session
+     * Create content clubs
      * */
-    public void createContentSession(String id,String content){
-        // Storing content in pref
-        editor.putString(CONTENT, content);
-        // Storing content id in pref
-        editor.putString(ID_CONTENT, id);
-        // commit changes
+    public void createContentClubs(String list){
+        editor.putString(CONTENT_ALL_CLUBS, list);
         editor.commit();
     }
 
@@ -104,43 +101,61 @@ public class SessionManager {
     }
 
 
+    /**
+     * Simple network connection check.
+     *
+     * @param context
+     */
+    public boolean checkConnection(Context context) {
+        final ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo == null || !networkInfo.isConnectedOrConnecting()) {
+            Toast.makeText(context,"no  no connection found", Toast.LENGTH_LONG).show();
+            Log.e(TAG, "checkConnection - no connection found");
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * Get stored session data
      * */
     public HashMap<String, String> getUserDetails(){
-        HashMap<String, String> user = new HashMap<String, String>();
+        HashMap<String, String> data = new HashMap<String, String>();
         // user name
-        user.put(KEY_NAME, pref.getString(KEY_NAME, ""));
+        data.put(NAME, pref.getString(NAME, ""));
 
-        // user email id
-        user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, ""));
+        // user key
+        data.put(KEY, pref.getString(KEY, ""));
 
-        // user email id
-        user.put(ID_CONTENT, pref.getString(ID_CONTENT, ""));
+        // user  content_myclub
+        data.put(CONTENT_MYCLUB, pref.getString(CONTENT_MYCLUB, ""));
 
-        // user email id
-        user.put(CONTENT, pref.getString(CONTENT, ""));
+        // user id content myclub
+        data.put(ID_CONTENT_MYCLUB, pref.getString(ID_CONTENT_MYCLUB, ""));
+
+        // user content all clubs
+        data.put(CONTENT_ALL_CLUBS, pref.getString(CONTENT_ALL_CLUBS, ""));
+
         // return user
-        return user;
+        return data;
     }
 
     /**
      * Clear session details
      * */
-    public void logoutUser(){
-        // Clearing all data from Shared Preferences
+    public void logoutUser(Activity activity){
+        /* Clearing all data from Shared Preferences */
         editor.clear();
         editor.commit();
-
         // After logout redirect user to Loing Activity
-        Intent i = new Intent(_context, SignInActivity.class);
+        Intent i = new Intent(_context, activity.getClass());
         // Closing all the Activities
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
         // Add new Flag to start new Activity
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         // Staring Login Activity
         _context.startActivity(i);
     }

@@ -7,8 +7,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -23,9 +26,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import jcsoluciones.com.socialfootball.util.ImageCache;
+import jcsoluciones.com.socialfootball.util.ImageFetcher;
+
 public class MyclubActivity extends AppCompatActivity {
     /** Informacion */
-    private static String  AVATAR ="http://147.120.0.123:3000/img/57c4bc8c37cee530271588a3/profile.jpg";
+    private static String  AVATAR ="http://147.10.0.123:3000/img/57c4bc8c37cee530271588a3/profile.jpg";
     private static String  PHONE;
     private static String  CITY;
     private static String  NAME;
@@ -35,6 +41,10 @@ public class MyclubActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ImageView imageview;
+    private int mImageThumbSize;
+    private int mImageThumbSpacing;
+    private ImageFetcher mImageFetcher;
+    private static final String IMAGE_CACHE_DIR = "thumbs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +60,19 @@ public class MyclubActivity extends AppCompatActivity {
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         imageview = (ImageView) findViewById(R.id.profile_img);
+
+        mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
+        mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
+
+        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
+
+        cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
+
+        // The ImageFetcher takes care of loading images into our ImageView children asynchronously
+        mImageFetcher = new ImageFetcher(this, mImageThumbSize);
+        mImageFetcher.setLoadingImage(R.drawable.champions);
+        mImageFetcher.addImageCache(this.getSupportFragmentManager(), cacheParams);
+        mImageFetcher.clearCache();
         setupInformation();
     }
 
@@ -61,12 +84,29 @@ public class MyclubActivity extends AppCompatActivity {
                 NAME = jsonTeam.getString("name");
                 PHONE = jsonTeam.getString("phone");
                 CITY = jsonTeam.getString("city");
-                AVATAR = Constants.HostServer+"/img/"+jsonTeam.getString("_id")+"/profile.jpg";
+                AVATAR = Constants.HostServer+"img/"+jsonTeam.getString("_id")+"/profile.jpg";
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            mImageFetcher.loadImage(AVATAR,imageview);
         }
-        Picasso.with(this).load(AVATAR).resizeDimen(R.dimen.width,R.dimen.height).centerCrop().into(imageview);
+
+
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_teamprofile, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_invite:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -74,6 +114,8 @@ public class MyclubActivity extends AppCompatActivity {
         adapterViewpager.addFragment(new TeamMatchFragment(), "MATCHES");
         adapterViewpager.addFragment(new TeamMatchFragment(), "INFORMATIONS");
         adapterViewpager.addFragment(new TeamMatchFragment(), "PHOTOS");
+
+
         viewPager.setAdapter(adapterViewpager);
     }
 
