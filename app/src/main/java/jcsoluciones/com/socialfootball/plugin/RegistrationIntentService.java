@@ -172,9 +172,9 @@ public class RegistrationIntentService extends IntentService{
                 //sessionManager.createLoginSession(responseBody.getId(),jsonObject.toString());
                 Intent intent = new Intent(MainActivity.REGISTRATION_PROCESS);
                 intent.putExtra("result", responseBody.getId());
-                intent.putExtra("message", responseBody.getEmail());
+                intent.putExtra("message", "registro");
                 LocalBroadcastManager.getInstance(RegistrationIntentService.this).sendBroadcast(intent);
-                uploadFile();
+                //uploadFile();
             }
 
             @Override
@@ -218,7 +218,7 @@ public class RegistrationIntentService extends IntentService{
                     //sessionManager.createLoginSession(responseBody.getId(), jsonObject.toString());
                     Intent intent = new Intent(MainActivity.REGISTRATION_PROCESS);
                     intent.putExtra("result", responseBody.getId());
-                    intent.putExtra("message", responseBody.getEmail());
+                    intent.putExtra("message","actualizacion");
                     LocalBroadcastManager.getInstance(RegistrationIntentService.this).sendBroadcast(intent);
                 } catch (JSONException e) {
                     e.printStackTrace();

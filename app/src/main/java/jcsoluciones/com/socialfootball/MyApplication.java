@@ -7,6 +7,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.beardedhen.androidbootstrap.TypefaceProvider;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 
 /**
  * Created by ADMIN on 01/08/2016.
@@ -25,6 +27,8 @@ public class MyApplication extends Application {
         super.onCreate();
         TypefaceProvider.registerDefaultIconSets();
         mInstance = this;
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
     }
 
     public static synchronized MyApplication getInstance() {

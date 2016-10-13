@@ -107,108 +107,12 @@ public class InvitePlayActivity extends AppCompatActivity{
                 e.printStackTrace();
             }
         }
-        ActionEvent();
+        //ActionEvent();
         /*if(flagAccept)
             Sendnvite.setText("Accept");*/
     }
 
-    public void ActionEvent(){
-        sendnvite.setBootstrapBrand(DefaultBootstrapBrand.PRIMARY);
-        sendnvite.setText("Editar");
-        if(flagAccept==1) {
-            sendnvite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getApplicationContext(), TeamsMgtActivity.class);
-                    intent.putExtra("object",jsonObject.toString());
-                    startActivity(intent);
-                }
-            });
-        }else if(flagAccept==2){
-            sendnvite.setText("Aceptar");
-            sendnvite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    RequestInviteBody requestInviteBody = new RequestInviteBody();
-                    requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT_MYCLUB).toString());
-                    requestInviteBody.setAcceptinvite(true);
-                    requestInviteBody.setMessage("!Aceptaron tu reto");
-                    try {
-                        requestInviteBody.setId(jsonObjectinvite.getString("_id").toString());
-                        requestInviteBody.setFriends(jsonObject.getString("_id").toString());
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl(Constants.HostServer)
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
-
-                    RequestInterface request = retrofit.create(RequestInterface.class);
-                    Call<RequestInviteBody> call = request.updateInvite(requestInviteBody);
-                    call.enqueue(new Callback<RequestInviteBody>() {
-                        @Override
-                        public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
-                            RequestInviteBody responseBody = response.body();
-                            Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
-                            //progressDialog.dismiss();
-                            finish();
-                        }
-
-                        @Override
-                        public void onFailure(Call<RequestInviteBody> call, Throwable t) {
-                            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-                            //progressDialog.dismiss();
-                        }
-                    });
-                }
-            });
-        }else if(flagAccept==3) {
-            sendnvite.setText("Invitar");
-            sendnvite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    RequestInviteBody requestInviteBody = new RequestInviteBody();
-                    requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT_MYCLUB).toString());
-                    requestInviteBody.setAcceptinvite(false);
-                    requestInviteBody.setStatus(true);
-                    requestInviteBody.setMessage("!Te retaron a un partido");
-                    try {
-                        requestInviteBody.setFriends(jsonObject.getString("_id").toString());
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl(Constants.HostServer)
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
-
-                    RequestInterface request = retrofit.create(RequestInterface.class);
-                    Call<RequestInviteBody> call = request.registerInvite(requestInviteBody);
-                    call.enqueue(new Callback<RequestInviteBody>() {
-                        @Override
-                        public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
-                            RequestInviteBody responseBody = response.body();
-                            Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
-                            finish();
-                            //progressDialog.dismiss();
-                        }
-
-                        @Override
-                        public void onFailure(Call<RequestInviteBody> call, Throwable t) {
-                            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-                            //progressDialog.dismiss();
-                        }
-                    });
-                }
-            });
-        }
-
-    }
 
     public void makeSendnvite(String message,String registrationId){
         JSONObject jsonObject = new JSONObject();

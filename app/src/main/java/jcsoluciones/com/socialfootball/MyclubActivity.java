@@ -1,5 +1,6 @@
 package jcsoluciones.com.socialfootball;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -17,7 +18,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.api.defaults.DefaultBootstrapBrand;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -26,8 +29,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import jcsoluciones.com.socialfootball.provider.RequestInterface;
+import jcsoluciones.com.socialfootball.provider.RequestInviteBody;
 import jcsoluciones.com.socialfootball.util.ImageCache;
 import jcsoluciones.com.socialfootball.util.ImageFetcher;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MyclubActivity extends AppCompatActivity {
     /** Informacion */
@@ -35,6 +45,7 @@ public class MyclubActivity extends AppCompatActivity {
     private static String  PHONE;
     private static String  CITY;
     private static String  NAME;
+    private static String  KEY_CLUB;
     private String  NIVEL;
     /** objetos */
     private ViewPagerAdapter adapterViewpager;
@@ -70,9 +81,9 @@ public class MyclubActivity extends AppCompatActivity {
 
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
         mImageFetcher = new ImageFetcher(this, mImageThumbSize);
-        mImageFetcher.setLoadingImage(R.drawable.champions);
+        //mImageFetcher.setLoadingImage(R.drawable.champions);
         mImageFetcher.addImageCache(this.getSupportFragmentManager(), cacheParams);
-        mImageFetcher.clearCache();
+        //mImageFetcher.clearCache();
         setupInformation();
     }
 
@@ -84,12 +95,14 @@ public class MyclubActivity extends AppCompatActivity {
                 NAME = jsonTeam.getString("name");
                 PHONE = jsonTeam.getString("phone");
                 CITY = jsonTeam.getString("city");
-                AVATAR = Constants.HostServer+"img/"+jsonTeam.getString("_id")+"/profile.jpg";
+                KEY_CLUB =  jsonTeam.getString("_id");
+                AVATAR = Constants.HostServer+"/img/"+jsonTeam.getString("_id")+"/profile.jpg";
+                mImageFetcher.loadImage(AVATAR,imageview);
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            mImageFetcher.loadImage(AVATAR,imageview);
+
         }
 
 
@@ -104,6 +117,7 @@ public class MyclubActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_invite:
+                ActionEvent();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -117,6 +131,93 @@ public class MyclubActivity extends AppCompatActivity {
 
 
         viewPager.setAdapter(adapterViewpager);
+    }
+
+    public void ActionEvent(){
+
+        /*if(flagAccept==1) {
+            sendnvite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), TeamsMgtActivity.class);
+                    intent.putExtra("object",jsonObject.toString());
+                    startActivity(intent);
+                }
+            });
+        }else if(flagAccept==2){
+            sendnvite.setText("Aceptar");
+            sendnvite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RequestInviteBody requestInviteBody = new RequestInviteBody();
+                    requestInviteBody.setCreator(sessionManager.getUserDetails().get(sessionManager.ID_CONTENT_MYCLUB).toString());
+                    requestInviteBody.setAcceptinvite(true);
+                    requestInviteBody.setMessage("!Aceptaron tu reto");
+                    try {
+                        requestInviteBody.setId(jsonObjectinvite.getString("_id").toString());
+                        requestInviteBody.setFriends(jsonObject.getString("_id").toString());
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(Constants.HostServer)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+
+                    RequestInterface request = retrofit.create(RequestInterface.class);
+                    Call<RequestInviteBody> call = request.updateInvite(requestInviteBody);
+                    call.enqueue(new Callback<RequestInviteBody>() {
+                        @Override
+                        public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
+                            RequestInviteBody responseBody = response.body();
+                            Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
+                            //progressDialog.dismiss();
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<RequestInviteBody> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                            //progressDialog.dismiss();
+                        }
+                    });
+                }
+            });
+        }else if(flagAccept==3) {*/
+
+
+        RequestInviteBody requestInviteBody = new RequestInviteBody();
+        requestInviteBody.setCreator("57c4bc8c37cee530271588a3");
+        requestInviteBody.setAcceptinvite(false);
+        requestInviteBody.setStatus(true);
+        requestInviteBody.setMessage("!Te retaron a un partido");
+        requestInviteBody.setFriends(KEY_CLUB);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.HostServer)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RequestInterface request = retrofit.create(RequestInterface.class);
+        Call<RequestInviteBody> call = request.registerInvite(requestInviteBody);
+        call.enqueue(new Callback<RequestInviteBody>() {
+            @Override
+            public void onResponse(Call<RequestInviteBody> call, Response<RequestInviteBody> response) {
+                RequestInviteBody responseBody = response.body();
+                Toast.makeText(getApplicationContext(), "successfully registered.", Toast.LENGTH_SHORT).show();
+                finish();
+                //progressDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<RequestInviteBody> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                //progressDialog.dismiss();
+            }
+        });
+
     }
 
     private class ViewPagerAdapter extends FragmentPagerAdapter {
